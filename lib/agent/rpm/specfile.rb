@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require_relative '../template'
+require_relative '../utils/template'
 
 module Agent
   module Rpm
@@ -15,12 +15,12 @@ module Agent
         /[Nn]ame:(.+)/.match(template)[1].strip
       end
 
-      def render(params)
-        Agent::Template.new(params).render(template)
+      def render(params_hash)
+        Agent::Utils::Template.new(params_hash).render(template)
       end
 
-      def save(path, params)
-        File.write(path, render(params))
+      def save(path, params_hash)
+        File.write(path, render(params_hash))
         path
       end
     end

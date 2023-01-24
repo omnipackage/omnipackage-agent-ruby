@@ -15,8 +15,5 @@ Layout/LineLength:
 Style/Documentation:
   Enabled: false
 
-Style/ModuleFunction:
-  Enabled: false
-
 Layout/HashAlignment:
   Enabled: false
