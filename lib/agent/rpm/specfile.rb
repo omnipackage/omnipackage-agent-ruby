@@ -11,6 +11,10 @@ module Agent
         @template = File.read(template_file_path)
       end
 
+      def name
+        /[Nn]ame:(.+)/.match(template)[1].strip
+      end
+
       def render(params)
         Agent::Template.new(params).render(template)
       end

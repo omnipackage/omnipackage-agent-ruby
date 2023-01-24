@@ -22,18 +22,19 @@ module Agent
       build_deps = build_conf.build_dependencies
       specfile = Agent::Rpm::Specfile.new(Pathname.new(source_path).join(specfile_path_template_path))
       version = '1.0.22'
-      source_folder_name = "mpz-#{version}"
+      source_folder_name = "#{specfile.name}-#{version}"
       specfile_name = "#{source_folder_name}-#{distro}.spec"
       specfile.save(Pathname.new(source_path).join(specfile_name), {
-        version: version,
-        build_dependencies: build_deps,
-        source_folder_name: source_folder_name
-      })
+                      version: version,
+                      build_dependencies: build_deps,
+                      source_folder_name: source_folder_name
+                    })
 
       commands = [
         'zypper in -y -t pattern devel_basis devel_rpm_build',
         'zypper in -y rpmdevtools',
         "zypper in -y #{build_deps.join(' ')}",
+        'rm -rf /root/rpmbuild/*',
         'rpmdev-setuptree',
         "cp -R /source /root/rpmbuild/SOURCES/#{source_folder_name}",
         'cd /root/rpmbuild/SOURCES/',

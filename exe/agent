@@ -7,7 +7,6 @@ require 'optparse'
 
 options = {}
 optparser = OptionParser.new do |parser|
-  optparser =
   parser.banner = "Usage: #{$PROGRAM_NAME} [options]"
 
   parser.on('--version', 'show version') do

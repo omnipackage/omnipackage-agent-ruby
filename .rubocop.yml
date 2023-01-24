@@ -17,3 +17,6 @@ Style/Documentation:
 
 Style/ModuleFunction:
   Enabled: false
+
+Layout/HashAlignment:
+  Enabled: false

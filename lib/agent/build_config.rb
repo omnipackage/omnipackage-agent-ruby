@@ -48,11 +48,11 @@ module Agent
         end
 
         DistroBuildConfig.new(
-                      distro: dc.fetch('distro'),
+          distro:             dc.fetch('distro'),
           build_dependencies: dc.fetch('build_dependencies'),
-                       image: dc['image'],
-                         rpm: rpm,
-                         deb: deb
+          image:              dc['image'],
+          rpm:                rpm,
+          deb:                deb
         )
       end
       freeze
