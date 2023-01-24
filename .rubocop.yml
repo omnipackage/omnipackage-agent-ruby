@@ -1,0 +1,19 @@
+require:
+- rubocop-minitest
+- rubocop-rake
+
+AllCops:
+  TargetRubyVersion: 2.3
+  NewCops: enable
+
+Gemspec/RequireMFA:
+  Enabled: false
+
+Layout/LineLength:
+  Max: 180
+
+Style/Documentation:
+  Enabled: false
+
+Style/ModuleFunction:
+  Enabled: false

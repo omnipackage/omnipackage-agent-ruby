@@ -1,0 +1,34 @@
+#!/usr/bin/env ruby
+# frozen_string_literal: true
+
+require_relative '../lib/agent'
+
+require 'optparse'
+
+options = {}
+optparser = OptionParser.new do |parser|
+  optparser =
+  parser.banner = "Usage: #{$PROGRAM_NAME} [options]"
+
+  parser.on('--version', 'show version') do
+    puts Agent::VERSION
+    exit
+  end
+  parser.on('--help', 'show help info') do
+    puts parser
+    exit
+  end
+  parser.on('--[no-]headless', 'run agent without cloud connection')
+  parser.on('--source SOURCE_PATH', 'path to source code in headless mode')
+end
+optparser.parse!(into: options)
+
+# pp options
+# Dir.chdir(__dir__)
+
+begin
+  Agent.run(options)
+rescue StandardError
+  puts optparser
+  exit(1)
+end
