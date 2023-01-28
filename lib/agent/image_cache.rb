@@ -18,8 +18,11 @@ module Agent
       end
     end
 
-    def commit_rm(container_name, &block)
+    def commit(container_name, &block)
       Agent::Utils::Subprocess.execute("#{Agent.runtime} commit #{container_name} #{container_name}", &block)
+    end
+
+    def rm(container_name, &block)
       Agent::Utils::Subprocess.execute("#{Agent.runtime} rm #{container_name}", &block)
     end
   end

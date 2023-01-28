@@ -20,15 +20,21 @@ module Agent
     def run(source_path, job_variables)
       Agent.logger.info("starting build for #{distro.name} in #{source_path}, variables: #{job_variables}")
 
-      artifacts = if distro.rpm?
+      build_success, artifacts = if distro.rpm?
         rpm(source_path, job_variables)
       elsif distro.deb?
+        deb(source_path, job_variables)
       else
         raise "distro #{distro} not supported"
       end
 
-      finalize
-      Agent.logger.info("finished build for #{distro.name} in #{source_path}, artifacts: #{artifacts}")
+      if build_success
+        image_cache.commit(container_name)
+        Agent.logger.info("successfully finished build for #{distro.name}, artifacts: #{artifacts}")
+      else
+        Agent.logger.info("failed build for #{distro.name}")
+      end
+      image_cache.rm(container_name)
     end
 
     private
@@ -45,8 +51,8 @@ module Agent
       @image ||= image_cache.image(container_name, build_conf[:image] || distro.image)
     end
 
-    def finalize
-      image_cache.commit_rm(container_name)
+    def mkpath(*parts)
+      Pathname.new(parts[0]).join(*parts[1..-1])
     end
 
     def rpm(source_path, job_variables)
@@ -54,28 +60,24 @@ module Agent
 
       specfile_path_template_path = build_conf.fetch(:rpm).fetch(:spec_template)
       build_src_rpm = build_conf[:rpm][:build_srcrpm] || false
-      build_debuginfo =  build_conf[:rpm][:build_debuginfo] || false
 
-      specfile = Agent::Rpm::Specfile.new(Pathname.new(source_path).join(specfile_path_template_path))
-      rpmbuild_path = Pathname.new(Agent.build_dir).join("rpmbuild-#{specfile.name}-#{distro.name}")
+      specfile = Agent::Rpm::Specfile.new(mkpath(source_path, specfile_path_template_path))
+      rpmbuild_folder_name = "rpmbuild-#{specfile.name}-#{distro.name}"
+      rpmbuild_path = mkpath(Agent.build_dir, rpmbuild_folder_name)
       FileUtils.mkdir_p(rpmbuild_path)
       source_folder_name = "#{specfile.name}-#{version}"
       specfile_name = "#{source_folder_name}-#{distro.name}.spec"
-      specfile.save(Pathname.new(source_path).join(specfile_name), {
-                      version: version,
-                      build_dependencies: build_deps,
-                      source_folder_name: source_folder_name
-                    })
+      specfile_template_params = build_conf.merge(job_variables).merge(source_folder_name: source_folder_name)
+      specfile.save(mkpath(Agent.build_dir, rpmbuild_folder_name, specfile_name), specfile_template_params)
 
       commands = distro.setup(build_deps) + [
-        'rm -rf /root/rpmbuild/*',
         'rpmdev-setuptree',
         "cp -R /source /root/rpmbuild/SOURCES/#{source_folder_name}",
         'cd /root/rpmbuild/SOURCES/',
         "tar -cvzf #{source_folder_name}.tar.gz #{source_folder_name}/",
         "cd /root/rpmbuild/SOURCES/#{source_folder_name}/",
         # "rpmbuild #{build_debuginfo ? '' : '--define "debug_package %{nil}"'} -b#{build_src_rpm ? 'a' : 'b'} /root/rpmbuild/SOURCES/#{source_folder_name}/#{specfile_name}"
-        "rpmbuild -b#{build_src_rpm ? 'a' : 'b'} /root/rpmbuild/SOURCES/#{source_folder_name}/#{specfile_name}"
+        "rpmbuild -b#{build_src_rpm ? 'a' : 'b'} /root/rpmbuild/#{specfile_name}"
       ]
 
       mounts = [
@@ -92,16 +94,24 @@ module Agent
 
       artifact_regex = /Wrote: (.+\.rpm)/
       artifacts = []
-      Agent::Utils::Subprocess.execute(cli) do |output_line|
+      build_success = Agent::Utils::Subprocess.execute(cli) do |output_line|
         match = artifact_regex.match(output_line)
         artifacts << match[1].strip if match
         puts(output_line)
-      end
+      end&.success?
 
-      artifacts.map do |path|
+      artifacts.map! do |path|
         mount_map = mounts.find { |from, to| path.start_with?(to) }
         path.gsub(mount_map[1], mount_map[0])
       end
+      [build_success, artifacts]
     end
+
+    def deb(source_path, job_variables)
+      version = job_variables.fetch(:version)
+
+
+    end
+
   end
 end

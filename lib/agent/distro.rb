@@ -63,6 +63,13 @@ module Agent
           'dnf install -y rpmdevtools tar %{build_dependencies}'
         ]
       },
+      'debian_bullseye' => {
+        package_type: 'deb',
+        image: 'debian:bullseye',
+        setup: [
+          'apt-get install -y build-essential %{build_dependencies}'
+        ]
+      },
     }.freeze
     private_constant :CONFIGS
   end
