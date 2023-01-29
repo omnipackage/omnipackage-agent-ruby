@@ -1,12 +1,12 @@
 # frozen_string_literal: true
 
-require_relative 'agent/version'
-require_relative 'agent/rpm/specfile'
-require_relative 'agent/build'
-require_relative 'agent/build_config'
-
 require 'logger'
 require 'tmpdir'
+
+require 'agent/version'
+require 'agent/rpm/specfile'
+require 'agent/build'
+require 'agent/build_config'
 
 module Agent
   extend self

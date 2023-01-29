@@ -1,8 +1,8 @@
 # frozen_string_literal: true
 
-require_relative 'utils/subprocess'
-
 require 'digest/sha1'
+
+require 'agent/utils/subprocess'
 
 module Agent
   class ImageCache

@@ -1,9 +1,12 @@
 #!/usr/bin/env ruby
 # frozen_string_literal: true
 
-require_relative '../lib/agent'
-
 require 'optparse'
+require 'pathname'
+
+$LOAD_PATH.append(Pathname.new(__dir__).join('..', 'lib'))
+
+require 'agent'
 
 options = {}
 optparser = OptionParser.new do |parser|

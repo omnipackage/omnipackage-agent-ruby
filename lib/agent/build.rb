@@ -1,11 +1,13 @@
 # frozen_string_literal: true
 
-require_relative 'utils/subprocess'
-require_relative 'distro'
-require_relative 'image_cache'
-
 require 'fileutils'
 require 'pathname'
+
+require 'agent/utils/subprocess'
+require 'agent/distro'
+require 'agent/image_cache'
+require 'agent/rpm/specfile'
+require 'agent/deb/debian_folder'
 
 module Agent
   class Build
@@ -77,7 +79,7 @@ module Agent
         "tar -cvzf #{source_folder_name}.tar.gz #{source_folder_name}/",
         "cd /root/rpmbuild/SOURCES/#{source_folder_name}/",
         # "rpmbuild #{build_debuginfo ? '' : '--define "debug_package %{nil}"'} -b#{build_src_rpm ? 'a' : 'b'} /root/rpmbuild/SOURCES/#{source_folder_name}/#{specfile_name}"
-        "rpmbuild -b#{build_src_rpm ? 'a' : 'b'} /root/rpmbuild/#{specfile_name}"
+        "rpmbuild --clean -b#{build_src_rpm ? 'a' : 'b'} /root/rpmbuild/#{specfile_name}"
       ]
 
       mounts = [
@@ -110,7 +112,42 @@ module Agent
     def deb(source_path, job_variables)
       version = job_variables.fetch(:version)
 
+      debian_folder_template_path = build_conf.fetch(:deb).fetch(:debian_templates)
+      debian_folder = Agent::Deb::DebianFolder.new(mkpath(source_path, debian_folder_template_path))
+      debian_template_params = build_conf.merge(job_variables)
+      build_folder_name = "debuild-#{debian_folder.name}-#{distro.name}"
+      build_path = mkpath(Agent.build_dir, build_folder_name, 'build')
+      output_path = mkpath(Agent.build_dir, build_folder_name, 'output')
+      FileUtils.mkdir_p(build_path)
+      FileUtils.mkdir_p(output_path)
+      debian_folder.save(mkpath(build_path, 'debian'), debian_template_params)
 
+      commands = distro.setup(build_deps) + [
+        'cp -R /source/* /output/build/',
+        'cd /output/build',
+        'dpkg-buildpackage -b -tc',
+        'rm -rf /output/build/*'
+      ]
+
+      mounts = [
+        [source_path.to_s, '/source'],
+        [build_path.to_s, '/output/build'],
+        [output_path.to_s, '/output/'],
+      ]
+      mount_cli = mounts.map do |from, to|
+        "--mount type=bind,source=#{from},target=#{to}"
+      end.join(' ')
+
+      cli = <<~CLI
+        #{Agent.runtime} run --name #{container_name} --entrypoint /bin/sh #{mount_cli} #{image} -c "#{commands.join(' && ')}"
+      CLI
+
+      build_success = Agent::Utils::Subprocess.execute(cli) do |output_line|
+        puts(output_line)
+      end&.success?
+
+      artifacts = Dir["#{output_path}/*.deb"]
+      [build_success, artifacts]
     end
 
   end

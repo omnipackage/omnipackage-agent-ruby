@@ -67,9 +67,27 @@ module Agent
         package_type: 'deb',
         image: 'debian:bullseye',
         setup: [
-          'apt-get install -y build-essential %{build_dependencies}'
+          'apt-get update',
+          'apt-get install -y build-essential debhelper %{build_dependencies}'
         ]
       },
+      'ubuntu_22_04' => {
+        package_type: 'deb',
+        image: 'ubuntu:22.04',
+        setup: [
+          'apt-get update',
+          'apt-get install -y build-essential debhelper %{build_dependencies}'
+        ]
+      },
+      'ubuntu_22_10' => {
+        package_type: 'deb',
+        image: 'ubuntu:22.10',
+        setup: [
+          'apt-get update',
+          'apt-get install -y build-essential debhelper %{build_dependencies}'
+        ]
+      }
+
     }.freeze
     private_constant :CONFIGS
   end
