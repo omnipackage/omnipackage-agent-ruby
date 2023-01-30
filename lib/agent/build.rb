@@ -16,12 +16,12 @@ module Agent
 
     def initialize(build_conf)
       @build_conf = build_conf
-      @distro = Agent::Distro.new(build_conf.fetch(:distro))
-      @image_cache = Agent::ImageCache.new
+      @distro = ::Agent::Distro.new(build_conf.fetch(:distro))
+      @image_cache = ::Agent::ImageCache.new
     end
 
     def run(source_path, job_variables)
-      Agent.logger.info("starting build for #{distro.name} in #{source_path}, variables: #{job_variables}")
+      ::Agent.logger.info("starting build for #{distro.name} in #{source_path}, variables: #{job_variables}")
 
       build_success, artifacts = if distro.rpm?
                                    rpm(source_path, job_variables)
@@ -33,9 +33,9 @@ module Agent
 
       if build_success
         image_cache.commit(container_name)
-        Agent.logger.info("successfully finished build for #{distro.name}, artifacts: #{artifacts}")
+        ::Agent.logger.info("successfully finished build for #{distro.name}, artifacts: #{artifacts}")
       else
-        Agent.logger.info("failed build for #{distro.name}")
+        ::Agent.logger.error("failed build for #{distro.name}")
       end
       image_cache.rm(container_name)
     end
@@ -60,7 +60,7 @@ module Agent
       end.join(' ')
 
       <<~CLI
-        #{Agent.runtime} run --name #{container_name} --entrypoint /bin/sh #{mount_cli} #{image} -c "#{commands.join(' && ')}"
+        #{::Agent.runtime} run --name #{container_name} --entrypoint /bin/sh #{mount_cli} #{image} -c "#{commands.join(' && ')}"
       CLI
     end
 
@@ -70,16 +70,16 @@ module Agent
       specfile_path_template_path = build_conf.fetch(:rpm).fetch(:spec_template)
       build_src_rpm = build_conf[:rpm][:build_srcrpm] || false
 
-      specfile = Agent::Rpm::Specfile.new(Agent::Utils::Path.mkpath(source_path, specfile_path_template_path))
+      specfile = ::Agent::Rpm::Specfile.new(::Agent::Utils::Path.mkpath(source_path, specfile_path_template_path))
       rpmbuild_folder_name = "rpmbuild-#{specfile.name}-#{distro.name}"
-      rpmbuild_path = Agent::Utils::Path.mkpath(Agent.build_dir, rpmbuild_folder_name)
-      FileUtils.mkdir_p(rpmbuild_path)
+      rpmbuild_path = ::Agent::Utils::Path.mkpath(::Agent.build_dir, rpmbuild_folder_name)
+      ::FileUtils.mkdir_p(rpmbuild_path)
 
       source_folder_name = "#{specfile.name}-#{version}"
       specfile_name = "#{source_folder_name}-#{distro.name}.spec"
 
       template_params = build_conf.merge(job_variables).merge(source_folder_name: source_folder_name)
-      specfile.save(Agent::Utils::Path.mkpath(Agent.build_dir, rpmbuild_folder_name, specfile_name), template_params)
+      specfile.save(::Agent::Utils::Path.mkpath(::Agent.build_dir, rpmbuild_folder_name, specfile_name), template_params)
 
       commands = distro.setup(build_deps) + [
         'rpmdev-setuptree',
@@ -98,10 +98,10 @@ module Agent
 
       artifact_regex = /Wrote: (.+\.rpm)/
       artifacts = []
-      build_success = Agent::Utils::Subprocess.execute(build_cli(mounts, commands)) do |output_line|
+      build_success = ::Agent::Utils::Subprocess.execute(build_cli(mounts, commands)) do |output_line|
         match = artifact_regex.match(output_line)
         artifacts << match[1].strip if match
-        puts(output_line)
+        ::Agent.logger.info('container') { output_line }
       end&.success?
 
       artifacts.map! do |path|
@@ -115,16 +115,16 @@ module Agent
       # version = job_variables.fetch(:version)
 
       debian_folder_template_path = build_conf.fetch(:deb).fetch(:debian_templates)
-      debian_folder = Agent::Deb::DebianFolder.new(Agent::Utils::Path.mkpath(source_path, debian_folder_template_path))
+      debian_folder = ::Agent::Deb::DebianFolder.new(::Agent::Utils::Path.mkpath(source_path, debian_folder_template_path))
       build_folder_name = "debuild-#{debian_folder.name}-#{distro.name}"
 
-      build_path = Agent::Utils::Path.mkpath(Agent.build_dir, build_folder_name, 'build')
-      output_path = Agent::Utils::Path.mkpath(Agent.build_dir, build_folder_name, 'output')
-      FileUtils.mkdir_p(build_path)
-      FileUtils.mkdir_p(output_path)
+      build_path = ::Agent::Utils::Path.mkpath(::Agent.build_dir, build_folder_name, 'build')
+      output_path = ::Agent::Utils::Path.mkpath(::Agent.build_dir, build_folder_name, 'output')
+      ::FileUtils.mkdir_p(build_path)
+      ::FileUtils.mkdir_p(output_path)
 
       template_params = build_conf.merge(job_variables)
-      debian_folder.save(Agent::Utils::Path.mkpath(build_path, 'debian'), template_params)
+      debian_folder.save(::Agent::Utils::Path.mkpath(build_path, 'debian'), template_params)
 
       commands = distro.setup(build_deps) + [
         'cp -R /source/* /output/build/',
@@ -138,8 +138,8 @@ module Agent
         build_path.to_s   => '/output/build',
         output_path.to_s  => '/output/'
       }
-      build_success = Agent::Utils::Subprocess.execute(build_cli(mounts, commands)) do |output_line|
-        puts(output_line)
+      build_success = ::Agent::Utils::Subprocess.execute(build_cli(mounts, commands)) do |output_line|
+        ::Agent.logger.info('container') { output_line }
       end&.success?
 
       artifacts = Dir["#{output_path}/*.deb"]

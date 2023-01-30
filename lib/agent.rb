@@ -7,6 +7,7 @@ require 'agent/version'
 require 'agent/rpm/specfile'
 require 'agent/build'
 require 'agent/build_config'
+require 'agent/logging/formatter'
 
 module Agent
   extend self
@@ -14,30 +15,30 @@ module Agent
   attr_writer :logger, :build_dir, :runtime
 
   def run(options = {})
-    logger.info(RUBY_DESCRIPTION)
+    logger.info(::RUBY_DESCRIPTION)
 
     if options[:headless]
       logger.info('running in headless mode')
 
       source_path = options[:source]
-      build_config = Agent::BuildConfig.new(source_path)
+      build_config = ::Agent::BuildConfig.new(source_path)
 
       build_config[:builds].each do |distro_build_config|
-        Agent::Build.new(distro_build_config).run(source_path, { version: '1.0.22' })
+        ::Agent::Build.new(distro_build_config).run(source_path, { version: '1.0.22' })
       end
 
     end
-  rescue StandardError => e
+  rescue ::StandardError => e
     logger.fatal(e)
     raise
   end
 
   def logger
-    @logger ||= Logger.new($stdout)
+    @logger ||= ::Logger.new($stdout, formatter: ::Agent::Logging::Formatter.new)
   end
 
   def build_dir
-    @build_dir ||= "#{Dir.tmpdir}/build-package-ipsum"
+    @build_dir ||= "#{::Dir.tmpdir}/build-package-ipsum"
   end
 
   def runtime

@@ -4,16 +4,16 @@
 require 'optparse'
 require 'pathname'
 
-$LOAD_PATH.append(Pathname.new(__dir__).join('..', 'lib'))
+$LOAD_PATH.append(::Pathname.new(__dir__).join('..', 'lib'))
 
 require 'agent'
 
 options = {}
-optparser = OptionParser.new do |parser|
+optparser = ::OptionParser.new do |parser|
   parser.banner = "Usage: #{$PROGRAM_NAME} [options]"
 
   parser.on('--version', 'show version') do
-    puts Agent::VERSION
+    puts ::Agent::VERSION
     exit
   end
   parser.on('--help', 'show help info') do
@@ -29,8 +29,8 @@ optparser.parse!(into: options)
 # Dir.chdir(__dir__)
 
 begin
-  Agent.run(options)
-rescue StandardError
+  ::Agent.run(options)
+rescue ::StandardError
   puts optparser
   exit(1)
 end

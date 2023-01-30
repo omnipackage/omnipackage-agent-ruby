@@ -11,11 +11,11 @@ module Agent
         end
 
         def render(erb_template)
-          ERB.new(erb_template).result(binding)
+          ::ERB.new(erb_template).result(binding)
         end
 
-        def build_time_rfc2822
-          @build_time_rfc2822 ||= Time.now.utc.rfc2822
+        def current_time_rfc2822
+          @current_time_rfc2822 ||= ::Time.now.utc.rfc2822
         end
 
         def method_missing(method_name, *arguments, &block)
@@ -38,7 +38,7 @@ module Agent
       attr_reader :template
 
       def initialize(template_file_path)
-        @template = File.read(template_file_path)
+        @template = ::File.read(template_file_path)
       end
 
       def render(params_hash)
@@ -46,7 +46,7 @@ module Agent
       end
 
       def save(path, params_hash)
-        File.write(path, render(params_hash))
+        ::File.write(path, render(params_hash))
         path
       end
     end

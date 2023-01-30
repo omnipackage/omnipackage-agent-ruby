@@ -2,9 +2,9 @@
 
 require_relative 'lib/agent/version'
 
-Gem::Specification.new do |spec|
+::Gem::Specification.new do |spec|
   spec.name = 'package-ipsum-agent-ruby'
-  spec.version = Agent::VERSION
+  spec.version = ::Agent::VERSION
   spec.authors = ['Oleg Antonyan']
   spec.email = ['oleg.b.antonyan@gmail.com']
 

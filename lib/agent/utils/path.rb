@@ -8,7 +8,7 @@ module Agent
       extend self
 
       def mkpath(*parts)
-        Pathname.new(parts[0]).join(*parts[1..-1])
+        ::Pathname.new(parts[0]).join(*parts[1..-1])
       end
     end
   end
