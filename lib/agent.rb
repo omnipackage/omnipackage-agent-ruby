@@ -12,8 +12,6 @@ require 'agent/logging/formatter'
 module Agent
   extend self
 
-  attr_writer :logger, :build_dir, :runtime
-
   def run(options = {})
     logger.info(::RUBY_DESCRIPTION)
 

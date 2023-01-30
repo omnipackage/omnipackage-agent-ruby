@@ -18,6 +18,10 @@ module Agent
         file.puts(line)
       end
 
+      def write(message)
+        file.write(message)
+      end
+
       def close
         file.close
       end
