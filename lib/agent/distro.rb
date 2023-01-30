@@ -11,11 +11,14 @@ module Agent
 
     def setup(build_dependencies)
       config.fetch(:setup).map do |command|
-        if command.include?('%{build_dependencies}')
-          command.gsub('%{build_dependencies}', build_dependencies.join(' '))
-        else
-          command
-        end
+        command % {
+          build_dependencies: build_dependencies.join(' ')
+        }
+        #if command.include?('%{build_dependencies}')
+        #  command.gsub('%{build_dependencies}', build_dependencies.join(' '))
+        #else
+        #  command
+        #end
       end
     end
 

@@ -14,6 +14,10 @@ module Agent
           ERB.new(erb_template).result(binding)
         end
 
+        def build_time_rfc2822
+          @build_time_rfc2822 ||= Time.now.utc.rfc2822
+        end
+
         def method_missing(method_name, *arguments, &block)
           if h.key?(method_name.to_s)
             h.fetch(method_name.to_s)

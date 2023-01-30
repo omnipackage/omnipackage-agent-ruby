@@ -8,6 +8,7 @@ require 'agent/distro'
 require 'agent/image_cache'
 require 'agent/rpm/specfile'
 require 'agent/deb/debian_folder'
+require 'agent/utils/path'
 
 module Agent
   class Build
@@ -53,8 +54,14 @@ module Agent
       @image ||= image_cache.image(container_name, build_conf[:image] || distro.image)
     end
 
-    def mkpath(*parts)
-      Pathname.new(parts[0]).join(*parts[1..-1])
+    def build_cli(mounts, commands)
+      mount_cli = mounts.map do |from, to|
+        "--mount type=bind,source=#{from},target=#{to}"
+      end.join(' ')
+
+      <<~CLI
+        #{Agent.runtime} run --name #{container_name} --entrypoint /bin/sh #{mount_cli} #{image} -c "#{commands.join(' && ')}"
+      CLI
     end
 
     def rpm(source_path, job_variables)
@@ -63,14 +70,16 @@ module Agent
       specfile_path_template_path = build_conf.fetch(:rpm).fetch(:spec_template)
       build_src_rpm = build_conf[:rpm][:build_srcrpm] || false
 
-      specfile = Agent::Rpm::Specfile.new(mkpath(source_path, specfile_path_template_path))
+      specfile = Agent::Rpm::Specfile.new(Agent::Utils::Path.mkpath(source_path, specfile_path_template_path))
       rpmbuild_folder_name = "rpmbuild-#{specfile.name}-#{distro.name}"
-      rpmbuild_path = mkpath(Agent.build_dir, rpmbuild_folder_name)
+      rpmbuild_path = Agent::Utils::Path.mkpath(Agent.build_dir, rpmbuild_folder_name)
       FileUtils.mkdir_p(rpmbuild_path)
+
       source_folder_name = "#{specfile.name}-#{version}"
       specfile_name = "#{source_folder_name}-#{distro.name}.spec"
-      specfile_template_params = build_conf.merge(job_variables).merge(source_folder_name: source_folder_name)
-      specfile.save(mkpath(Agent.build_dir, rpmbuild_folder_name, specfile_name), specfile_template_params)
+
+      template_params = build_conf.merge(job_variables).merge(source_folder_name: source_folder_name)
+      specfile.save(Agent::Utils::Path.mkpath(Agent.build_dir, rpmbuild_folder_name, specfile_name), template_params)
 
       commands = distro.setup(build_deps) + [
         'rpmdev-setuptree',
@@ -79,24 +88,17 @@ module Agent
         "tar -cvzf #{source_folder_name}.tar.gz #{source_folder_name}/",
         "cd /root/rpmbuild/SOURCES/#{source_folder_name}/",
         # "rpmbuild #{build_debuginfo ? '' : '--define "debug_package %{nil}"'} -b#{build_src_rpm ? 'a' : 'b'} /root/rpmbuild/SOURCES/#{source_folder_name}/#{specfile_name}"
-        "rpmbuild --clean -b#{build_src_rpm ? 'a' : 'b'} /root/rpmbuild/#{specfile_name}"
+        "QA_RPATHS=$(( 0x0001|0x0010 )) rpmbuild --clean -b#{build_src_rpm ? 'a' : 'b'} /root/rpmbuild/#{specfile_name}"
       ]
 
-      mounts = [
-        [source_path.to_s, '/source'],
-        [rpmbuild_path.to_s, '/root/rpmbuild']
-      ]
-      mount_cli = mounts.map do |from, to|
-        "--mount type=bind,source=#{from},target=#{to}"
-      end.join(' ')
-
-      cli = <<~CLI
-        #{Agent.runtime} run --name #{container_name} --entrypoint /bin/sh #{mount_cli} #{image} -c "#{commands.join(' && ')}"
-      CLI
+      mounts = {
+        source_path.to_s    => '/source',
+        rpmbuild_path.to_s  => '/root/rpmbuild'
+      }
 
       artifact_regex = /Wrote: (.+\.rpm)/
       artifacts = []
-      build_success = Agent::Utils::Subprocess.execute(cli) do |output_line|
+      build_success = Agent::Utils::Subprocess.execute(build_cli(mounts, commands)) do |output_line|
         match = artifact_regex.match(output_line)
         artifacts << match[1].strip if match
         puts(output_line)
@@ -113,14 +115,16 @@ module Agent
       version = job_variables.fetch(:version)
 
       debian_folder_template_path = build_conf.fetch(:deb).fetch(:debian_templates)
-      debian_folder = Agent::Deb::DebianFolder.new(mkpath(source_path, debian_folder_template_path))
-      debian_template_params = build_conf.merge(job_variables)
+      debian_folder = Agent::Deb::DebianFolder.new(Agent::Utils::Path.mkpath(source_path, debian_folder_template_path))
       build_folder_name = "debuild-#{debian_folder.name}-#{distro.name}"
-      build_path = mkpath(Agent.build_dir, build_folder_name, 'build')
-      output_path = mkpath(Agent.build_dir, build_folder_name, 'output')
+
+      build_path = Agent::Utils::Path.mkpath(Agent.build_dir, build_folder_name, 'build')
+      output_path = Agent::Utils::Path.mkpath(Agent.build_dir, build_folder_name, 'output')
       FileUtils.mkdir_p(build_path)
       FileUtils.mkdir_p(output_path)
-      debian_folder.save(mkpath(build_path, 'debian'), debian_template_params)
+
+      template_params = build_conf.merge(job_variables)
+      debian_folder.save(Agent::Utils::Path.mkpath(build_path, 'debian'), template_params)
 
       commands = distro.setup(build_deps) + [
         'cp -R /source/* /output/build/',
@@ -129,20 +133,12 @@ module Agent
         'rm -rf /output/build/*'
       ]
 
-      mounts = [
-        [source_path.to_s, '/source'],
-        [build_path.to_s, '/output/build'],
-        [output_path.to_s, '/output/'],
-      ]
-      mount_cli = mounts.map do |from, to|
-        "--mount type=bind,source=#{from},target=#{to}"
-      end.join(' ')
-
-      cli = <<~CLI
-        #{Agent.runtime} run --name #{container_name} --entrypoint /bin/sh #{mount_cli} #{image} -c "#{commands.join(' && ')}"
-      CLI
-
-      build_success = Agent::Utils::Subprocess.execute(cli) do |output_line|
+      mounts = {
+        source_path.to_s  => '/source',
+        build_path.to_s   => '/output/build',
+        output_path.to_s  => '/output/'
+      }
+      build_success = Agent::Utils::Subprocess.execute(build_cli(mounts, commands)) do |output_line|
         puts(output_line)
       end&.success?
 

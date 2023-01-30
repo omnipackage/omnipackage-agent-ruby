@@ -5,6 +5,7 @@ require 'fileutils'
 require 'time'
 
 require 'agent/utils/template'
+require 'agent/utils/path'
 
 module Agent
   module Deb
@@ -32,7 +33,8 @@ module Agent
         Dir.foreach(debian_folder_path) do |fname|
           next if fname == '.' || fname == '..'
           if fname.end_with?('.erb')
-            result_hash[fname.chomp('.erb')] = Agent::Utils::Template.new(mkpath(debian_folder_path, fname)).render(params_hash)
+            output_file_path = Agent::Utils::Path.mkpath(debian_folder_path, fname)
+            result_hash[fname.chomp('.erb')] = Agent::Utils::Template.new(output_file_path).render(params_hash)
           else
             result_hash[fname] = File.read(mkpath_rel(fname))
           end
@@ -43,18 +45,14 @@ module Agent
       def save(path, params_hash)
         FileUtils.mkdir_p(path)
         render(params_hash).each do |file, content|
-          File.write(mkpath(path, file), content)
+          File.write(Agent::Utils::Path.mkpath(path, file), content)
         end
       end
 
       private
 
       def mkpath_rel(fname)
-        mkpath(debian_folder_path, fname)
-      end
-
-      def mkpath(*parts)
-        Pathname.new(parts[0]).join(*parts[1..-1])
+        Agent::Utils::Path.mkpath(debian_folder_path, fname)
       end
     end
   end
