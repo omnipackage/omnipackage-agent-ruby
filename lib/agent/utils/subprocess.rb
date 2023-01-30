@@ -8,18 +8,24 @@ module Agent
       extend self
 
       def execute(cli, &block)
-        Agent.logger.debug("starting child process: #{cli}")
+        log("starting child process: #{cli}")
         exit_status = nil
         Open3.popen2e(cli) do |_stdin, stdout_and_stderr, wait_thr|
           pid = wait_thr.pid
-          Agent.logger.debug("started child process with pid #{pid}")
+          log("started child process with pid #{pid}")
 
           stdout_and_stderr.each(&block) if block
 
           exit_status = wait_thr.value
-          Agent.logger.debug("finished child process #{exit_status}")
+          log("finished child process #{exit_status}")
         end
         exit_status
+      end
+
+      private
+
+      def log(msg)
+        Agent.logger.debug(msg)
       end
     end
   end

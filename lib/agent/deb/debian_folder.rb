@@ -29,9 +29,9 @@ module Agent
       end
 
       def render(params_hash)
-        result_hash = {}
-        Dir.foreach(debian_folder_path) do |fname|
-          next if fname == '.' || fname == '..'
+        Dir.foreach(debian_folder_path).each_with_object({}) do |fname, result_hash|
+          next if ['.', '..'].include?(fname)
+
           if fname.end_with?('.erb')
             output_file_path = Agent::Utils::Path.mkpath(debian_folder_path, fname)
             result_hash[fname.chomp('.erb')] = Agent::Utils::Template.new(output_file_path).render(params_hash)
@@ -39,7 +39,6 @@ module Agent
             result_hash[fname] = File.read(mkpath_rel(fname))
           end
         end
-        result_hash
       end
 
       def save(path, params_hash)

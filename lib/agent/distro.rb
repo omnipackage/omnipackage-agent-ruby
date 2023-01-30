@@ -11,14 +11,12 @@ module Agent
 
     def setup(build_dependencies)
       config.fetch(:setup).map do |command|
-        command % {
-          build_dependencies: build_dependencies.join(' ')
-        }
-        #if command.include?('%{build_dependencies}')
+        format(command, build_dependencies: build_dependencies.join(' '))
+        # if command.include?('%{build_dependencies}')
         #  command.gsub('%{build_dependencies}', build_dependencies.join(' '))
-        #else
+        # else
         #  command
-        #end
+        # end
       end
     end
 
@@ -34,6 +32,7 @@ module Agent
       config.fetch(:package_type) == 'deb'
     end
 
+    # rubocop: disable Style/FormatStringToken
     CONFIGS = {
       'opensuse_15.3' => {
         package_type: 'rpm',
@@ -93,5 +92,6 @@ module Agent
 
     }.freeze
     private_constant :CONFIGS
+    # rubocop: enable Style/FormatStringToken
   end
 end

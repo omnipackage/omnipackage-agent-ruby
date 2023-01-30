@@ -24,12 +24,12 @@ module Agent
       Agent.logger.info("starting build for #{distro.name} in #{source_path}, variables: #{job_variables}")
 
       build_success, artifacts = if distro.rpm?
-        rpm(source_path, job_variables)
-      elsif distro.deb?
-        deb(source_path, job_variables)
-      else
-        raise "distro #{distro} not supported"
-      end
+                                   rpm(source_path, job_variables)
+                                 elsif distro.deb?
+                                   deb(source_path, job_variables)
+                                 else
+                                   raise "distro #{distro} not supported"
+                                 end
 
       if build_success
         image_cache.commit(container_name)
@@ -105,14 +105,14 @@ module Agent
       end&.success?
 
       artifacts.map! do |path|
-        mount_map = mounts.find { |from, to| path.start_with?(to) }
+        mount_map = mounts.find { |_from, to| path.start_with?(to) }
         path.gsub(mount_map[1], mount_map[0])
       end
       [build_success, artifacts]
     end
 
     def deb(source_path, job_variables)
-      version = job_variables.fetch(:version)
+      # version = job_variables.fetch(:version)
 
       debian_folder_template_path = build_conf.fetch(:deb).fetch(:debian_templates)
       debian_folder = Agent::Deb::DebianFolder.new(Agent::Utils::Path.mkpath(source_path, debian_folder_template_path))
@@ -145,6 +145,5 @@ module Agent
       artifacts = Dir["#{output_path}/*.deb"]
       [build_success, artifacts]
     end
-
   end
 end
