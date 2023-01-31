@@ -33,8 +33,8 @@ module Agent
           @commands = distro.setup(build_deps) + [
             'cp -R /source/* /output/build/',
             'cd /output/build',
-            'dpkg-buildpackage -b -tc',
-            'rm -rf /output/build/*'
+            'DEB_BUILD_OPTIONS=noddebs dpkg-buildpackage -b -tc',
+            #'rm -rf /output/build/*'
           ]
 
           @mounts = {

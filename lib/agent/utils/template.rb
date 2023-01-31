@@ -18,16 +18,12 @@ module Agent
           @current_time_rfc2822 ||= ::Time.now.utc.rfc2822
         end
 
-        def method_missing(method_name, *arguments, &block)
-          if h.key?(method_name.to_s)
-            h.fetch(method_name.to_s)
-          else
-            super
-          end
+        def method_missing(method_name, *_arguments, &_block)
+          h[method_name.to_s]
         end
 
-        def respond_to_missing?(method_name, include_private = false)
-          h.key?(method_name.to_s) || super
+        def respond_to_missing?(_method_name, _include_private = false)
+          true
         end
 
         private

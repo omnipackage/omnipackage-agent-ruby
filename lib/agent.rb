@@ -17,22 +17,23 @@ module Agent
 
     if options[:headless]
       logger.info('running in headless mode')
-
-      source_path = options[:source]
-      build_config = ::Agent::Build::Config.new(source_path)
-
-      job_variables = {
-        version: ::Agent::ExtractVersion.new(build_config, source_path).call
-      }
-
-      build_config[:builds].each do |distro_build_config|
-        ::Agent::Build::Runner.new(distro_build_config).run(source_path, job_variables)
-      end
-
+      build(options[:source])
     end
   rescue ::StandardError => e
     logger.fatal(e)
     raise
+  end
+
+  def build(source_path)
+    build_config = ::Agent::Build::Config.new(source_path)
+
+    job_variables = {
+      version: ::Agent::ExtractVersion.new(build_config, source_path).call
+    }
+
+    build_config[:builds].map do |distro_build_config|
+      ::Agent::Build::Runner.new(distro_build_config).run(source_path, job_variables)
+    end
   end
 
   def logger

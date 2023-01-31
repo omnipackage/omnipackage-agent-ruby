@@ -1,0 +1,36 @@
+Name:       sample_project
+Version:    <%= version %>
+Release:    1%{?dist}
+Summary:    Sample project
+License:    GPL-3.0-or-later
+URL:        https://github.com/olegantonyan/mpz
+Source0:    <%= source_folder_name %>.tar.gz
+
+BuildRequires: <%= build_dependencies.join(' ') %>
+
+%define debug_package %{nil}
+%define _build_id_links none
+
+%description
+Sample project
+
+
+%prep
+%setup -q
+
+
+%build
+make %{?_smp_mflags}
+
+
+%install
+make install INSTALL_ROOT=%{buildroot}
+
+
+%files
+%{_bindir}/sample_project
+
+
+%changelog
+* Sun Aug 9 2020 Chuck Norris <chuck@norr.is>
+- First public release

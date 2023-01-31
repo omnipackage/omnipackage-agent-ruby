@@ -1,0 +1,12 @@
+Source: sample-project
+Section: sound
+Priority: optional
+Maintainer: Chuck Norris <chuck@norr.is>
+Build-Depends: debhelper (>= 8.0.0), build-essential, <%= build_dependencies&.join(', ') %>
+Standards-Version: 3.9.4
+Homepage: http://example.com
+
+Package: sample-project
+Architecture: amd64
+Depends: ${shlibs:Depends}, ${misc:Depends}, <%= runtime_dependencies&.join(', ') %>
+Description: Sample project

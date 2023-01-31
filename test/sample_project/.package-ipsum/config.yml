@@ -1,0 +1,42 @@
+extract_version:
+  provider: 'file'
+  file:
+    file: 'version.h'
+    regex: 'VERSION "(.+)"'
+
+
+builds:
+- distro: 'opensuse_15.3'
+  build_dependencies: ['gcc', 'make']
+  rpm:
+    spec_template: '.package-ipsum/sample_project.spec.erb'
+
+- distro: 'opensuse_15.4'
+  build_dependencies: ['gcc', 'make']
+  rpm:
+    spec_template: '.package-ipsum/sample_project.spec.erb'
+
+- distro: 'opensuse_tumbleweed'
+  build_dependencies: ['gcc', 'make']
+  rpm:
+    spec_template: '.package-ipsum/sample_project.spec.erb'
+
+- distro: 'fedora_38'
+  build_dependencies: ['gcc', 'make']
+  rpm:
+    spec_template: '.package-ipsum/sample_project.spec.erb'
+
+- distro: 'debian_bullseye'
+  build_dependencies: ['gcc', 'make']
+  deb:
+    debian_templates: '.package-ipsum/deb'
+
+- distro: 'ubuntu_22.04'
+  build_dependencies: ['gcc', 'make']
+  deb:
+    debian_templates: '.package-ipsum/deb'
+
+- distro: 'ubuntu_22.10'
+  build_dependencies: ['gcc', 'make']
+  deb:
+    debian_templates: '.package-ipsum/deb'

@@ -36,12 +36,17 @@ module Agent
 
         success = execute(build_cli(package.mounts, package.commands))
         if success
-          image_cache.commit(container_name)
           logger.info("successfully finished build for #{distro.name}, artefacts: #{package.artefacts}, log: #{@logfile.path}")
         else
           logger.error("failed build for #{distro.name}")
         end
-        ::Agent::Build::Output.new(success: success, artefacts: package.artefacts, build_log: @logfile.path)
+        image_cache.commit(container_name)
+        ::Agent::Build::Output.new(
+          success: success,
+          artefacts: package.artefacts.map { |i| ::Pathname.new(i) },
+          build_log: @logfile.path,
+          build_config: build_conf
+        )
       ensure
         image_cache.rm(container_name)
         @logfile&.write(@log_string.string)
