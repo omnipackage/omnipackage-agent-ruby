@@ -28,7 +28,7 @@ module Agent
         @image_cache = ::Agent::ImageCache.new(logger: logger)
       end
 
-      def run(source_path, job_variables)
+      def run(source_path, job_variables) # rubocop: disable Metrics/AbcSize, Metrics/MethodLength
         logger.info("starting build for #{distro.name} in #{source_path}, variables: #{job_variables}")
 
         package = build_package(source_path, job_variables)

@@ -30,7 +30,7 @@ optparser.parse!(into: options)
 begin
   ::Agent.run(options)
 rescue ::StandardError => e
-  puts e.backtrace
-  puts optparser
+  warn e.backtrace
+  warn optparser
   exit(1)
 end

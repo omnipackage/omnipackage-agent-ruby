@@ -12,7 +12,8 @@ module Agent
     end
 
     def call
-      if config.fetch(:provider) == 'file'
+      case config.fetch(:provider)
+      when 'file'
         file
       else
         raise "version provider '#{config.fetch(:provider)}' not supported"
