@@ -8,6 +8,7 @@ require 'agent/rpm/specfile'
 require 'agent/build'
 require 'agent/build_config'
 require 'agent/logging/formatter'
+require 'agent/extract_version'
 
 module Agent
   extend self
@@ -21,8 +22,12 @@ module Agent
       source_path = options[:source]
       build_config = ::Agent::BuildConfig.new(source_path)
 
+      job_variables = {
+        version: ::Agent::ExtractVersion.new(build_config, source_path).call
+      }
+
       build_config[:builds].each do |distro_build_config|
-        ::Agent::Build.new(distro_build_config).run(source_path, { version: '1.0.22' })
+        ::Agent::Build.new(distro_build_config).run(source_path, job_variables)
       end
 
     end
