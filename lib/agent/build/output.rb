@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 module Agent
-  class Build
+  module Build
     class Output
       attr_reader :success, :artefacts, :build_log
 

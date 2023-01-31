@@ -4,9 +4,8 @@ require 'logger'
 require 'tmpdir'
 
 require 'agent/version'
-require 'agent/rpm/specfile'
-require 'agent/build'
-require 'agent/build_config'
+require 'agent/build/runner'
+require 'agent/build/config'
 require 'agent/logging/formatter'
 require 'agent/extract_version'
 
@@ -20,14 +19,14 @@ module Agent
       logger.info('running in headless mode')
 
       source_path = options[:source]
-      build_config = ::Agent::BuildConfig.new(source_path)
+      build_config = ::Agent::Build::Config.new(source_path)
 
       job_variables = {
         version: ::Agent::ExtractVersion.new(build_config, source_path).call
       }
 
       build_config[:builds].each do |distro_build_config|
-        ::Agent::Build.new(distro_build_config).run(source_path, job_variables)
+        ::Agent::Build::Runner.new(distro_build_config).run(source_path, job_variables)
       end
 
     end

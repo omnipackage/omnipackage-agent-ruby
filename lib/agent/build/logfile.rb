@@ -3,7 +3,7 @@
 require 'fileutils'
 
 module Agent
-  class Build
+  module Build
     class Logfile
       attr_reader :file, :path
 

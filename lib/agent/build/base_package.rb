@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 module Agent
-  class Build
+  module Build
     class BasePackage
       attr_reader :source_path, :job_variables, :build_conf, :distro
       attr_reader :output_path, :commands, :mounts # set these in setup method
