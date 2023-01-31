@@ -26,3 +26,12 @@ Style/RedundantConstantBase:
 
 Style/CommentedKeyword:
   Enabled: false
+
+Style/EmptyMethod:
+  Enabled: false
+
+Style/AccessorGrouping:
+  Enabled: false
+
+Style/FormatStringToken:
+  Enabled: false

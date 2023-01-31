@@ -8,12 +8,12 @@ require 'stringio'
 require 'agent/utils/subprocess'
 require 'agent/distro'
 require 'agent/image_cache'
-require 'agent/rpm/specfile'
-require 'agent/deb/debian_folder'
 require 'agent/utils/path'
 require 'agent/build/logfile'
 require 'agent/build/output'
 require 'agent/logging/multioutput'
+require 'agent/build/rpm'
+require 'agent/build/deb'
 
 module Agent
   class Build
@@ -23,38 +23,33 @@ module Agent
       @build_conf = build_conf
       @distro = ::Agent::Distro.new(build_conf.fetch(:distro))
       @log_string = ::StringIO.new
-      @logger = ::Logger.new(::Agent::Logging::Multioutput.new($stdout, log_string), formatter: ::Agent::Logging::Formatter.new)
+      @logger = ::Logger.new(::Agent::Logging::Multioutput.new($stdout, @log_string), formatter: ::Agent::Logging::Formatter.new)
       @image_cache = ::Agent::ImageCache.new(logger: logger)
     end
 
     def run(source_path, job_variables)
       logger.info("starting build for #{distro.name} in #{source_path}, variables: #{job_variables}")
 
-      success, artefacts = if distro.rpm?
-                             rpm(source_path, job_variables)
-                           elsif distro.deb?
-                             deb(source_path, job_variables)
-                           else
-                             raise "distro #{distro} not supported"
-                           end
+      package = build_package(source_path, job_variables)
+      @logfile = ::Agent::Build::Logfile.new(::Agent::Utils::Path.mkpath(package.output_path, 'build.log'))
 
+      success = execute(build_cli(package.mounts, package.commands))
       if success
         image_cache.commit(container_name)
-        logger.info("successfully finished build for #{distro.name}, artefacts: #{artefacts}, log: #{logfile.path}")
+        logger.info("successfully finished build for #{distro.name}, artefacts: #{package.artefacts}, log: #{@logfile.path}")
       else
         logger.error("failed build for #{distro.name}")
       end
-      
-      ::Agent::Build::Output.new(success: success, artefacts: artefacts, build_log: logfile&.path)
+      ::Agent::Build::Output.new(success: success, artefacts: package.artefacts, build_log: @logfile.path)
     ensure
       image_cache.rm(container_name)
-      logfile&.write(log_string.string)
-      logfile&.close
+      @logfile&.write(@log_string.string)
+      @logfile&.close
     end
 
     private
 
-    attr_reader :log_string, :logger, :logfile
+    attr_reader :logger
 
     def build_deps
       build_conf.fetch(:build_dependencies)
@@ -84,77 +79,14 @@ module Agent
       end&.success?
     end
 
-    def set_output_path(output_path) # rubocop: disable Naming/AccessorMethodName
-      @logfile = ::Agent::Build::Logfile.new(::Agent::Utils::Path.mkpath(output_path, 'build.log'))
-    end
-
-    def rpm(source_path, job_variables)
-      version = job_variables.fetch(:version)
-
-      specfile_path_template_path = build_conf.fetch(:rpm).fetch(:spec_template)
-
-      specfile = ::Agent::Rpm::Specfile.new(::Agent::Utils::Path.mkpath(source_path, specfile_path_template_path))
-      rpmbuild_folder_name = "rpmbuild-#{specfile.name}-#{distro.name}"
-      rpmbuild_path = ::Agent::Utils::Path.mkpath(::Agent.build_dir, rpmbuild_folder_name)
-      ::FileUtils.mkdir_p(rpmbuild_path)
-      set_output_path(rpmbuild_path)
-
-      source_folder_name = "#{specfile.name}-#{version}"
-      specfile_name = "#{source_folder_name}-#{distro.name}.spec"
-
-      template_params = build_conf.merge(job_variables).merge(source_folder_name: source_folder_name)
-      specfile.save(::Agent::Utils::Path.mkpath(::Agent.build_dir, rpmbuild_folder_name, specfile_name), template_params)
-
-      commands = distro.setup(build_deps) + [
-        'rpmdev-setuptree',
-        "cp -R /source /root/rpmbuild/SOURCES/#{source_folder_name}",
-        'cd /root/rpmbuild/SOURCES/',
-        "tar -cvzf #{source_folder_name}.tar.gz #{source_folder_name}/",
-        "cd /root/rpmbuild/SOURCES/#{source_folder_name}/",
-        "QA_RPATHS=$(( 0x0001|0x0010 )) rpmbuild --clean -bb /root/rpmbuild/#{specfile_name}"
-      ]
-
-      mounts = {
-        source_path.to_s    => '/source',
-        rpmbuild_path.to_s  => '/root/rpmbuild'
-      }
-      build_success = execute(build_cli(mounts, commands))
-      artifacts = ::Dir[::Agent::Utils::Path.mkpath(rpmbuild_path, 'RPMS', '**', '*.rpm')]
-      [build_success, artifacts]
-    end
-
-    def deb(source_path, job_variables)
-      _version = job_variables.fetch(:version)
-
-      debian_folder_template_path = build_conf.fetch(:deb).fetch(:debian_templates)
-      debian_folder = ::Agent::Deb::DebianFolder.new(::Agent::Utils::Path.mkpath(source_path, debian_folder_template_path))
-      build_folder_name = "debuild-#{debian_folder.name}-#{distro.name}"
-
-      build_path = ::Agent::Utils::Path.mkpath(::Agent.build_dir, build_folder_name, 'build')
-      output_path = ::Agent::Utils::Path.mkpath(::Agent.build_dir, build_folder_name, 'output')
-      ::FileUtils.mkdir_p(build_path)
-      ::FileUtils.mkdir_p(output_path)
-      set_output_path(output_path)
-
-      template_params = build_conf.merge(job_variables)
-      debian_folder.save(::Agent::Utils::Path.mkpath(build_path, 'debian'), template_params)
-
-      commands = distro.setup(build_deps) + [
-        'cp -R /source/* /output/build/',
-        'cd /output/build',
-        'dpkg-buildpackage -b -tc',
-        'rm -rf /output/build/*'
-      ]
-
-      mounts = {
-        source_path.to_s  => '/source',
-        build_path.to_s   => '/output/build',
-        output_path.to_s  => '/output/'
-      }
-
-      build_success = execute(build_cli(mounts, commands))
-      artifacts = ::Dir[::Agent::Utils::Path.mkpath(output_path, '*.deb')]
-      [build_success, artifacts]
+    def build_package(source_path, job_variables)
+      if distro.rpm?
+        ::Agent::Build::Rpm
+      elsif distro.deb?
+        ::Agent::Build::Deb
+      else
+        raise "distro #{distro} not supported"
+      end.new(source_path, job_variables, build_conf, distro)
     end
   end
 end

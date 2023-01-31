@@ -32,7 +32,6 @@ module Agent
       config.fetch(:package_type) == 'deb'
     end
 
-    # rubocop: disable Style/FormatStringToken
     CONFIGS = {
       'opensuse_15.3' => {
         package_type: 'rpm',
@@ -92,6 +91,5 @@ module Agent
 
     }.freeze
     private_constant :CONFIGS
-    # rubocop: enable Style/FormatStringToken
   end
 end
