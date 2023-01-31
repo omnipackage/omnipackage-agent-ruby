@@ -20,3 +20,9 @@ Layout/HashAlignment:
 
 Style/ModuleFunction:
   Enabled: false
+
+Style/RedundantConstantBase:
+  Enabled: false
+
+Style/CommentedKeyword:
+  Enabled: false
