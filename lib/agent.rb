@@ -45,6 +45,6 @@ module Agent
   end
 
   def runtime
-    @runtime ||= 'docker' # docker or podman
+    @runtime ||= 'podman' # docker or podman
   end
 end

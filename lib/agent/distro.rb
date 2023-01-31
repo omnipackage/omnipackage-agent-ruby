@@ -72,7 +72,7 @@ module Agent
           'apt-get install -y build-essential debhelper %{build_dependencies}'
         ]
       },
-      'ubuntu_22_04' => {
+      'ubuntu_22.04' => {
         package_type: 'deb',
         image: 'ubuntu:22.04',
         setup: [
@@ -80,7 +80,7 @@ module Agent
           'apt-get install -y build-essential debhelper %{build_dependencies}'
         ]
       },
-      'ubuntu_22_10' => {
+      'ubuntu_22.10' => {
         package_type: 'deb',
         image: 'ubuntu:22.10',
         setup: [

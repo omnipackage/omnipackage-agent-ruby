@@ -20,7 +20,7 @@ module Agent
         specfile_path_template_path = build_conf.fetch(:rpm).fetch(:spec_template)
 
         specfile = ::Agent::Rpm::Specfile.new(::Agent::Utils::Path.mkpath(source_path, specfile_path_template_path))
-        rpmbuild_folder_name = "rpmbuild-#{specfile.name}-#{distro.name}"
+        rpmbuild_folder_name = "#{specfile.name}-#{distro.name}"
         rpmbuild_path = ::Agent::Utils::Path.mkpath(::Agent.build_dir, rpmbuild_folder_name)
         ::FileUtils.mkdir_p(rpmbuild_path)
         @output_path = rpmbuild_path
