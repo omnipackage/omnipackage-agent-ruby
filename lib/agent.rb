@@ -43,7 +43,7 @@ module Agent
   end
 
   def build_dir
-    @build_dir ||= "#{::Dir.tmpdir}/build-package-ipsum"
+    @build_dir ||= "#{::Dir.tmpdir}/build-omnipackage"
   end
 
   def runtime

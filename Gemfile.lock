@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    package-ipsum-agent-ruby (0.1.0)
+    omnipackage-agent-ruby (0.1.0)
 
 GEM
   remote: https://rubygems.org/
@@ -40,7 +40,7 @@ PLATFORMS
 
 DEPENDENCIES
   minitest
-  package-ipsum-agent-ruby!
+  omnipackage-agent-ruby!
   rake
   rubocop
   rubocop-minitest

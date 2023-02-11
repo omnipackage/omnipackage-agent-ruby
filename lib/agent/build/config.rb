@@ -10,7 +10,7 @@ module Agent
       extend self
 
       def new(source_path)
-        fpath = ::Agent::Utils::Path.mkpath(source_path, '.package-ipsum', 'config.yml')
+        fpath = ::Agent::Utils::Path.mkpath(source_path, '.omnipackage', 'config.yml')
         ::YAML.load_file(fpath, symbolize_names: true)
       end
     end

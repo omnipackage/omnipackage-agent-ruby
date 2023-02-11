@@ -14,7 +14,7 @@ module Agent
     end
 
     def generate_container_name(distro_name, build_deps)
-      "package-ipsum-#{distro_name}-#{::Digest::SHA1.hexdigest(build_deps.sort.join)}"
+      "omnipackage-#{distro_name}-#{::Digest::SHA1.hexdigest(build_deps.sort.join)}"
     end
 
     def image(container_name, default_image)
