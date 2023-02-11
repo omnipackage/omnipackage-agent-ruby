@@ -18,8 +18,8 @@ module Agent
         end
 
         def name
-          file = if ::File.exist?(mkpath_rel('control.erb'))
-                   ::File.read(mkpath_rel('control.erb'))
+          file = if ::File.exist?(mkpath_rel("control#{template_ext}"))
+                   ::File.read(mkpath_rel("control#{template_ext}"))
                  elsif ::File.exist?(mkpath_rel('control'))
                    ::File.read(mkpath_rel('control'))
                  else
@@ -29,13 +29,13 @@ module Agent
           /[Ss]ource:(.+)/.match(file)[1].strip
         end
 
-        def render(params_hash)
+        def render(params_hash) # rubocop: disable Metrics/AbcSize
           ::Dir.foreach(debian_folder_path).each_with_object({}) do |fname, result_hash|
             next if ['.', '..'].include?(fname)
 
-            if fname.end_with?('.erb')
+            if fname.end_with?(template_ext)
               output_file_path = ::Agent::Utils::Path.mkpath(debian_folder_path, fname)
-              result_hash[fname.chomp('.erb')] = ::Agent::Utils::Template.new(output_file_path).render(params_hash)
+              result_hash[fname.chomp(template_ext)] = ::Agent::Utils::Template.new(output_file_path).render(params_hash)
             else
               result_hash[fname] = ::File.read(mkpath_rel(fname))
             end
@@ -53,6 +53,10 @@ module Agent
 
         def mkpath_rel(fname)
           ::Agent::Utils::Path.mkpath(debian_folder_path, fname)
+        end
+
+        def template_ext
+          ::Agent::Utils::Template.file_extension
         end
       end
     end

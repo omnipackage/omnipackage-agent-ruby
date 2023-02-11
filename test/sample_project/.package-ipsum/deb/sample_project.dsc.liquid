@@ -1,9 +1,9 @@
 Format: 1.0
 Source: sample-project
-Version: <%= version %>-0
+Version: {{ version }}-0
 Binary: sample_project
 Maintainer: Chuck Norris <chuck@norr.is>
 Architecture: amd64
 Homepage: http://example.com
 Standards-Version: 3.9.4
-Build-Depends: debhelper (>= 8.0.0), build-essential, <%= build_dependencies&.join(', ') %>
+Build-Depends: debhelper (>= 8.0.0), build-essential, {{ build_dependencies | join: ', ' }}

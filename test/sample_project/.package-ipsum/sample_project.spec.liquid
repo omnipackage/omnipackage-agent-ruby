@@ -1,12 +1,12 @@
 Name:       sample_project
-Version:    <%= version %>
+Version:    {{ version }}
 Release:    1%{?dist}
 Summary:    Sample project
 License:    GPL-3.0-or-later
 URL:        https://github.com/olegantonyan/mpz
-Source0:    <%= source_folder_name %>.tar.gz
+Source0:    {{ source_folder_name }}.tar.gz
 
-BuildRequires: <%= build_dependencies.join(' ') %>
+BuildRequires: {{ build_dependencies | join: ' ' }}
 
 %define debug_package %{nil}
 %define _build_id_links none
