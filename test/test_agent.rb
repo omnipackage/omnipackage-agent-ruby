@@ -2,19 +2,19 @@
 
 require 'test_helper'
 
-class TestAgent < ::Minitest::Test
-  def test_sample_project_build # rubocop: disable Metrics/AbcSize, Metrics/MethodLength
+class TestAgent < ::Test::Unit::TestCase
+  test 'build sample project' do # rubocop: disable Metrics/BlockLength
     result = ::Agent.build(::File.expand_path('sample_project', __dir__))
     puts ' -- BUILD RESULTS -- '
     pp result
     puts ' -- ENDOF BUILD RESULTS -- '
     result.each do |res| # rubocop: disable Metrics/BlockLength
       assert res.success
-      assert_path_exists res.build_log
+      assert_path_exist res.build_log
       assert_match(/successfully finished build/, ::File.read(res.build_log))
       assert_equal 1, res.artefacts.size
       res.artefacts.each do |art|
-        assert_path_exists art
+        assert_path_exist art
       end
 
       distro = ::Agent::Distro.new(res.build_config.fetch(:distro))
