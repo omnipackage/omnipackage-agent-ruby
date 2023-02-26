@@ -20,6 +20,8 @@ module Agent
     if options[:headless]
       logger.info('running in headless mode')
       build(options[:source])
+    else
+      logger.info("running with #{options[:apihost]} mothership")
     end
   rescue ::StandardError => e
     logger.fatal(e)

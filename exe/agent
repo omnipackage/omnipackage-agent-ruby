@@ -21,6 +21,8 @@ optparser = ::OptionParser.new do |parser|
   end
   parser.on('--[no-]headless', 'run agent without cloud connection')
   parser.on('--source SOURCE_PATH', 'path to source code in headless mode')
+  parser.on('--apihost API_HOST', 'cloud api host url')
+  parser.on('--apikey API_KEY', 'cloud api key')
 end
 optparser.parse!(into: options)
 
