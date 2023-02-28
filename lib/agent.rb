@@ -10,6 +10,7 @@ require 'agent/build/runner'
 require 'agent/build/config'
 require 'agent/logging/formatter'
 require 'agent/extract_version'
+require 'agent/api/connector'
 
 module Agent
   extend self
@@ -22,6 +23,7 @@ module Agent
       build(options[:source])
     else
       logger.info("running with #{options[:apihost]} mothership")
+      ::Agent::Api::Connector.new(options[:apihost], options[:apikey]).join
     end
   rescue ::StandardError => e
     logger.fatal(e)
