@@ -15,7 +15,7 @@ require 'agent/api/connector'
 module Agent
   extend self
 
-  def run(options = {})
+  def run(options = {}) # rubocop: disable Metrics/AbcSize, Metrics/MethodLength
     logger.info(::RUBY_DESCRIPTION)
 
     if options[:headless]

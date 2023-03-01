@@ -4,6 +4,8 @@ require 'uri'
 require 'net/http'
 require 'json'
 
+require 'agent/api/client/response'
+
 module Agent
   module Api
     class Client
@@ -18,7 +20,9 @@ module Agent
         http = build_http
         request = build_request(payload)
         response = http.request(request)
-        ::JSON.parse(response.body) if response.body.present?
+        ::Agent::Api::Client::Response.new(ok: response.code == '200', payload: parse_json(response.body), headers: response.to_hash)
+      rescue ::StandardError => e
+        ::Agent::Api::Client::Response.new(ok: false, payload: parse_json(response&.body), exception: e, headers: response&.to_hash || {})
       end
 
       private
@@ -32,7 +36,7 @@ module Agent
           'Accept'        => 'application/json'
         }
         request = ::Net::HTTP::Post.new(uri, headers)
-        request.body = ::JSON.dump(payload)
+        request.body = ::JSON.dump(payload: payload)
         request
       end
 
@@ -45,6 +49,11 @@ module Agent
         http.set_debug_output($stdout) if @debug
         http.use_ssl = uri.scheme == 'https'
         http
+      end
+
+      def parse_json(body)
+        return {} if body.nil? || body.empty?
+        ::JSON.parse(body)
       end
     end
   end
