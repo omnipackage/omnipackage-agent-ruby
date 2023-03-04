@@ -12,15 +12,13 @@ module Agent
         recharge!
       end
 
-      def call(payload)
-        case state.state
-        when 'idle'
-          if payload['command'] == 'start'
-            start!(payload)
-          end
-        when 'busy'
-        when 'finished'
-        else
+      def call(payload) # rubocop: disable Metrics/MethodLength
+        case
+        when state.idle? && payload['command'] == 'start'
+          start!(payload)
+        when state.busy? && payload['command'] == 'stop'
+          stop!
+        when state.finished?
         end
       rescue ::StandardError => e
         logger.error("scheduling error: #{e.message}")
@@ -42,6 +40,10 @@ module Agent
           @state = ::Agent::Api::State.new('busy', agent_task_id: payload.fetch('agent_task_id'))
         end
         queue.push(state)
+      end
+
+      def stop!
+        logger.info('stopping build')
       end
 
       def finish!

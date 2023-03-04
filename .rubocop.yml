@@ -34,3 +34,6 @@ Style/AccessorGrouping:
 
 Style/FormatStringToken:
   Enabled: false
+
+Layout/LeadingCommentSpace:
+  Enabled: false

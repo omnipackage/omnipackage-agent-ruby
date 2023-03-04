@@ -17,6 +17,7 @@ module Agent
 
   def run(options = {}) # rubocop: disable Metrics/AbcSize, Metrics/MethodLength
     logger.info(::RUBY_DESCRIPTION)
+    check_system_packages!
 
     if options[:headless]
       logger.info('running in headless mode')
@@ -39,6 +40,17 @@ module Agent
 
     build_config[:builds].map do |distro_build_config|
       ::Agent::Build::Runner.new(distro_build_config).run(source_path, job_variables)
+    end
+  end
+
+  def check_system_packages!
+    ['tar', 'xz'].each do |b| # rubocop: disable Style/WordArray
+      name, cmd = if b.is_a?(::Hash)
+                    [b.keys.first, b.values.first]
+                  else
+                    [b, "#{b} --version"]
+                  end
+      raise "please install #{name}" unless system("#{cmd} &> /dev/null")
     end
   end
 
