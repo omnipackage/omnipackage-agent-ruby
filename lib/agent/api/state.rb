@@ -1,17 +1,21 @@
 # frozen_string_literal: true
 
-require 'agent/api/client'
-
 module Agent
   module Api
     class State
-      def get
+      attr_reader :state, :agent_task_id
+
+      def initialize(state, agent_task_id: nil)
+        @state = state
+        @agent_task_id = agent_task_id
+        freeze
       end
 
-      def start!
-      end
-
-      def finish!
+      def to_hash
+        {
+          state:          state,
+          agent_task_id:  agent_task_id
+        }.freeze
       end
     end
   end

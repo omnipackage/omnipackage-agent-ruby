@@ -1,10 +1,12 @@
+# frozen_string_literal: true
+
 module Agent
   module Api
     class Client
       class Response
         attr_reader :ok, :payload, :headers, :exception
 
-        def initialize(ok:, payload:, headers:, exception: nil)
+        def initialize(ok:, payload:, headers:, exception: nil) # rubocop: disable Naming/MethodParameterName
           @ok = ok
           @payload = payload
           @exception = exception
@@ -14,7 +16,7 @@ module Agent
 
         def next_poll_after
           res = headers['x-next-poll-after-seconds']&.first
-          if res
+          if res&.to_i&.positive?
             res.to_i
           else
             rand(19..29)
@@ -25,7 +27,7 @@ module Agent
           ok == true
         end
 
-        def error_message
+        def error_message # rubocop: disable Metrics/AbcSize
           if ok?
             ''
           elsif payload['error'] && !exception

@@ -1,15 +1,21 @@
 # frozen_string_literal: true
 
 require 'agent/api/client'
+require 'agent/api/scheduler'
+require 'agent/utils/timed_queue'
 
 module Agent
   module Api
     class Connector
+      attr_reader :scheduler
+
       def initialize(apihost, apikey)
+        @logger = ::Agent.logger
+        @queue = ::Agent::TimedQueue.new
+        @scheduler = ::Agent::Api::Scheduler.new(logger, queue)
         @thread = ::Thread.new do
           mainloop(::Agent::Api::Client.new(apihost, apikey))
         end
-        @logger = ::Agent.logger
       end
 
       def join
@@ -18,20 +24,22 @@ module Agent
 
       private
 
-      attr_reader :thread, :logger
+      attr_reader :thread, :logger, :queue
 
-      def mainloop(client)
+      def mainloop(client) # rubocop: disable Metrics/MethodLength
         loop do
-          response = client.call({state: 'idle'})
+          response = client.call(scheduler.state.to_hash)
+
           if response.ok?
+            scheduler.call(response.payload)
           else
-            logger.error(response.error_message)
+            logger.error("connector error: #{response.error_message}")
           end
 
-          # read queue
-          # send
-          # receive and put into another queue
-          sleep response.next_poll_after
+          case queue.pop(response.next_poll_after)
+          when 'quit'
+            break
+          end
         end
       end
     end

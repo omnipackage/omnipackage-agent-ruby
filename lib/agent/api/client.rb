@@ -53,6 +53,7 @@ module Agent
 
       def parse_json(body)
         return {} if body.nil? || body.empty?
+
         ::JSON.parse(body)
       end
     end
