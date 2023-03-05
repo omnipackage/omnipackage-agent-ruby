@@ -6,13 +6,13 @@ module Agent
       STATES = %w[idle busy finished].freeze
       private_constant :STATES
 
-      attr_reader :state, :agent_task_id
+      attr_reader :state, :task
 
-      def initialize(state, agent_task_id: nil)
+      def initialize(state, task: nil)
         raise ::ArgumentError, "state must be one of #{STATES}" unless STATES.include?(state)
 
         @state = state
-        @agent_task_id = agent_task_id
+        @task = task
         freeze
       end
 
@@ -22,8 +22,8 @@ module Agent
 
       def to_hash
         {
-          state:          state,
-          agent_task_id:  agent_task_id
+          state: state,
+          task:  task&.to_hash
         }.freeze
       end
     end

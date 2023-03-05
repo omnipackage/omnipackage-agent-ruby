@@ -12,7 +12,7 @@ module Agent
       def initialize(apihost, apikey)
         @logger = ::Agent.logger
         @queue = ::Agent::TimedQueue.new
-        @scheduler = ::Agent::Api::Scheduler.new(logger, queue)
+        @scheduler = ::Agent::Api::Scheduler.new(logger, queue, apikey: apikey)
         @thread = ::Thread.new do
           mainloop(::Agent::Api::Client.new(apihost, apikey))
         end
