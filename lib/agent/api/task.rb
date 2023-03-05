@@ -16,10 +16,10 @@ module Agent
         @downloader = downloader
       end
 
-      def start(&block)
+      def start(&block) # rubocop: disable Metrics/MethodLength
         sources_dir = ::Agent::Utils::Path.mkpath(::Agent.build_dir, "sources_#{id}").to_s
         ::FileUtils.mkdir_p(sources_dir)
-        
+
         @thread = ::Thread.new do
           downloader.download_decompress(tarball_url, sources_dir)
           @build_outputs = ::Agent::Build.call(sources_dir)

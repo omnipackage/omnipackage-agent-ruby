@@ -13,7 +13,7 @@ module Agent
           freeze
         end
 
-        def download_decompress(uri, destination_path) # rubocop: disable Metrics/AbcSize, Metrics/MethodLength
+        def download_decompress(uri, destination_path) # rubocop: disable Metrics/MethodLength
           uri = ::URI.parse(uri)
 
           request = ::Net::HTTP::Get.new(uri, headers)

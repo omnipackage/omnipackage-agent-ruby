@@ -15,8 +15,8 @@ module Agent
         recharge!
       end
 
-      def call(payload) # rubocop: disable Metrics/MethodLength
-        case
+      def call(payload) # rubocop: disable Metrics/MethodLength, Metrics/AbcSize
+        case # rubocop: disable Style/EmptyCaseCondition
         when state.idle? && payload['command'] == 'start'
           task = ::Agent::Api::Task.new(
             id:           payload.fetch('task').fetch('id'),

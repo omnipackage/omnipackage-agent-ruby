@@ -11,14 +11,12 @@ module Agent
       data
     end
 
-    def pop(timeout_sec) # rubocop: disable Metrics/MethodLength
+    def pop(timeout_sec)
       begin_time = mtime
       begin
         q.pop(true)
       rescue ::ThreadError => _e
-        if mtime - begin_time > timeout_sec # rubocop: disable Style/GuardClause
-          return
-        else
+        if mtime - begin_time <= timeout_sec
           sleep(0.01)
           retry
         end
