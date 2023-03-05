@@ -2,37 +2,33 @@
 
 require 'uri'
 
-require 'agent/utils/download'
 require 'agent/utils/path'
 require 'agent/build'
 
 module Agent
   module Api
     class Task
-      class << self
-        def from_hash(task_payload)
-          new(
-            id:           task_payload.fetch('id'),
-            tarball_url:  task_payload.fetch('sources_tarball_url')
-          )
-        end
-      end
+      attr_reader :id, :tarball_url, :downloader, :build_outputs, :exception
 
-      attr_reader :id, :tarball_url
-
-      def initialize(id:, tarball_url:)
+      def initialize(id:, tarball_url:, downloader:)
         @id = id
         @tarball_url = tarball_url
+        @downloader = downloader
       end
 
-      def start(apikey, &block)
+      def start(&block)
+        sources_dir = ::Agent::Utils::Path.mkpath(::Agent.build_dir, "sources_#{id}").to_s
+        ::FileUtils.mkdir_p(sources_dir)
+        
         @thread = ::Thread.new do
-          sources_dir = ::Agent::Utils::Path.mkpath(::Agent.build_dir, "sources_#{id}").to_s
-          ::Agent::Utils::Download.download_decompress(::URI.parse(tarball_url), sources_dir, headers: { 'X-APIKEY' => apikey })
-          build_output = ::Agent::Build.call(sources_dir)
-          block.call(build_output)
+          downloader.download_decompress(tarball_url, sources_dir)
+          @build_outputs = ::Agent::Build.call(sources_dir)
         rescue ::StandarError => e
-          block.call(e)
+          @exception = e
+        ensure
+          ::FileUtils.rm_rf(sources_dir)
+          block.call(self)
+          freeze
         end
       end
 

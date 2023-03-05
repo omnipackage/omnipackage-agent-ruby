@@ -7,18 +7,22 @@ require 'agent/build/output'
 module Agent
   module Api
     class Scheduler
-      def initialize(logger, queue, apikey:)
+      def initialize(logger, queue, downloader:)
         @mutex = ::Mutex.new
         @logger = logger
         @queue = queue
-        @apikey = apikey
+        @downloader = downloader
         recharge!
       end
 
       def call(payload) # rubocop: disable Metrics/MethodLength
         case
         when state.idle? && payload['command'] == 'start'
-          task = ::Agent::Api::Task.from_hash(payload.fetch('task'))
+          task = ::Agent::Api::Task.new(
+            id:           payload.fetch('task').fetch('id'),
+            tarball_url:  payload.fetch('task').fetch('sources_tarball_url'),
+            downloader:   downloader
+          )
           start!(task)
         when state.busy? && payload['command'] == 'stop'
           stop!
@@ -38,7 +42,11 @@ module Agent
 
       private
 
-      attr_reader :mutex, :logger, :queue, :apikey
+      attr_reader :mutex, :logger, :queue, :downloader
+
+      def finalize(task)
+        finish!(task)
+      end
 
       def start!(task)
         logger.info("starting build, task #{task.to_hash}")
@@ -46,12 +54,7 @@ module Agent
           @state = ::Agent::Api::State.new('busy', task: task)
         end
 
-        task.start(apikey) do |result|
-          if result.is_a?(::StandardError)
-          else
-          end
-          finish!(task)
-        end
+        task.start(&method(:finalize))
         queue.push(state)
       end
 

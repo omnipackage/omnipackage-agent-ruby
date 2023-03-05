@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require 'agent/api/client'
+require 'agent/api/client/download'
 require 'agent/api/scheduler'
 require 'agent/utils/timed_queue'
 
@@ -12,7 +13,7 @@ module Agent
       def initialize(apihost, apikey)
         @logger = ::Agent.logger
         @queue = ::Agent::TimedQueue.new
-        @scheduler = ::Agent::Api::Scheduler.new(logger, queue, apikey: apikey)
+        @scheduler = ::Agent::Api::Scheduler.new(logger, queue, downloader: ::Agent::Api::Client::Download.new(apikey))
         @thread = ::Thread.new do
           mainloop(::Agent::Api::Client.new(apihost, apikey))
         end
