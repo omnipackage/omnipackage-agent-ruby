@@ -2,6 +2,7 @@
 
 require 'agent/api/state'
 require 'agent/api/task'
+require 'agent/build/output'
 
 module Agent
   module Api
@@ -37,6 +38,8 @@ module Agent
 
       private
 
+      attr_reader :mutex, :logger, :queue, :apikey
+
       def start!(task)
         logger.info("starting build, task #{task.to_hash}")
         mutex.synchronize do
@@ -44,6 +47,9 @@ module Agent
         end
 
         task.start(apikey) do |result|
+          if result.is_a?(::StandardError)
+          else
+          end
           finish!(task)
         end
         queue.push(state)
@@ -68,8 +74,6 @@ module Agent
         end
         queue.push(state)
       end
-
-      attr_reader :mutex, :logger, :queue, :apikey
     end
   end
 end

@@ -4,6 +4,7 @@ require 'uri'
 
 require 'agent/utils/download'
 require 'agent/utils/path'
+require 'agent/build'
 
 module Agent
   module Api
@@ -27,12 +28,12 @@ module Agent
       def start(apikey, &block)
         @thread = ::Thread.new do
           sources_dir = ::Agent::Utils::Path.mkpath(::Agent.build_dir, "sources_#{id}").to_s
-
           ::Agent::Utils::Download.download_decompress(::URI.parse(tarball_url), sources_dir, headers: { 'X-APIKEY' => apikey })
-
-          block.call(123)
+          build_output = ::Agent::Build.call(sources_dir)
+          block.call(build_output)
+        rescue ::StandarError => e
+          block.call(e)
         end
-
       end
 
       def to_hash

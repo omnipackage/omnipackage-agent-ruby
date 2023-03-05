@@ -4,7 +4,7 @@ require 'test_helper'
 
 class TestAgent < ::Test::Unit::TestCase
   test 'build sample project' do # rubocop: disable Metrics/BlockLength
-    result = ::Agent.build(::File.expand_path('sample_project', __dir__))
+    result = ::Agent::Build.call(::File.expand_path('sample_project', __dir__))
     puts ' -- BUILD RESULTS -- '
     pp result
     puts ' -- ENDOF BUILD RESULTS -- '
