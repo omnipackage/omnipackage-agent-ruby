@@ -35,7 +35,7 @@ module Agent
           elsif exception && !payload['error']
             exception.message
           else
-            "#{payload['error']} | #{exception.message}"
+            "#{payload['error']} | #{exception&.message}"
           end
         end
       end
