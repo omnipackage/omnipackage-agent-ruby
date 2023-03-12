@@ -27,16 +27,17 @@ module Agent
 
       attr_reader :thread, :logger, :queue
 
-      def mainloop(client) # rubocop: disable Metrics/MethodLength
+      def mainloop(client) # rubocop: disable Metrics/MethodLength, Metrics/AbcSize
         loop do
           response = client.call(scheduler.state.to_hash)
-
           if response.ok?
             scheduler.call(response.payload)
           else
             logger.error("connector error: #{response.error_message}")
           end
-
+        rescue ::StanrdError => e
+          logger.error(e.message)
+        ensure
           case queue.pop(response.next_poll_after)
           when 'quit'
             break
