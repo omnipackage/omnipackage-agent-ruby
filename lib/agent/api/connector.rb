@@ -35,7 +35,7 @@ module Agent
           else
             logger.error("connector error: #{response.error_message}")
           end
-        rescue ::StanrdError => e
+        rescue ::StandardError => e
           logger.error(e.message)
         ensure
           case queue.pop(response.next_poll_after)

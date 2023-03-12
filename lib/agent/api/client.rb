@@ -52,9 +52,9 @@ module Agent
       end
 
       def parse_json(body)
-        return {} if body.nil? || body.empty?
-
         ::JSON.parse(body)
+      rescue ::StandardError
+        {}
       end
     end
   end
