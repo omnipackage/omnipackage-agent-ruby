@@ -8,11 +8,12 @@ require 'agent/build'
 module Agent
   module Api
     class Task
-      attr_reader :id, :tarball_url, :downloader, :build_outputs, :exception
+      attr_reader :id, :tarball_url, :upload_url, :downloader, :build_outputs, :exception
 
-      def initialize(id:, tarball_url:, downloader:)
+      def initialize(id:, tarball_url:, upload_url:, downloader:)
         @id = id
         @tarball_url = tarball_url
+        @upload_url = upload_url
         @downloader = downloader
       end
 

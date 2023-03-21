@@ -21,6 +21,7 @@ module Agent
           task = ::Agent::Api::Task.new(
             id:           payload.fetch('task').fetch('id'),
             tarball_url:  payload.fetch('task').fetch('sources_tarball_url'),
+            upload_url:   payload.fetch('task').fetch('upload_artefact_url'),
             downloader:   downloader
           )
           start!(task)
