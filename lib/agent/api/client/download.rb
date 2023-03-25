@@ -36,18 +36,24 @@ module Agent
 
         def upload(uri, filepath)
           uri = ::URI.parse(uri)
+
+          form_data = [['data', ::File.open(filepath)]]
+          request = ::Net::HTTP::Post.new(uri, headers)
+          request.set_form(form_data, 'multipart/form-data')
+          build_http(uri, read_timeout: 10, write_timeout: 600).request(request) do |response|
+          end
         end
 
         private
 
         attr_reader :headers
 
-        def build_http(uri)
+        def build_http(uri, read_timeout: 600, write_timeout: 10)
           http = ::Net::HTTP.new(uri.host, uri.port)
           http.open_timeout = 10
           http.ssl_timeout = 10
-          http.read_timeout = 600
-          http.write_timeout = 10
+          http.read_timeout = read_timeout
+          http.write_timeout = write_timeout
           http.set_debug_output($stdout) if @debug
           http.use_ssl = uri.scheme == 'https'
           http

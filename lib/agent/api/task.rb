@@ -56,13 +56,18 @@ module Agent
       def upload_artefacts
         build_outputs.each do |i|
           next unless i.success
+
           i.artefacts.each do |art|
             logger.info("uploading artefact #{art}")
-            downloader.upload(upload_url, art)
+            upload(art)
           end
           logger.info("uploading build log #{i.build_log}")
-          downloader.upload(upload_url, i.build_log)
+          upload(i.build_log)
         end
+      end
+
+      def upload(file)
+        downloader.upload(upload_url, file)
       end
     end
   end
