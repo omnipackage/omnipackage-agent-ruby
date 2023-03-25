@@ -34,6 +34,10 @@ module Agent
           destination_path
         end
 
+        def upload(uri, filepath)
+          uri = ::URI.parse(uri)
+        end
+
         private
 
         attr_reader :headers

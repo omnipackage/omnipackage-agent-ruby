@@ -22,7 +22,8 @@ module Agent
             id:           payload.fetch('task').fetch('id'),
             tarball_url:  payload.fetch('task').fetch('sources_tarball_url'),
             upload_url:   payload.fetch('task').fetch('upload_artefact_url'),
-            downloader:   downloader
+            downloader:   downloader,
+            logger:       logger
           )
           start!(task)
         when state.busy? && payload['command'] == 'stop'
