@@ -18,7 +18,7 @@ module Agent
 
           request = ::Net::HTTP::Get.new(uri, headers)
           build_http(uri).request(request) do |response|
-            raise "download error #{response}" if response.code != '200'
+            raise "download error: #{response}" if response.code != '200'
 
             first_stdin, wait_threads = ::Open3.pipeline_w(
               [{}, 'tar', '--directory', destination_path, '-xJf', '-']
@@ -41,6 +41,7 @@ module Agent
           request = ::Net::HTTP::Post.new(uri, headers)
           request.set_form(payload, 'multipart/form-data')
           build_http(uri, read_timeout: 10, write_timeout: 600).request(request) do |response|
+            raise "upload error: #{response}" if response.code != '200'
           end
         end
 
