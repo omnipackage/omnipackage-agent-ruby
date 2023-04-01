@@ -20,9 +20,9 @@ module Agent
         http = build_http
         request = build_request(payload)
         response = http.request(request)
-        ::Agent::Api::Client::Response.new(ok: response.code == '200', payload: parse_json(response.body), headers: response.to_hash)
+        ::Agent::Api::Client::Response.new(code: response.code, payload: parse_json(response.body), headers: response.to_hash)
       rescue ::StandardError => e
-        ::Agent::Api::Client::Response.new(ok: false, payload: parse_json(response&.body), exception: e, headers: response&.to_hash || {})
+        ::Agent::Api::Client::Response.new(code: response&.code, payload: parse_json(response&.body), exception: e, headers: response&.to_hash || {})
       end
 
       private
@@ -31,7 +31,7 @@ module Agent
 
       def build_request(payload)
         headers = {
-          'X-APIKEY'      => apikey,
+          'Authorization' => "Bearer: #{apikey}",
           'Content-Type'  => 'application/json',
           'Accept'        => 'application/json'
         }

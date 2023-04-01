@@ -9,7 +9,7 @@ module Agent
     class Client
       class Download
         def initialize(apikey)
-          @headers = { 'X-APIKEY' => apikey }.freeze
+          @headers = { 'Authorization' => "Bearer: #{apikey}" }.freeze
           freeze
         end
 

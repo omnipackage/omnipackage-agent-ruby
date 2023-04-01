@@ -4,10 +4,10 @@ module Agent
   module Api
     class Client
       class Response
-        attr_reader :ok, :payload, :headers, :exception
+        attr_reader :code, :payload, :headers, :exception
 
-        def initialize(ok:, payload:, headers:, exception: nil) # rubocop: disable Naming/MethodParameterName
-          @ok = ok
+        def initialize(code:, payload:, headers:, exception: nil) # rubocop: disable Naming/MethodParameterName
+          @code = code
           @payload = payload
           @exception = exception
           @headers = headers.transform_keys(&:downcase)
@@ -24,19 +24,21 @@ module Agent
         end
 
         def ok?
-          ok == true
+          code == '200'
         end
 
         def error_message # rubocop: disable Metrics/AbcSize
-          if ok?
-            ''
-          elsif payload['error'] && !exception
-            payload['error']
-          elsif exception && !payload['error']
-            exception.message
-          else
-            "#{payload['error']} | #{exception&.message}"
-          end
+          return '' if ok?
+
+          text = if payload['error'] && !exception
+                   payload['error']
+                 elsif exception && !payload['error']
+                   exception.message
+                 else
+                   "#{payload['error']} | #{exception&.message}"
+                 end
+
+          "[#{code}] #{text}"
         end
       end
     end
