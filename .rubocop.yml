@@ -37,3 +37,6 @@ Style/FormatStringToken:
 
 Layout/LeadingCommentSpace:
   Enabled: false
+
+Style/NumericPredicate:
+  Enabled: false

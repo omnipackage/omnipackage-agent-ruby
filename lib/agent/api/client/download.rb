@@ -34,12 +34,12 @@ module Agent
           destination_path
         end
 
-        def upload(uri, filepath)
+        def upload(uri, filepath, payload = {})
           uri = ::URI.parse(uri)
 
-          form_data = [['data', ::File.open(filepath)]]
+          payload['data'] = ::File.open(filepath)
           request = ::Net::HTTP::Post.new(uri, headers)
-          request.set_form(form_data, 'multipart/form-data')
+          request.set_form(payload, 'multipart/form-data')
           build_http(uri, read_timeout: 10, write_timeout: 600).request(request) do |response|
           end
         end

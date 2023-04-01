@@ -11,6 +11,10 @@ module Agent
         @build_log = build_log
         @build_config = build_config
       end
+
+      def distro
+        ::Agent::Distro.new(build_config.fetch(:distro))
+      end
     end
   end
 end

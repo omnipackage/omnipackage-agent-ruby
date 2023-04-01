@@ -18,7 +18,7 @@ module Agent
         @logger = logger
       end
 
-      def start(&block) # rubocop: disable Metrics/MethodLength
+      def start(&block) # rubocop: disable Metrics/MethodLength, Metrics/AbcSize
         sources_dir = ::Agent::Utils::Path.mkpath(::Agent.build_dir, "sources_#{id}").to_s
         ::FileUtils.mkdir_p(sources_dir)
 
@@ -28,6 +28,8 @@ module Agent
           upload_artefacts
         rescue ::StandardError => e
           @exception = e
+          logger.error("error: #{e}")
+          logger.debug(e.backtrace.join("\n"))
         ensure
           ::FileUtils.rm_rf(sources_dir)
           block.call(self)
@@ -53,21 +55,28 @@ module Agent
         downloader.download_decompress(tarball_url, sources_dir)
       end
 
-      def upload_artefacts
+      def upload_artefacts # rubocop: disable Metrics/AbcSize
         build_outputs.each do |i|
           next unless i.success
 
           i.artefacts.each do |art|
             logger.info("uploading artefact #{art}")
-            upload(art)
+            upload(art, i.distro.name)
           end
           logger.info("uploading build log #{i.build_log}")
-          upload(i.build_log)
+          upload(i.build_log, i.distro.name)
         end
       end
 
-      def upload(file)
-        downloader.upload(upload_url, file)
+      def upload(file, distro)
+        attempts ||= 3
+        downloader.upload(upload_url, file, { 'distro' => distro })
+      rescue ::StandardError => e
+        attempts -= 1
+        if attempts > 0
+          logger.debug("upload error: #{e}, retrying...")
+          retry
+        end
       end
     end
   end
