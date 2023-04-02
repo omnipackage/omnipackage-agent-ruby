@@ -6,7 +6,7 @@ module Agent
       class Response
         attr_reader :code, :payload, :headers, :exception
 
-        def initialize(code:, payload:, headers:, exception: nil) # rubocop: disable Naming/MethodParameterName
+        def initialize(code:, payload:, headers:, exception: nil)
           @code = code
           @payload = payload
           @exception = exception

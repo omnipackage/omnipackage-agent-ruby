@@ -8,10 +8,11 @@ require 'agent/build'
 module Agent
   module Api
     class Task
-      attr_reader :id, :tarball_url, :upload_url, :downloader, :build_outputs, :exception, :logger
+      attr_reader :id, :tarball_url, :upload_url, :distros, :downloader, :build_outputs, :exception, :logger
 
-      def initialize(id:, tarball_url:, upload_url:, downloader:, logger:)
+      def initialize(id:, tarball_url:, upload_url:, distros:, downloader:, logger:) # rubocop: disable Metrics/ParameterLists
         @id = id
+        @distros = distros
         @tarball_url = tarball_url
         @upload_url = upload_url
         @downloader = downloader
@@ -24,7 +25,7 @@ module Agent
 
         @thread = ::Thread.new do
           download_tarball(sources_dir)
-          @build_outputs = ::Agent::Build.call(sources_dir)
+          @build_outputs = ::Agent::Build.call(sources_dir, distros: distros)
           upload_artefacts
         rescue ::StandardError => e
           @exception = e
@@ -42,6 +43,7 @@ module Agent
           id:           id,
           tarball_url:  tarball_url,
           upload_url:   upload_url,
+          distros:      distros,
           status:       thread&.status
         }.freeze
       end
