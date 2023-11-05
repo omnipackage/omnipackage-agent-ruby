@@ -38,7 +38,7 @@ module Agent
       },
       'opensuse_15.4' => {
         package_type: 'rpm',
-        image: 'opensuse/leap:15.3',
+        image: 'opensuse/leap:15.4',
         setup: [
           'zypper --non-interactive install -y -t pattern devel_basis devel_rpm_build',
           'zypper --non-interactive install -y rpmdevtools %{build_dependencies}'
