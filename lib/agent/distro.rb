@@ -82,6 +82,22 @@ module Agent
           'apt-get update',
           'apt-get install -y build-essential debhelper %{build_dependencies}'
         ]
+      },
+      'ubuntu_23.04' => {
+        package_type: 'deb',
+        image: 'ubuntu:23.04',
+        setup: [
+          'apt-get update',
+          'apt-get install -y build-essential debhelper %{build_dependencies}'
+        ]
+      },
+      'ubuntu_23.10' => {
+        package_type: 'deb',
+        image: 'ubuntu:23.10',
+        setup: [
+          'apt-get update',
+          'apt-get install -y build-essential debhelper %{build_dependencies}'
+        ]
       }
 
     }.freeze
