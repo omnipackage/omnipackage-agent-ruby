@@ -59,6 +59,13 @@ module Agent
           'dnf install -y rpmdevtools tar %{build_dependencies}'
         ]
       },
+      'fedora_39' => {
+        package_type: 'rpm',
+        image: 'fedora:39',
+        setup: [
+          'dnf install -y rpmdevtools tar %{build_dependencies}'
+        ]
+      },
       'debian_bullseye' => {
         package_type: 'deb',
         image: 'debian:bullseye',
