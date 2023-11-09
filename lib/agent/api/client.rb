@@ -13,7 +13,7 @@ module Agent
         @apikey = apikey
         @uri = ::URI.parse(apihost)
         @uri = ::URI.join(@uri, 'agent_api') if @uri.path.empty?
-        freeze
+        @sequence = 0
       end
 
       def call(payload)
@@ -36,7 +36,7 @@ module Agent
           'Accept'        => 'application/json'
         }
         request = ::Net::HTTP::Post.new(uri, headers)
-        request.body = ::JSON.dump(payload: payload)
+        request.body = ::JSON.dump(payload: payload, sequence: @sequence += 1)
         request
       end
 

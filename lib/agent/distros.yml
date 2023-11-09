@@ -1,0 +1,64 @@
+opensuse: &opensuse
+  package_type: 'rpm'
+  setup:
+  - 'zypper --non-interactive install -y -t pattern devel_basis devel_rpm_build'
+  - 'zypper --non-interactive install -y rpmdevtools %{build_dependencies}'
+  setup_repo:
+  - 'zypper --non-interactive install -y createrepo_c'
+
+debian: &debian
+  package_type: 'deb'
+  setup:
+  - 'DEBIAN_FRONTEND=noninteractive apt-get update'
+  - 'DEBIAN_FRONTEND=noninteractive apt-get install -y build-essential debhelper %{build_dependencies}'
+  setup_repo:
+  - 'DEBIAN_FRONTEND=noninteractive apt-get update'
+  - 'DEBIAN_FRONTEND=noninteractive apt-get -y install dpkg-dev'
+
+fedora: &fedora
+  package_type: 'rpm'
+  setup:
+  - 'dnf install -y rpmdevtools tar %{build_dependencies}'
+  setup_repo:
+  - 'dnf install -y createrepo_c'
+
+distros:
+- id: 'opensuse_15.3'
+  name: 'openSUSE Leap 15.3'
+  image: 'opensuse/leap:15.3'
+  <<: *opensuse
+
+- id: 'opensuse_15.4'
+  name: 'openSUSE Leap 15.4'
+  image: 'opensuse/leap:15.4'
+  <<: *opensuse
+
+- id: 'opensuse_tumbleweed'
+  name: 'openSUSE Tumbleweed'
+  image: 'opensuse/tumbleweed'
+  <<: *opensuse
+
+- id: 'fedora_38'
+  name: 'Fedora 38'
+  image: 'fedora:38'
+  <<: *fedora
+
+- id: 'fedora_39'
+  name: 'Fedora 39'
+  image: 'fedora:39'
+  <<: *fedora
+
+- id: 'debian_bullseye'
+  name: 'Debian Bullseye'
+  image: 'debian:bullseye'
+  <<: *debian
+
+- id: 'ubuntu_22.04'
+  name: 'Ubutntu LTS 22.04'
+  image: 'ubuntu:22.04'
+  <<: *debian
+
+- id: 'ubuntu_22.10'
+  name: 'Ubutntu 22.10'
+  image: 'ubuntu:22.10'
+  <<: *debian

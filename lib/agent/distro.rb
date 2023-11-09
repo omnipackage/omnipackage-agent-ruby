@@ -1,113 +1,44 @@
 # frozen_string_literal: true
 
+require 'yaml'
+
 module Agent
   class Distro
-    attr_reader :name, :config
+    class << self
+      def set_distro_configs!(hash)
+        @@configs = hash.freeze
+      end
+    end
+
+    attr_reader :name
 
     def initialize(distro)
       @name = distro
-      @config = CONFIGS.fetch(distro)
+      @config = @@configs.fetch(distro)
     end
 
     def setup(build_dependencies)
-      config.fetch(:setup).map do |command|
+      config.fetch('setup').map do |command|
         format(command, build_dependencies: build_dependencies.join(' '))
       end
     end
 
     def image
-      config.fetch(:image)
+      config.fetch('image')
     end
 
     def rpm?
-      config.fetch(:package_type) == 'rpm'
+      config.fetch('package_type') == 'rpm'
     end
 
     def deb?
-      config.fetch(:package_type) == 'deb'
+      config.fetch('package_type') == 'deb'
     end
 
-    CONFIGS = {
-      'opensuse_15.3' => {
-        package_type: 'rpm',
-        image: 'opensuse/leap:15.3',
-        setup: [
-          'zypper --non-interactive install -y -t pattern devel_basis devel_rpm_build',
-          'zypper --non-interactive install -y rpmdevtools %{build_dependencies}'
-        ]
-      },
-      'opensuse_15.4' => {
-        package_type: 'rpm',
-        image: 'opensuse/leap:15.4',
-        setup: [
-          'zypper --non-interactive install -y -t pattern devel_basis devel_rpm_build',
-          'zypper --non-interactive install -y rpmdevtools %{build_dependencies}'
-        ]
-      },
-      'opensuse_tumbleweed' => {
-        package_type: 'rpm',
-        image: 'opensuse/tumbleweed',
-        setup: [
-          'zypper --non-interactive install -y -t pattern devel_basis devel_rpm_build',
-          'zypper --non-interactive install -y rpmdevtools %{build_dependencies}'
-        ]
-      },
-      'fedora_38' => {
-        package_type: 'rpm',
-        image: 'fedora:38',
-        setup: [
-          'dnf install -y rpmdevtools tar %{build_dependencies}'
-        ]
-      },
-      'fedora_39' => {
-        package_type: 'rpm',
-        image: 'fedora:39',
-        setup: [
-          'dnf install -y rpmdevtools tar %{build_dependencies}'
-        ]
-      },
-      'debian_bullseye' => {
-        package_type: 'deb',
-        image: 'debian:bullseye',
-        setup: [
-          'apt-get update',
-          'apt-get install -y build-essential debhelper %{build_dependencies}'
-        ]
-      },
-      'ubuntu_22.04' => {
-        package_type: 'deb',
-        image: 'ubuntu:22.04',
-        setup: [
-          'apt-get update',
-          'apt-get install -y build-essential debhelper %{build_dependencies}'
-        ]
-      },
-      'ubuntu_22.10' => {
-        package_type: 'deb',
-        image: 'ubuntu:22.10',
-        setup: [
-          'apt-get update',
-          'apt-get install -y build-essential debhelper %{build_dependencies}'
-        ]
-      },
-      'ubuntu_23.04' => {
-        package_type: 'deb',
-        image: 'ubuntu:23.04',
-        setup: [
-          'apt-get update',
-          'apt-get install -y build-essential debhelper %{build_dependencies}'
-        ]
-      },
-      'ubuntu_23.10' => {
-        package_type: 'deb',
-        image: 'ubuntu:23.10',
-        setup: [
-          'apt-get update',
-          'apt-get install -y build-essential debhelper %{build_dependencies}'
-        ]
-      }
+    private
 
-    }.freeze
-    private_constant :CONFIGS
+    attr_reader :config
+
+    @@configs = ::YAML.load_file(::Pathname.new(__dir__).join('distros.yml'), aliases: true)
   end
 end
