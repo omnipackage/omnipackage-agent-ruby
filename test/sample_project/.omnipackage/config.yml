@@ -5,10 +5,12 @@ extract_version:
     regex: 'VERSION "(.+)"'
 
 rpm: &rpm
+  installable_package_name: 'sample_project'
   rpm:
     spec_template: '.omnipackage/sample_project.spec.liquid'
 
 deb: &deb
+  installable_package_name: 'sample-project'
   deb:
     debian_templates: '.omnipackage/deb'
 
