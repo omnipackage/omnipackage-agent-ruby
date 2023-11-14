@@ -30,7 +30,7 @@ module Agent
     end
 
     def rm(container_name, &block)
-      subprocess.execute("#{::Agent.runtime} rm #{container_name}", &block)
+      subprocess.execute("#{::Agent.runtime} rm -f #{container_name}", &block)
     end
   end
 end

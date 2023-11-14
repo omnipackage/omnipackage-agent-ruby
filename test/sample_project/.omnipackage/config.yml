@@ -4,44 +4,43 @@ extract_version:
     file: 'version.h'
     regex: 'VERSION "(.+)"'
 
+rpm: &rpm
+  rpm:
+    spec_template: '.omnipackage/sample_project.spec.liquid'
+
+deb: &deb
+  deb:
+    debian_templates: '.omnipackage/deb'
 
 builds:
 - distro: 'opensuse_15.3'
   build_dependencies: ['gcc', 'make']
-  rpm:
-    spec_template: '.omnipackage/sample_project.spec.liquid'
+  <<: *rpm
 
 - distro: 'opensuse_15.4'
   build_dependencies: ['gcc', 'make']
-  rpm:
-    spec_template: '.omnipackage/sample_project.spec.liquid'
+  <<: *rpm
 
 - distro: 'opensuse_tumbleweed'
   build_dependencies: ['gcc', 'make']
-  rpm:
-    spec_template: '.omnipackage/sample_project.spec.liquid'
+  <<: *rpm
 
 - distro: 'fedora_38'
   build_dependencies: ['gcc', 'make']
-  rpm:
-    spec_template: '.omnipackage/sample_project.spec.liquid'
+  <<: *rpm
 
 - distro: 'debian_bullseye'
   build_dependencies: ['gcc', 'make']
-  deb:
-    debian_templates: '.omnipackage/deb'
+  <<: *deb
 
 - distro: 'ubuntu_22.04'
   build_dependencies: ['gcc', 'make']
-  deb:
-    debian_templates: '.omnipackage/deb'
+  <<: *deb
 
 - distro: 'ubuntu_23.10'
   build_dependencies: ['gcc', 'make']
-  deb:
-    debian_templates: '.omnipackage/deb'
+  <<: *deb
 
 - distro: 'ubuntu_23.04'
   build_dependencies: ['gcc', 'make']
-  deb:
-    debian_templates: '.omnipackage/deb'
+  <<: *deb

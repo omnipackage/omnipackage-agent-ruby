@@ -14,7 +14,7 @@ module Agent
 
     def initialize(distro)
       @name = distro
-      @config = @@configs.fetch(distro)
+      @config = @@configs[distro] || (raise "no '#{distro}' in #{@@configs}")
     end
 
     def setup(build_dependencies)
@@ -39,6 +39,6 @@ module Agent
 
     attr_reader :config
 
-    @@configs = ::YAML.load_file(::Pathname.new(__dir__).join('distros.yml'), aliases: true)
+    @@configs = ::YAML.load_file(::Pathname.new(__dir__).join('distros.yml'), aliases: true).fetch('distros').each_with_object({}) { |elem, acc| acc[elem['id']] = elem }.freeze
   end
 end

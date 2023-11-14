@@ -11,7 +11,7 @@ module Agent
 
       def new(source_path)
         fpath = ::Agent::Utils::Path.mkpath(source_path, '.omnipackage', 'config.yml')
-        ::YAML.load_file(fpath, symbolize_names: true)
+        ::YAML.load_file(fpath, symbolize_names: true, aliases: true)
       end
     end
   end

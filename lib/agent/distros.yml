@@ -62,3 +62,13 @@ distros:
   name: 'Ubutntu 22.10'
   image: 'ubuntu:22.10'
   <<: *debian
+
+- id: 'ubuntu_23.10'
+  name: 'Ubutntu 23.10'
+  image: 'ubuntu:23.10'
+  <<: *debian
+
+- id: 'ubuntu_23.04'
+  name: 'Ubutntu 23.04'
+  image: 'ubuntu:23.04'
+  <<: *debian
