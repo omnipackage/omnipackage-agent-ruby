@@ -51,4 +51,8 @@ module Agent
   def runtime
     @runtime ||= 'podman' # docker or podman
   end
+
+  def arch
+    @arch ||= `uname -m`.strip
+  end
 end

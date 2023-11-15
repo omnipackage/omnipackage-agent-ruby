@@ -5,6 +5,10 @@ opensuse: &opensuse
   - 'zypper --non-interactive install -y rpmdevtools %{build_dependencies}'
   setup_repo:
   - 'zypper --non-interactive install -y createrepo_c'
+  install_steps:
+  - 'zypper addrepo %{url}/%{project_safe_name}.repo'
+  - 'zypper refresh'
+  - 'zypper install %{installable_package_name}'
 
 debian: &debian
   package_type: 'deb'
@@ -14,61 +18,88 @@ debian: &debian
   setup_repo:
   - 'DEBIAN_FRONTEND=noninteractive apt-get update'
   - 'DEBIAN_FRONTEND=noninteractive apt-get -y install dpkg-dev'
+  install_steps:
+  - "echo 'deb %{url} stable/' | sudo tee /etc/apt/sources.list.d/omnipackage_%{project_safe_name}.list"
+  - "curl -fsSL %{url}/stable/Release.key | gpg --dearmor | sudo tee /etc/apt/trusted.gpg.d/omnipackage_%{project_safe_name}.gpg > /dev/null"
+  - "sudo apt update"
+  - "sudo apt install %{installable_package_name}"
 
 fedora: &fedora
   package_type: 'rpm'
   setup:
-  - 'dnf install -y rpmdevtools tar %{build_dependencies}'
+  - 'dnf install -y --allowerasing rpmdevtools tar %{build_dependencies}'
   setup_repo:
-  - 'dnf install -y createrepo_c'
+  - 'dnf install -y --allowerasing createrepo rpm-sign'
+  install_steps:
+  - "dnf config-manager --add-repo %{url}/%{project_safe_name}.repo"
+  - "dnf install %{installable_package_name}"
+
+arch_x86_64: &arch_x86_64
+  arch: x86_64
 
 distros:
 - id: 'opensuse_15.3'
   name: 'openSUSE Leap 15.3'
   image: 'opensuse/leap:15.3'
   <<: *opensuse
+  <<: *arch_x86_64
 
 - id: 'opensuse_15.4'
   name: 'openSUSE Leap 15.4'
   image: 'opensuse/leap:15.4'
   <<: *opensuse
+  <<: *arch_x86_64
 
 - id: 'opensuse_tumbleweed'
   name: 'openSUSE Tumbleweed'
   image: 'opensuse/tumbleweed'
   <<: *opensuse
+  <<: *arch_x86_64
 
 - id: 'fedora_38'
   name: 'Fedora 38'
   image: 'fedora:38'
   <<: *fedora
+  <<: *arch_x86_64
 
 - id: 'fedora_39'
   name: 'Fedora 39'
   image: 'fedora:39'
   <<: *fedora
+  <<: *arch_x86_64
 
 - id: 'debian_bullseye'
   name: 'Debian Bullseye'
   image: 'debian:bullseye'
   <<: *debian
+  <<: *arch_x86_64
 
 - id: 'ubuntu_22.04'
-  name: 'Ubutntu LTS 22.04'
+  name: 'Ubuntu LTS 22.04'
   image: 'ubuntu:22.04'
   <<: *debian
-
-- id: 'ubuntu_22.10'
-  name: 'Ubutntu 22.10'
-  image: 'ubuntu:22.10'
-  <<: *debian
-
-- id: 'ubuntu_23.10'
-  name: 'Ubutntu 23.10'
-  image: 'ubuntu:23.10'
-  <<: *debian
+  <<: *arch_x86_64
 
 - id: 'ubuntu_23.04'
   name: 'Ubutntu 23.04'
   image: 'ubuntu:23.04'
   <<: *debian
+  <<: *arch_x86_64
+
+- id: 'ubuntu_23.10'
+  name: 'Ubutntu 23.10'
+  image: 'ubuntu:23.10'
+  <<: *debian
+  <<: *arch_x86_64
+
+- id: 'mageia_8'
+  name: 'Mageia 8'
+  image: 'mageia:8'
+  <<: *fedora
+  <<: *arch_x86_64
+
+- id: 'mageia_cauldron'
+  name: 'Mageia Cauldron'
+  image: 'mageia:cauldron'
+  <<: *fedora
+  <<: *arch_x86_64

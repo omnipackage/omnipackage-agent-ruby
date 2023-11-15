@@ -6,7 +6,7 @@ module Agent
   class Distro
     class << self
       def set_distro_configs!(hash)
-        @@configs = hash.freeze
+        @@configs = hash.fetch('distros').each_with_object({}) { |elem, acc| acc[elem['id']] = elem }.freeze
       end
     end
 
@@ -27,6 +27,10 @@ module Agent
       config.fetch('image')
     end
 
+    def arch
+      config.fetch('arch')
+    end
+
     def rpm?
       config.fetch('package_type') == 'rpm'
     end
@@ -39,6 +43,6 @@ module Agent
 
     attr_reader :config
 
-    @@configs = ::YAML.load_file(::Pathname.new(__dir__).join('distros.yml'), aliases: true).fetch('distros').each_with_object({}) { |elem, acc| acc[elem['id']] = elem }.freeze
+    set_distro_configs!(::YAML.load_file(::Pathname.new(__dir__).join('distros.yml'), aliases: true))
   end
 end

@@ -3,6 +3,7 @@
 require 'agent/build/runner'
 require 'agent/build/config'
 require 'agent/extract_version'
+require 'agent/distro'
 
 module Agent
   module Build
@@ -15,7 +16,10 @@ module Agent
         version: ::Agent::ExtractVersion.new(build_config, source_path).call
       }
 
-      build_config[:builds].select { |i| distros.nil? || distros.include?(i.fetch(:distro)) }.map do |distro_build_config|
+      build_config[:builds].select do |i|
+        distro_id = i.fetch(:distro)
+        ::Agent::Distro.new(distro_id).arch == ::Agent.arch && (distros.nil? || distros.include?(distro_id))
+      end.map do |distro_build_config| # rubocop: disable Style/MultilineBlockChain
         ::Agent::Build::Runner.new(distro_build_config).run(source_path, job_variables)
       end
     end
