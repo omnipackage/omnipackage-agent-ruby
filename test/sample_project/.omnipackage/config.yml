@@ -31,7 +31,15 @@ builds:
   build_dependencies: ['gcc', 'make']
   <<: *rpm
 
-- distro: 'debian_bullseye'
+- distro: 'debian_10'
+  build_dependencies: ['gcc', 'make']
+  <<: *deb
+
+- distro: 'debian_11'
+  build_dependencies: ['gcc', 'make']
+  <<: *deb
+
+- distro: 'debian_12'
   build_dependencies: ['gcc', 'make']
   <<: *deb
 
@@ -46,3 +54,19 @@ builds:
 - distro: 'ubuntu_23.04'
   build_dependencies: ['gcc', 'make']
   <<: *deb
+
+- distro: 'almalinux_8'
+  build_dependencies: ['gcc', 'make']
+  <<: *rpm
+
+- distro: 'almalinux_9'
+  build_dependencies: ['gcc', 'make']
+  <<: *rpm
+
+- distro: 'rockylinux_8'
+  build_dependencies: ['gcc', 'make']
+  <<: *rpm
+
+- distro: 'rockylinux_9'
+  build_dependencies: ['gcc', 'make']
+  <<: *rpm
