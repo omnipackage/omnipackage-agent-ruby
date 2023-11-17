@@ -30,7 +30,6 @@ module Agent
         when state.busy? && payload['command'] == 'stop'
           stop!
         when state.finished?
-          # send artefacts etc...
           recharge!
         end
       rescue ::StandardError => e

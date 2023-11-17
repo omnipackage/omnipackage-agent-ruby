@@ -59,20 +59,21 @@ module Agent
 
       def upload_artefacts # rubocop: disable Metrics/AbcSize
         build_outputs.each do |i|
-          next unless i.success
-
-          i.artefacts.each do |art|
-            logger.info("uploading artefact #{art}")
-            upload(art, i.distro.name)
+          if i.success
+            i.artefacts.each do |art|
+              logger.info("uploading artefact #{art}")
+              upload(art, i.distro.name, i.success)
+            end
           end
+
           logger.info("uploading build log #{i.build_log}")
-          upload(i.build_log, i.distro.name)
+          upload(i.build_log, i.distro.name, i.success)
         end
       end
 
-      def upload(file, distro)
+      def upload(file, distro, success)
         attempts ||= 3
-        downloader.upload(upload_url, file, { 'distro' => distro })
+        downloader.upload(upload_url, file, { 'distro' => distro, 'error' => (!success).to_s })
       rescue ::StandardError => e
         attempts -= 1
         if attempts > 0
