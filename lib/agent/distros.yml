@@ -40,99 +40,151 @@ distros:
   image: 'opensuse/leap:15.3'
   <<: *opensuse
   arch: x86_64
+  image_info_url: 'https://hub.docker.com/r/opensuse/leap'
 
 - id: 'opensuse_15.4'
   name: 'openSUSE Leap 15.4'
   image: 'opensuse/leap:15.4'
   <<: *opensuse
   arch: x86_64
+  image_info_url: 'https://hub.docker.com/r/opensuse/leap'
+
+- id: 'opensuse_15.5'
+  name: 'openSUSE Leap 15.5'
+  image: 'opensuse/leap:15.5'
+  <<: *opensuse
+  arch: x86_64
+  image_info_url: 'https://hub.docker.com/r/opensuse/leap'
 
 - id: 'opensuse_tumbleweed'
   name: 'openSUSE Tumbleweed'
   image: 'opensuse/tumbleweed'
   <<: *opensuse
   arch: x86_64
+  image_info_url: 'https://hub.docker.com/r/opensuse/tumbleweed'
 
 - id: 'fedora_38'
   name: 'Fedora 38'
   image: 'fedora:38'
   <<: *redhat
   arch: x86_64
+  image_info_url: 'https://hub.docker.com/_/fedora'
 
 - id: 'fedora_39'
   name: 'Fedora 39'
   image: 'fedora:39'
   <<: *redhat
   arch: x86_64
+  image_info_url: 'https://hub.docker.com/_/fedora'
+
+- id: 'fedora_rawhide'
+  name: 'Fedora Rawhide'
+  image: 'fedora:rawhide'
+  <<: *redhat
+  arch: x86_64
+  image_info_url: 'https://hub.docker.com/_/fedora'
 
 - id: 'debian_10'
-  name: 'Debian 10 Buster'
+  name: 'Debian 10'
   image: 'debian:10'
   <<: *debian
   arch: x86_64
+  image_info_url: 'https://hub.docker.com/_/debian'
 
 - id: 'debian_11'
-  name: 'Debian 11 Bullseye'
+  name: 'Debian 11'
   image: 'debian:11'
   <<: *debian
   arch: x86_64
+  image_info_url: 'https://hub.docker.com/_/debian'
 
 - id: 'debian_12'
-  name: 'Debian 12 Bookworm'
+  name: 'Debian 12'
   image: 'debian:12'
   <<: *debian
   arch: x86_64
+  image_info_url: 'https://hub.docker.com/_/debian'
+
+- id: 'debian_testing'
+  name: 'Debian testing'
+  image: 'debian:testing'
+  <<: *debian
+  arch: x86_64
+  image_info_url: 'https://hub.docker.com/_/debian'
+
+- id: 'debian_unstable'
+  name: 'Debian unstable'
+  image: 'debian:unstable'
+  <<: *debian
+  arch: x86_64
+  image_info_url: 'https://hub.docker.com/_/debian'
+
+- id: 'ubuntu_20.04'
+  name: 'Ubuntu 20.04 LTS'
+  image: 'ubuntu:20.04'
+  <<: *debian
+  arch: x86_64
+  image_info_url: 'https://hub.docker.com/_/ubuntu'
 
 - id: 'ubuntu_22.04'
-  name: 'Ubuntu 22.04 LTS Jammy Jellyfish'
+  name: 'Ubuntu 22.04 LTS'
   image: 'ubuntu:22.04'
   <<: *debian
   arch: x86_64
+  image_info_url: 'https://hub.docker.com/_/ubuntu'
 
 - id: 'ubuntu_23.04'
-  name: 'Ubutntu 23.04 Lunar Lobster'
+  name: 'Ubuntu 23.04'
   image: 'ubuntu:23.04'
   <<: *debian
   arch: x86_64
+  image_info_url: 'https://hub.docker.com/_/ubuntu'
 
 - id: 'ubuntu_23.10'
-  name: 'Ubutntu 23.10 Mantic Minotaur'
+  name: 'Ubuntu 23.10'
   image: 'ubuntu:23.10'
   <<: *debian
   arch: x86_64
+  image_info_url: 'https://hub.docker.com/_/ubuntu'
 
 - id: 'mageia_8'
   name: 'Mageia 8'
   image: 'mageia:8'
   <<: *redhat
   arch: x86_64
+  image_info_url: 'https://hub.docker.com/_/mageia'
 
 - id: 'mageia_cauldron'
   name: 'Mageia Cauldron'
   image: 'mageia:cauldron'
   <<: *redhat
   arch: x86_64
+  image_info_url: 'https://hub.docker.com/_/mageia'
 
 - id: 'almalinux_8'
   name: 'AlmaLinux 8'
   image: 'almalinux:8'
   <<: *redhat
   arch: x86_64
+  image_info_url: 'https://hub.docker.com/_/almalinux'
 
 - id: 'almalinux_9'
   name: 'AlmaLinux 9'
   image: 'almalinux:9'
   <<: *redhat
   arch: x86_64
+  image_info_url: 'https://hub.docker.com/_/almalinux'
 
 - id: 'rockylinux_8'
   name: 'Rocky Linux 8'
   image: 'rockylinux:8'
   <<: *redhat
   arch: x86_64
+  image_info_url: 'https://hub.docker.com/_/rockylinux'
 
 - id: 'rockylinux_9'
   name: 'Rocky Linux 9'
   image: 'rockylinux:9'
   <<: *redhat
   arch: x86_64
+  image_info_url: 'https://hub.docker.com/_/rockylinux'
