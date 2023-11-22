@@ -3,4 +3,4 @@
 $LOAD_PATH.unshift ::File.expand_path('../lib', __dir__)
 require 'agent'
 
-require 'test-unit'
+require 'minitest/autorun'
