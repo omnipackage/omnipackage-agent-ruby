@@ -36,7 +36,7 @@ module Agent
           'Accept'        => 'application/json'
         }
         request = ::Net::HTTP::Post.new(uri, headers)
-        request.body = ::JSON.dump(payload: payload, sequence: @sequence += 1)
+        request.body = ::JSON.dump({ payload: payload, sequence: @sequence += 1 })
         request
       end
 
