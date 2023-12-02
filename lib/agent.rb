@@ -7,7 +7,7 @@ require 'tmpdir'
 
 require 'agent/version'
 require 'agent/build'
-require 'agent/logging/formatter'
+require 'agent/logging/logger'
 require 'agent/api/connector'
 
 module Agent
@@ -41,7 +41,7 @@ module Agent
   end
 
   def logger
-    @logger ||= ::Logger.new($stdout, formatter: ::Agent::Logging::Formatter.new)
+    @logger ||= ::Agent::Logging::Logger.new
   end
 
   def build_dir

@@ -24,7 +24,7 @@ module Agent
         @build_conf = build_conf
         @distro = ::Agent::Distro.new(build_conf.fetch(:distro))
         @log_string = ::StringIO.new
-        @logger = ::Logger.new(::Agent::Logging::Multioutput.new($stdout, @log_string), formatter: ::Agent::Logging::Formatter.new)
+        @logger = ::Agent.logger.add_outputs(@log_string)
         @image_cache = ::Agent::ImageCache.new(logger: logger)
       end
 
@@ -51,6 +51,8 @@ module Agent
         image_cache.rm(container_name)
         @logfile&.write(@log_string.string)
         @logfile&.close
+        @log_string.rewind
+        @log_string.truncate(0)
       end
 
       private
