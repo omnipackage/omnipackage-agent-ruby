@@ -24,7 +24,7 @@ module Agent
         {
           state: state,
           task:  task&.to_hash
-        }.freeze
+        }
       end
     end
   end

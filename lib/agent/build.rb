@@ -9,7 +9,7 @@ module Agent
   module Build
     module_function
 
-    def call(source_path, distros: nil)
+    def call(source_path, distros: nil, logger: ::Agent.logger)
       build_config = ::Agent::Build::Config.new(source_path)
 
       job_variables = {
@@ -20,7 +20,7 @@ module Agent
         distro_id = i.fetch(:distro)
         ::Agent::Distro.new(distro_id).arch == ::Agent.arch && (distros.nil? || distros.include?(distro_id))
       end.map do |distro_build_config| # rubocop: disable Style/MultilineBlockChain
-        ::Agent::Build::Runner.new(distro_build_config).run(source_path, job_variables)
+        ::Agent::Build::Runner.new(distro_build_config, logger: logger).run(source_path, job_variables)
       end
     end
   end

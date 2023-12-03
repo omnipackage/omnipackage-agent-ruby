@@ -36,15 +36,17 @@ module Agent
         logger.error("scheduling error: #{e.message}")
       end
 
-      def state
+      def state_serialize
         mutex.synchronize do
-          @state
+          result = state.to_hash
+          result[:livelog] = state.task&.read_log if state.task
+          result
         end
       end
 
       private
 
-      attr_reader :mutex, :logger, :queue, :downloader
+      attr_reader :mutex, :logger, :queue, :downloader, :state
 
       def finalize(task)
         finish!(task)

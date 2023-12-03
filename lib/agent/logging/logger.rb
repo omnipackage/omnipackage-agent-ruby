@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require 'logger'
+
 require 'agent/logging/formatter'
 require 'agent/logging/multioutput'
 

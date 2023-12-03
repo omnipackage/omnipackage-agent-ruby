@@ -2,7 +2,6 @@
 
 require 'fileutils'
 require 'pathname'
-require 'logger'
 require 'stringio'
 
 require 'agent/logging/multioutput'
@@ -20,11 +19,11 @@ module Agent
     class Runner
       attr_reader :build_conf, :distro, :image_cache
 
-      def initialize(build_conf)
+      def initialize(build_conf, logger: ::Agent.logger)
         @build_conf = build_conf
         @distro = ::Agent::Distro.new(build_conf.fetch(:distro))
         @log_string = ::StringIO.new
-        @logger = ::Agent.logger.add_outputs(@log_string)
+        @logger = logger.add_outputs(@log_string)
         @image_cache = ::Agent::ImageCache.new(logger: logger)
       end
 

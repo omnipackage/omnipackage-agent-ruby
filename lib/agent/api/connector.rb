@@ -30,7 +30,7 @@ module Agent
 
       def mainloop(client) # rubocop: disable Metrics/MethodLength, Metrics/AbcSize
         loop do
-          response = client.call(scheduler.state.to_hash)
+          response = client.call(scheduler.state_serialize)
           if response.ok?
             ::Agent::Distro.set_distro_configs!(response.payload['distro_configs']) if response.payload['distro_configs']
             scheduler.call(response.payload)
@@ -40,7 +40,7 @@ module Agent
         rescue ::StandardError => e
           logger.error(e.message)
         ensure
-          case queue.pop(response.next_poll_after)
+          case queue.pop(response&.next_poll_after || rand(30..180))
           when 'quit'
             break
           end

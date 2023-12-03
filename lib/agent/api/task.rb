@@ -4,6 +4,7 @@ require 'uri'
 
 require 'agent/utils/path'
 require 'agent/build'
+require 'agent/logging/stdout2'
 
 module Agent
   module Api
@@ -16,7 +17,8 @@ module Agent
         @tarball_url = tarball_url
         @upload_url = upload_url
         @downloader = downloader
-        @logger = logger
+        @stdout2 = ::Agent::Logging::Stdout2.new
+        @logger = logger.add_outputs(stdout2)
       end
 
       def start(&block) # rubocop: disable Metrics/MethodLength, Metrics/AbcSize
@@ -25,7 +27,7 @@ module Agent
 
         @thread = ::Thread.new do
           download_tarball(sources_dir)
-          @build_outputs = ::Agent::Build.call(sources_dir, distros: distros)
+          @build_outputs = ::Agent::Build.call(sources_dir, distros: distros, logger: logger)
           upload_artefacts
         rescue ::StandardError => e
           @exception = e
@@ -45,12 +47,16 @@ module Agent
           upload_url:   upload_url,
           distros:      distros,
           status:       thread&.status
-        }.freeze
+        }
+      end
+
+      def read_log
+        stdout2.dequeue
       end
 
       private
 
-      attr_reader :thread
+      attr_reader :thread, :stdout2
 
       def download_tarball(sources_dir)
         logger.info("downloading sources from #{tarball_url} to #{sources_dir}")
