@@ -31,7 +31,7 @@ module Agent
 
       def build_request(payload)
         headers = {
-          'Authorization' => "Bearer: #{apikey}",
+          'Authorization' => "Bearer #{apikey}",
           'Content-Type'  => 'application/json',
           'Accept'        => 'application/json'
         }
