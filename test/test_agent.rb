@@ -10,13 +10,11 @@ class TestAgent < ::Minitest::Test
     puts ' -- ENDOF BUILD RESULTS -- '
     result.each do |res| # rubocop: disable Metrics/BlockLength
       assert res.success
-      #assert ::File.exist?(res.build_log)
       assert_path_exists res.build_log
       assert_match(/successfully finished build/, ::File.read(res.build_log))
       assert_equal 1, res.artefacts.size
       res.artefacts.each do |art|
         assert_path_exists art
-        #assert ::File.exist?(art)
       end
 
       distro = ::Agent::Distro.new(res.build_config.fetch(:distro))
@@ -38,7 +36,7 @@ class TestAgent < ::Minitest::Test
       lines = []
       success = ::Agent::Utils::Subprocess.new.execute(cli) { |output_line| lines << output_line }&.success?
 
-      assert success
+      assert success, lines.join('|')
       assert_equal 'alive 1.3.5', lines[-1]
     end
   end
