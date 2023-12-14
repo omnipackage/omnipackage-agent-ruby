@@ -9,14 +9,14 @@ module Agent
     class Client
       class Download
         def initialize(apikey)
-          @headers = { 'Authorization' => "Bearer: #{apikey}" }.freeze
+          @apikey = apikey
           freeze
         end
 
         def download_decompress(uri, destination_path) # rubocop: disable Metrics/MethodLength
           uri = ::URI.parse(uri)
 
-          request = ::Net::HTTP::Get.new(uri, headers)
+          request = ::Net::HTTP::Get.new(uri)
           build_http(uri).request(request) do |response|
             raise "download error: #{response}" if response.code != '200'
 
@@ -36,6 +36,7 @@ module Agent
 
         def upload(uri, filepath, payload = {})
           uri = ::URI.parse(uri)
+          headers = { 'Authorization' => "Bearer #{apikey}" }
 
           payload['data'] = ::File.open(filepath)
           request = ::Net::HTTP::Post.new(uri, headers)
@@ -47,7 +48,7 @@ module Agent
 
         private
 
-        attr_reader :headers
+        attr_reader :apikey
 
         def build_http(uri, read_timeout: 600, write_timeout: 10)
           http = ::Net::HTTP.new(uri.host, uri.port)
