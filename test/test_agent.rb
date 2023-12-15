@@ -36,7 +36,7 @@ class TestAgent < ::Minitest::Test
       lines = []
       success = ::Agent::Utils::Subprocess.new.execute(cli) { |output_line| lines << output_line }&.success?
 
-      assert success, lines.join('|')
+      assert success, lines.join('|') # rubocop: disable Minitest/AssertWithExpectedArgument
       assert_equal 'alive 1.3.5', lines[-1]
     end
   end
