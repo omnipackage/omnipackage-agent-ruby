@@ -83,12 +83,13 @@ module Agent
       end
 
       def upload(file, distro, success)
-        attempts ||= 3
+        attempts ||= 30
         downloader.upload(upload_url, file, { 'distro' => distro, 'error' => (!success).to_s })
       rescue ::StandardError => e
         attempts -= 1
         if attempts > 0
           logger.debug("upload error: #{e}, retrying...")
+          sleep(10)
           retry
         end
       end
