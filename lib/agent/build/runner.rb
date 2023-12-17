@@ -19,15 +19,18 @@ module Agent
     class Runner
       attr_reader :build_conf, :distro, :image_cache
 
-      def initialize(build_conf, logger: ::Agent.logger)
+      def initialize(build_conf, logger: ::Agent.logger, terminator: nil)
         @build_conf = build_conf
         @distro = ::Agent::Distro.new(build_conf.fetch(:distro))
         @log_string = ::StringIO.new
         @logger = logger.add_outputs(@log_string)
+        @terminator = terminator
         @image_cache = ::Agent::ImageCache.new(logger: logger)
       end
 
-      def run(source_path, job_variables) # rubocop: disable Metrics/AbcSize, Metrics/MethodLength
+      def run(source_path, job_variables) # rubocop: disable Metrics/AbcSize, Metrics/MethodLength, Metrics/PerceivedComplexity, Metrics/CyclomaticComplexity
+        return if terminator&.called?
+
         logger.info("starting build for #{distro.name} in #{source_path}, variables: #{job_variables}")
 
         package = build_package(source_path, job_variables)
@@ -39,7 +42,7 @@ module Agent
         else
           logger.error("failed build for #{distro.name}")
         end
-        image_cache.commit(container_name)
+        image_cache.commit(container_name) unless terminator&.called?
         ::Agent::Build::Output.new(
           success: success,
           artefacts: package.artefacts.map { |i| ::Pathname.new(i) },
@@ -56,7 +59,7 @@ module Agent
 
       private
 
-      attr_reader :logger
+      attr_reader :logger, :terminator
 
       def build_deps
         build_conf.fetch(:build_dependencies)
@@ -81,7 +84,7 @@ module Agent
       end
 
       def execute(cli)
-        ::Agent::Utils::Subprocess.new(logger: logger).execute(cli) do |output_line|
+        ::Agent::Utils::Subprocess.new(logger: logger, terminator: terminator).execute(cli) do |output_line|
           logger.info('container') { output_line }
         end&.success?
       end

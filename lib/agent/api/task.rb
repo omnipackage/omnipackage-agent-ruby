@@ -19,6 +19,7 @@ module Agent
         @downloader = downloader
         @stdout2 = ::Agent::Logging::Stdout2.new
         @logger = logger.add_outputs(stdout2)
+        @terminator = ::Agent::Utils::Terminator.new
       end
 
       def start(&block) # rubocop: disable Metrics/MethodLength, Metrics/AbcSize
@@ -27,7 +28,7 @@ module Agent
 
         @thread = ::Thread.new do
           download_tarball(sources_dir)
-          @build_outputs = ::Agent::Build.call(sources_dir, distros: distros, logger: logger)
+          @build_outputs = ::Agent::Build.call(sources_dir, distros: distros, logger: logger, terminator: terminator)
           upload_artefacts
         rescue ::StandardError => e
           @exception = e
@@ -38,6 +39,10 @@ module Agent
           block.call(self)
           freeze
         end
+      end
+
+      def stop
+        terminator.call
       end
 
       def to_hash
@@ -56,7 +61,7 @@ module Agent
 
       private
 
-      attr_reader :thread, :stdout2
+      attr_reader :thread, :stdout2, :terminator
 
       def download_tarball(sources_dir)
         logger.info("downloading sources from #{tarball_url} to #{sources_dir}")

@@ -64,6 +64,9 @@ module Agent
 
       def stop!
         logger.info('stopping build')
+        mutex.synchronize do
+          @state.task.stop
+        end
       end
 
       def finish!(task)
