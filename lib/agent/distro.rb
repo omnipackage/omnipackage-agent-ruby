@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require 'yaml'
+require 'agent/utils/yaml'
 
 module Agent
   class Distro
@@ -43,6 +43,6 @@ module Agent
 
     attr_reader :config
 
-    set_distro_configs!(::YAML.load_file(::Pathname.new(__dir__).join('distros.yml'), aliases: true))
+    set_distro_configs!(::Agent::Yaml.load_file(::Pathname.new(__dir__).join('distros.yml')))
   end
 end
