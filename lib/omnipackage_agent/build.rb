@@ -25,7 +25,7 @@ module OmnipackageAgent
       build_config[:builds].select do |i|
         distro_id = i.fetch(:distro)
         ::OmnipackageAgent::Distro.new(distro_id).arch == ::OmnipackageAgent::ARCH && (distros.nil? || distros.include?(distro_id))
-      end.map do |distro_build_config| # rubocop: disable Style/MultilineBlockChain
+      end.shuffle.map do |distro_build_config| # rubocop: disable Style/MultilineBlockChain
         ::OmnipackageAgent::Build::Runner.new(
           build_conf:   distro_build_config,
           config:       config,
