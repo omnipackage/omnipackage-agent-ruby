@@ -5,15 +5,14 @@ $LOAD_PATH.unshift ::File.expand_path('../lib', __dir__)
 
 require 'optparse'
 
-require 'agent'
-require 'agent/config'
+require 'omnipackage_agent'
 
 options = {}
 optparser = ::OptionParser.new do |parser|
   parser.banner = "Usage: #{$PROGRAM_NAME} [options]"
 
   parser.on('--version', 'show version') do
-    puts ::Agent::VERSION
+    puts ::OmnipackageAgent::VERSION
     exit
   end
   parser.on('--help', 'show help info') do
@@ -32,8 +31,8 @@ optparser.parse!(into: options)
 # Dir.chdir(__dir__)
 
 begin
-  ::Agent.config = ::Agent::Config.load!(options[:config], options) if options[:config]
-  ::Agent.run(options)
+  ::OmnipackageAgent.config = ::OmnipackageOmnipackageAgent::Config.load!(options[:config], options) if options[:config]
+  ::OmnipackageAgent.run(options)
 rescue ::StandardError => e
   warn e.backtrace
   warn optparser
