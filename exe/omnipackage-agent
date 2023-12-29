@@ -31,10 +31,18 @@ optparser.parse!(into: options)
 # Dir.chdir(__dir__)
 
 begin
-  ::OmnipackageAgent.config = ::OmnipackageOmnipackageAgent::Config.load!(options[:config], options) if options[:config]
-  ::OmnipackageAgent.run(options)
+  config = ::OmnipackageAgent::Config.get(options)
+  ::OmnipackageAgent.check_system_packages!
+
+  if options[:headless]
+    ::OmnipackageAgent.headless(config, options[:source])
+  else
+    ::OmnipackageAgent.api(config)
+  end
 rescue ::StandardError => e
+  warn "#{e.class}: #{e.message}"
   warn e.backtrace
+  warn ''
   warn optparser
   exit(1)
 end

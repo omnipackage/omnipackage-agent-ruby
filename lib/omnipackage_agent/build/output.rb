@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 module OmnipackageAgent
-  module Build
+  class Build
     class Output
       attr_reader :success, :artefacts, :build_log, :build_config
 

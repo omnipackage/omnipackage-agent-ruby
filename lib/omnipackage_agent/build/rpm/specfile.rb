@@ -3,7 +3,7 @@
 require 'omnipackage_agent/utils/template'
 
 module OmnipackageAgent
-  module Build
+  class Build
     module Rpm
       class Specfile < ::OmnipackageAgent::Utils::Template
         def name

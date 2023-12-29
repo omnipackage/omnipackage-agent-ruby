@@ -3,7 +3,7 @@
 require 'fileutils'
 
 module OmnipackageAgent
-  module Build
+  class Build
     class Logfile
       attr_reader :file, :path
 

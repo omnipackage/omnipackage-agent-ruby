@@ -4,7 +4,7 @@ require 'omnipackage_agent/utils/yaml'
 require 'omnipackage_agent/utils/path'
 
 module OmnipackageAgent
-  module Build
+  class Build
     module Config
       extend self
 

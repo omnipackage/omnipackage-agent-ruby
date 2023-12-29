@@ -15,17 +15,18 @@ require 'omnipackage_agent/build/rpm/package'
 require 'omnipackage_agent/build/deb/package'
 
 module OmnipackageAgent
-  module Build
+  class Build
     class Runner
-      attr_reader :build_conf, :distro, :image_cache
+      attr_reader :build_conf, :distro, :image_cache, :config
 
-      def initialize(build_conf, logger:, terminator: nil)
+      def initialize(build_conf:, config:, logger:, terminator: nil)
         @build_conf = build_conf
         @distro = ::OmnipackageAgent::Distro.new(build_conf.fetch(:distro))
         @log_string = ::StringIO.new
         @logger = logger.add_outputs(@log_string)
         @terminator = terminator
-        @image_cache = ::OmnipackageAgent::ImageCache.new(logger: logger)
+        @config = config
+        @image_cache = ::OmnipackageAgent::ImageCache.new(logger: logger, config: config)
       end
 
       def run(source_path, job_variables) # rubocop: disable Metrics/AbcSize, Metrics/MethodLength, Metrics/PerceivedComplexity, Metrics/CyclomaticComplexity
@@ -79,7 +80,7 @@ module OmnipackageAgent
         end.join(' ')
 
         <<~CLI
-          #{::OmnipackageAgent.config.container_runtime} run --name #{container_name} --entrypoint /bin/sh #{mount_cli} #{image} -c "#{commands.join(' && ')}"
+          #{config.container_runtime} run --name #{container_name} --entrypoint /bin/sh #{mount_cli} #{image} -c "#{commands.join(' && ')}"
         CLI
       end
 
@@ -96,7 +97,7 @@ module OmnipackageAgent
           ::OmnipackageAgent::Build::Deb::Package
         else
           raise "distro #{distro} not supported"
-        end.new(source_path, job_variables, build_conf, distro)
+        end.new(source_path, job_variables, build_conf, distro, config: config)
       end
     end
   end

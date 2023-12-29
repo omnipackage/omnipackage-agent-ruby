@@ -6,10 +6,11 @@ require 'omnipackage_agent/utils/subprocess'
 
 module OmnipackageAgent
   class ImageCache
-    attr_reader :logger, :subprocess
+    attr_reader :logger, :subprocess, :config
 
-    def initialize(logger:)
+    def initialize(logger:, config:)
       @logger = logger
+      @config = config
       @subprocess = ::OmnipackageAgent::Utils::Subprocess.new(logger: logger)
     end
 
@@ -18,7 +19,7 @@ module OmnipackageAgent
     end
 
     def image(container_name, default_image)
-      if subprocess.execute("#{::OmnipackageAgent.config.container_runtime} image inspect #{container_name}")&.success?
+      if subprocess.execute("#{config.container_runtime} image inspect #{container_name}")&.success?
         container_name
       else
         default_image
@@ -26,11 +27,11 @@ module OmnipackageAgent
     end
 
     def commit(container_name, &block)
-      subprocess.execute("#{::OmnipackageAgent.config.container_runtime} commit #{container_name} #{container_name}", &block)
+      subprocess.execute("#{config.container_runtime} commit #{container_name} #{container_name}", &block)
     end
 
     def rm(container_name, &block)
-      subprocess.execute("#{::OmnipackageAgent.config.container_runtime} rm -f #{container_name}", &block)
+      subprocess.execute("#{config.container_runtime} rm -f #{container_name}", &block)
     end
   end
 end

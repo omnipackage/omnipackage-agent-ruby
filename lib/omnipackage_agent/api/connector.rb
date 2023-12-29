@@ -11,12 +11,17 @@ module OmnipackageAgent
     class Connector
       attr_reader :scheduler
 
-      def initialize(apihost, apikey, logger:)
+      def initialize(config:, logger:) # rubocop: disable Metrics/MethodLength
         @logger = logger
         @queue = ::OmnipackageAgent::TimedQueue.new
-        @scheduler = ::OmnipackageAgent::Api::Scheduler.new(logger, queue, downloader: ::OmnipackageAgent::Api::Client::Download.new(apikey))
+        @scheduler = ::OmnipackageAgent::Api::Scheduler.new(
+          logger:     logger,
+          queue:      queue,
+          config:     config,
+          downloader: ::OmnipackageAgent::Api::Client::Download.new(config.apikey)
+        )
         @thread = ::Thread.new do
-          mainloop(::OmnipackageAgent::Api::Client.new(apihost, apikey))
+          mainloop(::OmnipackageAgent::Api::Client.new(config.apihost, config.apikey))
         end
       end
 

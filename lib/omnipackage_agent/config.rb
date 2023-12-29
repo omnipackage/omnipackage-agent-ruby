@@ -7,10 +7,11 @@ require 'omnipackage_agent/utils/yaml'
 module OmnipackageAgent
   class Config
     class << self
-      def load!(path, merge_with = {})
-        content = ::File.read(path)
+      def get(options = {})
+        fpath = options.delete(:config) || ::File.expand_path('../../support/config.yml.example', __dir__)
+        content = ::File.read(fpath)
         yaml = ::ERB.new(content).result
-        new(::OmnipackageAgent::Yaml.load(yaml, symbolize_names: true).merge(merge_with))
+        new(::OmnipackageAgent::Yaml.load(yaml, symbolize_names: true).merge(options))
       end
     end
 

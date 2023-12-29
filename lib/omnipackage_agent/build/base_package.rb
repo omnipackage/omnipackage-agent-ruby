@@ -1,16 +1,17 @@
 # frozen_string_literal: true
 
 module OmnipackageAgent
-  module Build
+  class Build
     class BasePackage
-      attr_reader :source_path, :job_variables, :build_conf, :distro
+      attr_reader :source_path, :job_variables, :build_conf, :distro, :config
       attr_reader :output_path, :commands, :mounts # set these in setup method
 
-      def initialize(source_path, job_variables, build_conf, distro)
+      def initialize(source_path, job_variables, build_conf, distro, config:)
         @source_path = source_path
         @job_variables = job_variables
         @distro = distro
         @build_conf = build_conf
+        @config = config
         setup
       end
 

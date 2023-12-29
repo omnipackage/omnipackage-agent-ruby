@@ -6,32 +6,31 @@ require 'logger'
 require 'tmpdir'
 
 require 'omnipackage_agent/version'
+require 'omnipackage_agent/arch'
 require 'omnipackage_agent/config'
 require 'omnipackage_agent/build'
 require 'omnipackage_agent/logging/logger'
 require 'omnipackage_agent/api/connector'
 
 module OmnipackageAgent
-  extend self
+  module_function
 
-  attr_writer :config
-
-  def run(options = {}) # rubocop: disable Metrics/AbcSize, Metrics/MethodLength
+  def headless(config, source)
     logger = ::OmnipackageAgent::Logging::Logger.new
 
     logger.info(::RUBY_DESCRIPTION)
-    check_system_packages!
+    logger.info('running in headless mode')
 
-    if options[:headless]
-      logger.info('running in headless mode')
-      ::OmnipackageAgent::Build.call(options[:source], logger: logger)
-    else
-      logger.info("running with #{config.apihost} mothership")
-      ::OmnipackageAgent::Api::Connector.new(config.apihost, config.apikey, logger: logger).join
-    end
-  rescue ::StandardError => e
-    logger.fatal(e)
-    raise
+    ::OmnipackageAgent::Build.new(logger: logger, config: config).call(source)
+  end
+
+  def api(config)
+    logger = ::OmnipackageAgent::Logging::Logger.new
+
+    logger.info(::RUBY_DESCRIPTION)
+    logger.info("running with #{config.apihost} mothership")
+
+    ::OmnipackageAgent::Api::Connector.new(config: config, logger: logger).join
   end
 
   def check_system_packages!
@@ -43,13 +42,5 @@ module OmnipackageAgent
                   end
       raise "please install #{name}" unless system("#{cmd} &> /dev/null")
     end
-  end
-
-  def config
-    @config ||= ::OmnipackageAgent::Config.load!(::File.expand_path('../support/config.yml.example', __dir__))
-  end
-
-  def arch
-    @arch ||= `uname -m`.strip
   end
 end

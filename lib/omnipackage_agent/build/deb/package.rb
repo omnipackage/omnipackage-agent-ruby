@@ -8,7 +8,7 @@ require 'omnipackage_agent/utils/path'
 require 'omnipackage_agent/build/base_package'
 
 module OmnipackageAgent
-  module Build
+  class Build
     module Deb
       class Package < ::OmnipackageAgent::Build::BasePackage
         def artefacts
@@ -22,8 +22,8 @@ module OmnipackageAgent
           debian_folder = ::OmnipackageAgent::Build::Deb::DebianFolder.new(::OmnipackageAgent::Utils::Path.mkpath(source_path, debian_folder_template_path))
           build_folder_name = "#{debian_folder.name}-#{distro.name}"
 
-          build_path = ::OmnipackageAgent::Utils::Path.mkpath(::OmnipackageAgent.config.build_dir, build_folder_name, 'build')
-          @output_path = ::OmnipackageAgent::Utils::Path.mkpath(::OmnipackageAgent.config.build_dir, build_folder_name, 'output')
+          build_path = ::OmnipackageAgent::Utils::Path.mkpath(config.build_dir, build_folder_name, 'build')
+          @output_path = ::OmnipackageAgent::Utils::Path.mkpath(config.build_dir, build_folder_name, 'output')
           ::FileUtils.mkdir_p(build_path)
           ::FileUtils.mkdir_p(output_path)
 

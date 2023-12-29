@@ -8,7 +8,7 @@ require 'omnipackage_agent/utils/template'
 require 'omnipackage_agent/utils/path'
 
 module OmnipackageAgent
-  module Build
+  class Build
     module Deb
       class DebianFolder
         attr_reader :debian_folder_path

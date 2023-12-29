@@ -5,7 +5,9 @@ require 'test_helper'
 class TestAgent < ::Minitest::Test
   def test_build_sample_project # rubocop: disable Metrics/AbcSize, Metrics/MethodLength
     logger = ::OmnipackageAgent::Logging::Logger.new
-    result = ::OmnipackageAgent::Build.call(::File.expand_path('sample_project', __dir__), logger: logger)
+    config = ::OmnipackageAgent::Config.get
+
+    result = ::OmnipackageAgent::Build.new(logger: logger, config: config).call(::File.expand_path('sample_project', __dir__))
     puts ' -- BUILD RESULTS -- '
     pp result
     puts ' -- ENDOF BUILD RESULTS -- '
@@ -32,7 +34,7 @@ class TestAgent < ::Minitest::Test
       end
       commands << 'sample_project'
       cli = <<~CLI
-        #{::OmnipackageAgent.config.container_runtime} run --rm --entrypoint /bin/sh #{mount_cli} #{distro.image} -c "#{commands.join(' && ')}"
+        #{config.container_runtime} run --rm --entrypoint /bin/sh #{mount_cli} #{distro.image} -c "#{commands.join(' && ')}"
       CLI
       lines = []
       success = ::OmnipackageAgent::Utils::Subprocess.new(logger: logger).execute(cli) { |output_line| lines << output_line }&.success?

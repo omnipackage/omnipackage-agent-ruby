@@ -7,11 +7,12 @@ require 'omnipackage_agent/build/output'
 module OmnipackageAgent
   module Api
     class Scheduler
-      def initialize(logger, queue, downloader:)
+      def initialize(config:, logger:, queue:, downloader:)
         @mutex = ::Mutex.new
         @logger = logger
         @queue = queue
         @downloader = downloader
+        @config = config
         recharge!
       end
 
@@ -24,7 +25,8 @@ module OmnipackageAgent
             upload_url:   payload.fetch('task').fetch('upload_artefact_url'),
             distros:      payload.fetch('task').fetch('distros'),
             downloader:   downloader,
-            logger:       logger
+            logger:       logger,
+            config:       config
           )
           start!(task)
         when state.busy? && payload['command'] == 'stop'
@@ -46,7 +48,7 @@ module OmnipackageAgent
 
       private
 
-      attr_reader :mutex, :logger, :queue, :downloader, :state
+      attr_reader :mutex, :logger, :queue, :downloader, :state, :config
 
       def finalize(task)
         finish!(task)
