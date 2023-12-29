@@ -44,7 +44,7 @@ module Agent
   end
 
   def config
-    @config ||= ::Agent::Config.load!(::File.expand_path('support/config.yml.example'))
+    @config ||= ::Agent::Config.load!(::File.expand_path('../support/config.yml.example', __dir__))
   end
 
   def logger
