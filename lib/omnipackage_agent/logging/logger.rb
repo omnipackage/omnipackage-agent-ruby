@@ -8,13 +8,13 @@ require 'omnipackage_agent/logging/multioutput'
 module OmnipackageAgent
   module Logging
     class Logger < ::Logger
-      def initialize(outputs: [$stdout])
+      def initialize(outputs: [$stdout], formatter: ::OmnipackageAgent::Logging::Formatter.new)
         @outputs = outputs
-        super(::OmnipackageAgent::Logging::Multioutput.new(*outputs), formatter: ::OmnipackageAgent::Logging::Formatter.new)
+        super(::OmnipackageAgent::Logging::Multioutput.new(*outputs), formatter: formatter)
       end
 
       def add_outputs(*outputs)
-        self.class.new(outputs: @outputs + outputs)
+        self.class.new(outputs: @outputs + outputs, formatter: formatter)
       end
     end
   end
