@@ -13,6 +13,7 @@ require 'omnipackage_agent/build/logfile'
 require 'omnipackage_agent/build/output'
 require 'omnipackage_agent/build/rpm/package'
 require 'omnipackage_agent/build/deb/package'
+require 'omnipackage_agent/container_runtime'
 
 module OmnipackageAgent
   class Build
@@ -26,7 +27,8 @@ module OmnipackageAgent
         @logger = logger.add_outputs(@log_string)
         @terminator = terminator
         @config = config
-        @image_cache = ::OmnipackageAgent::ImageCache.new(logger: logger, config: config)
+        @container_runtime = ::OmnipackageAgent::ContainerRuntime.new(logger: logger, config: config, terminator: terminator)
+        @image_cache = ::OmnipackageAgent::ImageCache.new(container_runtime: container_runtime)
       end
 
       def run(source_path, job_variables) # rubocop: disable Metrics/AbcSize, Metrics/MethodLength, Metrics/PerceivedComplexity, Metrics/CyclomaticComplexity
@@ -60,7 +62,7 @@ module OmnipackageAgent
 
       private
 
-      attr_reader :logger, :terminator
+      attr_reader :logger, :terminator, :container_runtime
 
       def build_deps
         build_conf.fetch(:build_dependencies)
@@ -80,12 +82,12 @@ module OmnipackageAgent
         end.join(' ')
 
         <<~CLI
-          #{config.container_runtime} run --name #{container_name} --entrypoint /bin/sh #{mount_cli} #{image} -c "#{commands.join(' && ')}"
+          run --name #{container_name} --entrypoint /bin/sh #{mount_cli} #{image} -c "#{commands.join(' && ')}"
         CLI
       end
 
       def execute(cli)
-        ::OmnipackageAgent::Utils::Subprocess.new(logger: logger, terminator: terminator).execute(cli) do |output_line|
+        container_runtime.execute(cli) do |output_line|
           logger.info('container') { output_line }
         end&.success?
       end

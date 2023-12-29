@@ -2,16 +2,12 @@
 
 require 'digest/sha1'
 
-require 'omnipackage_agent/utils/subprocess'
-
 module OmnipackageAgent
   class ImageCache
-    attr_reader :logger, :subprocess, :config
+    attr_reader :container_runtime
 
-    def initialize(logger:, config:)
-      @logger = logger
-      @config = config
-      @subprocess = ::OmnipackageAgent::Utils::Subprocess.new(logger: logger)
+    def initialize(container_runtime:)
+      @container_runtime = container_runtime
     end
 
     def generate_container_name(distro_name, build_deps)
@@ -19,19 +15,19 @@ module OmnipackageAgent
     end
 
     def image(container_name, default_image)
-      if subprocess.execute("#{config.container_runtime} image inspect #{container_name}")&.success?
+      if container_runtime.execute("image inspect #{container_name}")&.success?
         container_name
       else
         default_image
       end
     end
 
-    def commit(container_name, &block)
-      subprocess.execute("#{config.container_runtime} commit #{container_name} #{container_name}", &block)
+    def commit(container_name)
+      container_runtime.execute("commit #{container_name} #{container_name}")
     end
 
-    def rm(container_name, &block)
-      subprocess.execute("#{config.container_runtime} rm -f #{container_name}", &block)
+    def rm(container_name)
+      container_runtime.execute("rm -f #{container_name}")
     end
   end
 end
