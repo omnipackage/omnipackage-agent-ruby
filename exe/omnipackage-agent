@@ -6,6 +6,7 @@ $LOAD_PATH.unshift ::File.expand_path('../lib', __dir__)
 require 'optparse'
 
 require 'agent'
+require 'agent/config'
 
 options = {}
 optparser = ::OptionParser.new do |parser|
@@ -23,6 +24,7 @@ optparser = ::OptionParser.new do |parser|
   parser.on('--source SOURCE_PATH', 'path to source code in headless mode')
   parser.on('--apihost API_HOST', 'cloud api host url')
   parser.on('--apikey API_KEY', 'cloud api key')
+  parser.on('--config CONFIG_FILE', 'path to config file')
 end
 optparser.parse!(into: options)
 
@@ -30,6 +32,7 @@ optparser.parse!(into: options)
 # Dir.chdir(__dir__)
 
 begin
+  ::Agent.config = ::Agent::Config.load!(options[:config], options) if options[:config]
   ::Agent.run(options)
 rescue ::StandardError => e
   warn e.backtrace

@@ -31,7 +31,7 @@ class TestAgent < ::Minitest::Test
       end
       commands << 'sample_project'
       cli = <<~CLI
-        #{::Agent.runtime} run --rm --entrypoint /bin/sh #{mount_cli} #{distro.image} -c "#{commands.join(' && ')}"
+        #{::Agent.config.container_runtime} run --rm --entrypoint /bin/sh #{mount_cli} #{distro.image} -c "#{commands.join(' && ')}"
       CLI
       lines = []
       success = ::Agent::Utils::Subprocess.new.execute(cli) { |output_line| lines << output_line }&.success?

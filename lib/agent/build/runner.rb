@@ -79,7 +79,7 @@ module Agent
         end.join(' ')
 
         <<~CLI
-          #{::Agent.runtime} run --name #{container_name} --entrypoint /bin/sh #{mount_cli} #{image} -c "#{commands.join(' && ')}"
+          #{::Agent.config.container_runtime} run --name #{container_name} --entrypoint /bin/sh #{mount_cli} #{image} -c "#{commands.join(' && ')}"
         CLI
       end
 

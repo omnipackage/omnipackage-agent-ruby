@@ -1,0 +1,6 @@
+# docker or podman
+container_runtime: podman
+
+# ignored in headless mode
+apikey: '1234'
+apihost: 'http://zenbook:5000'
