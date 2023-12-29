@@ -4,3 +4,5 @@ container_runtime: podman
 # ignored in headless mode
 apikey: '1234'
 apihost: 'http://zenbook:5000'
+
+build_dir: "<%= ::Dir.tmpdir %>/build-omnipackage"

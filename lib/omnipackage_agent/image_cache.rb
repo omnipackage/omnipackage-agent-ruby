@@ -8,7 +8,7 @@ module OmnipackageAgent
   class ImageCache
     attr_reader :logger, :subprocess
 
-    def initialize(logger: ::OmnipackageAgent.logger)
+    def initialize(logger:)
       @logger = logger
       @subprocess = ::OmnipackageAgent::Utils::Subprocess.new(logger: logger)
     end

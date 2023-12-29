@@ -17,7 +17,8 @@ module OmnipackageAgent
     ATTRIBUTES = {
       container_runtime: ::String,
       apikey: ::String,
-      apihost: ::String
+      apihost: ::String,
+      build_dir: ::String
     }.freeze
 
     def initialize(hash, attributes = ATTRIBUTES) # rubocop: disable Metrics/MethodLength

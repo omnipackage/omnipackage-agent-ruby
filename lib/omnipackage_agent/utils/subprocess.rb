@@ -9,7 +9,7 @@ module OmnipackageAgent
     class Subprocess
       attr_reader :logger, :terminator
 
-      def initialize(logger: ::OmnipackageAgent.logger, terminator: nil)
+      def initialize(logger:, terminator: nil)
         @logger = logger
         @terminator = terminator
       end

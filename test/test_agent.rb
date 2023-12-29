@@ -4,7 +4,8 @@ require 'test_helper'
 
 class TestAgent < ::Minitest::Test
   def test_build_sample_project # rubocop: disable Metrics/AbcSize, Metrics/MethodLength
-    result = ::OmnipackageAgent::Build.call(::File.expand_path('sample_project', __dir__))
+    logger = ::OmnipackageAgent::Logging::Logger.new
+    result = ::OmnipackageAgent::Build.call(::File.expand_path('sample_project', __dir__), logger: logger)
     puts ' -- BUILD RESULTS -- '
     pp result
     puts ' -- ENDOF BUILD RESULTS -- '
@@ -34,7 +35,7 @@ class TestAgent < ::Minitest::Test
         #{::OmnipackageAgent.config.container_runtime} run --rm --entrypoint /bin/sh #{mount_cli} #{distro.image} -c "#{commands.join(' && ')}"
       CLI
       lines = []
-      success = ::OmnipackageAgent::Utils::Subprocess.new.execute(cli) { |output_line| lines << output_line }&.success?
+      success = ::OmnipackageAgent::Utils::Subprocess.new(logger: logger).execute(cli) { |output_line| lines << output_line }&.success?
 
       assert success, lines.join('|') # rubocop: disable Minitest/AssertWithExpectedArgument
       assert_equal 'alive 1.3.5', lines[-1]

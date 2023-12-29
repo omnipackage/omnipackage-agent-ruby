@@ -17,15 +17,17 @@ module OmnipackageAgent
   attr_writer :config
 
   def run(options = {}) # rubocop: disable Metrics/AbcSize, Metrics/MethodLength
+    logger = ::OmnipackageAgent::Logging::Logger.new
+
     logger.info(::RUBY_DESCRIPTION)
     check_system_packages!
 
     if options[:headless]
       logger.info('running in headless mode')
-      ::OmnipackageAgent::Build.call(options[:source])
+      ::OmnipackageAgent::Build.call(options[:source], logger: logger)
     else
       logger.info("running with #{config.apihost} mothership")
-      ::OmnipackageAgent::Api::Connector.new(config.apihost, config.apikey).join
+      ::OmnipackageAgent::Api::Connector.new(config.apihost, config.apikey, logger: logger).join
     end
   rescue ::StandardError => e
     logger.fatal(e)
@@ -45,14 +47,6 @@ module OmnipackageAgent
 
   def config
     @config ||= ::OmnipackageAgent::Config.load!(::File.expand_path('../support/config.yml.example', __dir__))
-  end
-
-  def logger
-    @logger ||= ::OmnipackageAgent::Logging::Logger.new
-  end
-
-  def build_dir
-    @build_dir ||= "#{::Dir.tmpdir}/build-omnipackage"
   end
 
   def arch

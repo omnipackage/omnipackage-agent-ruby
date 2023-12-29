@@ -9,7 +9,7 @@ module OmnipackageAgent
   module Build
     module_function
 
-    def call(source_path, distros: nil, logger: ::OmnipackageAgent.logger, terminator: nil)
+    def call(source_path, logger:, distros: nil, terminator: nil)
       build_config = ::OmnipackageAgent::Build::Config.new(source_path)
 
       job_variables = {

@@ -23,7 +23,7 @@ module OmnipackageAgent
       end
 
       def start(&block) # rubocop: disable Metrics/MethodLength, Metrics/AbcSize
-        sources_dir = ::OmnipackageAgent::Utils::Path.mkpath(::OmnipackageAgent.build_dir, "sources_#{id}").to_s
+        sources_dir = ::OmnipackageAgent::Utils::Path.mkpath(::OmnipackageAgent.config.build_dir, "sources_#{id}").to_s
         ::FileUtils.mkdir_p(sources_dir)
 
         @thread = ::Thread.new do

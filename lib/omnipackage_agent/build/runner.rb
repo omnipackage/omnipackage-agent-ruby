@@ -19,7 +19,7 @@ module OmnipackageAgent
     class Runner
       attr_reader :build_conf, :distro, :image_cache
 
-      def initialize(build_conf, logger: ::OmnipackageAgent.logger, terminator: nil)
+      def initialize(build_conf, logger:, terminator: nil)
         @build_conf = build_conf
         @distro = ::OmnipackageAgent::Distro.new(build_conf.fetch(:distro))
         @log_string = ::StringIO.new

@@ -11,8 +11,8 @@ module OmnipackageAgent
     class Connector
       attr_reader :scheduler
 
-      def initialize(apihost, apikey)
-        @logger = ::OmnipackageAgent.logger
+      def initialize(apihost, apikey, logger:)
+        @logger = logger
         @queue = ::OmnipackageAgent::TimedQueue.new
         @scheduler = ::OmnipackageAgent::Api::Scheduler.new(logger, queue, downloader: ::OmnipackageAgent::Api::Client::Download.new(apikey))
         @thread = ::Thread.new do
