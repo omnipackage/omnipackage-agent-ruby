@@ -16,15 +16,13 @@ module OmnipackageAgent
   module_function
 
   def headless(config, source, logger: ::OmnipackageAgent::Logging::Logger.new)
-    logger.info(::RUBY_DESCRIPTION)
-    logger.info('starting in headless mode')
+    logger.info("starting agent #{::OmnipackageAgent::VERSION} in headless mode, #{::RUBY_DESCRIPTION}")
 
     ::OmnipackageAgent::Build.new(logger: logger, config: config).call(source)
   end
 
   def api(config, logger: ::OmnipackageAgent::Logging::Logger.new)
-    logger.info(::RUBY_DESCRIPTION)
-    logger.info("starting with #{config.apihost} mothership")
+    logger.info("starting agent #{::OmnipackageAgent::VERSION} with #{config.apihost} mothership, #{::RUBY_DESCRIPTION}")
 
     ::OmnipackageAgent::Api::Connector.new(config: config, logger: logger).join
   end
