@@ -8,17 +8,17 @@ require 'omnipackage_agent/logging/multioutput'
 require 'omnipackage_agent/utils/subprocess'
 require 'omnipackage_agent/utils/path'
 require 'omnipackage_agent/distro'
-require 'omnipackage_agent/image_cache'
+require 'omnipackage_agent/build/image_cache'
 require 'omnipackage_agent/build/logfile'
 require 'omnipackage_agent/build/output'
 require 'omnipackage_agent/build/rpm/package'
 require 'omnipackage_agent/build/deb/package'
-require 'omnipackage_agent/container_runtime'
+require 'omnipackage_agent/build/lock'
 
 module OmnipackageAgent
   class Build
     class Runner
-      attr_reader :build_conf, :distro, :image_cache, :config
+      attr_reader :subprocess, :build_conf, :distro, :image_cache, :config
 
       def initialize(build_conf:, config:, logger:, terminator: nil) # rubocop: disable Metrics/MethodLength
         @build_conf = build_conf
@@ -27,12 +27,14 @@ module OmnipackageAgent
         @logger = logger.add_outputs(@log_string)
         @terminator = terminator
         @config = config
-        @container_runtime = ::OmnipackageAgent::ContainerRuntime.new(logger: logger, config: config, terminator: terminator)
-        @image_cache = ::OmnipackageAgent::ImageCache.new(
-          container_runtime:  container_runtime,
-          default_image:      build_conf[:image] || distro.image,
-          distro_name:        distro.name,
-          build_deps:         build_conf.fetch(:build_dependencies)
+        @subprocess = ::OmnipackageAgent::Utils::Subprocess.new(logger: logger, terminator: terminator)
+
+        @image_cache = ::OmnipackageAgent::Build::ImageCache.new(
+          subprocess:     subprocess,
+          config:         config,
+          default_image:  build_conf[:image] || distro.image,
+          distro_name:    distro.name,
+          build_deps:     build_conf.fetch(:build_dependencies)
         )
       end
 
@@ -44,16 +46,18 @@ module OmnipackageAgent
         package = build_package(source_path, job_variables)
         @logfile = ::OmnipackageAgent::Build::Logfile.new(::OmnipackageAgent::Utils::Path.mkpath(package.output_path, 'build.log'))
 
-        success = execute(build_cli(package.mounts, package.commands))
+        lock = ::OmnipackageAgent::Build::Lock.new(config: config, key: image_cache.container_name)
+
+        success = execute(build_cli(package.mounts, package.commands, lock))
         if success
           logger.info("successfully finished build for #{distro.name}, artefacts: #{package.artefacts}, log: #{@logfile.path}")
         else
           logger.error("failed build for #{distro.name}")
         end
         ::OmnipackageAgent::Build::Output.new(
-          success: success,
-          artefacts: package.artefacts.map { |i| ::Pathname.new(i) },
-          build_log: @logfile.path,
+          success:      success,
+          artefacts:    package.artefacts.map { |i| ::Pathname.new(i) },
+          build_log:    @logfile.path,
           build_config: build_conf
         )
       ensure
@@ -65,20 +69,20 @@ module OmnipackageAgent
 
       private
 
-      attr_reader :logger, :terminator, :container_runtime
+      attr_reader :logger, :terminator
 
-      def build_cli(mounts, commands)
+      def build_cli(mounts, commands, lock)
         mount_cli = mounts.map do |from, to|
           "--mount type=bind,source=#{from},target=#{to}"
         end.join(' ')
 
         <<~CLI
-          #{image_cache.rm_cli} ; #{container_runtime.executable} run --name #{image_cache.container_name} --entrypoint /bin/sh #{mount_cli} #{image_cache.image} -c "#{commands.join(' && ')}" && #{image_cache.commit_cli}
+          #{lock.to_cli} '#{image_cache.rm_cli} ; #{config.container_runtime} run --name #{image_cache.container_name} --entrypoint /bin/sh #{mount_cli} #{image_cache.image} -c "#{commands.join(' && ')}" && #{image_cache.commit_cli}'
         CLI
       end
 
       def execute(cli)
-        container_runtime.execute(cli, lock_key: image_cache.container_name) do |output_line|
+        subprocess.execute(cli) do |output_line|
           logger.info('container') { output_line }
         end&.success?
       end
