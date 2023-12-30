@@ -5,4 +5,5 @@ container_runtime: podman
 apikey: '1234'
 apihost: 'http://zenbook:5000'
 
-build_dir: "<%= ::Dir.tmpdir %>/build-omnipackage"
+build_dir: "<%= ::Dir.tmpdir %>/omnipackage-build"
+lockfiles_dir: "<%= ::Dir.tmpdir %>/omnipackage-lock"

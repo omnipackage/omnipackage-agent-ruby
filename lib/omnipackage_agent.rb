@@ -30,7 +30,7 @@ module OmnipackageAgent
   end
 
   def check_system_packages!
-    ['tar', 'xz'].each do |b| # rubocop: disable Style/WordArray
+    ['tar', 'xz', 'flock'].each do |b| # rubocop: disable Style/WordArray
       name, cmd = if b.is_a?(::Hash)
                     [b.keys.first, b.values.first]
                   else

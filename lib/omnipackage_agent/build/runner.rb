@@ -20,7 +20,7 @@ module OmnipackageAgent
     class Runner
       attr_reader :build_conf, :distro, :image_cache, :config
 
-      def initialize(build_conf:, config:, logger:, terminator: nil)
+      def initialize(build_conf:, config:, logger:, terminator: nil) # rubocop: disable Metrics/MethodLength
         @build_conf = build_conf
         @distro = ::OmnipackageAgent::Distro.new(build_conf.fetch(:distro))
         @log_string = ::StringIO.new
@@ -28,10 +28,15 @@ module OmnipackageAgent
         @terminator = terminator
         @config = config
         @container_runtime = ::OmnipackageAgent::ContainerRuntime.new(logger: logger, config: config, terminator: terminator)
-        @image_cache = ::OmnipackageAgent::ImageCache.new(container_runtime: container_runtime)
+        @image_cache = ::OmnipackageAgent::ImageCache.new(
+          container_runtime:  container_runtime,
+          default_image:      build_conf[:image] || distro.image,
+          distro_name:        distro.name,
+          build_deps:         build_conf.fetch(:build_dependencies)
+        )
       end
 
-      def run(source_path, job_variables) # rubocop: disable Metrics/AbcSize, Metrics/MethodLength, Metrics/PerceivedComplexity, Metrics/CyclomaticComplexity
+      def run(source_path, job_variables) # rubocop: disable Metrics/AbcSize, Metrics/MethodLength
         return if terminator&.called?
 
         logger.info("starting build for #{distro.name} in #{source_path}, variables: #{job_variables}")
@@ -45,7 +50,6 @@ module OmnipackageAgent
         else
           logger.error("failed build for #{distro.name}")
         end
-        image_cache.commit(container_name) unless terminator&.called?
         ::OmnipackageAgent::Build::Output.new(
           success: success,
           artefacts: package.artefacts.map { |i| ::Pathname.new(i) },
@@ -53,7 +57,6 @@ module OmnipackageAgent
           build_config: build_conf
         )
       ensure
-        image_cache.rm(container_name)
         @logfile&.write(@log_string.string)
         @logfile&.close
         @log_string.rewind
@@ -64,30 +67,18 @@ module OmnipackageAgent
 
       attr_reader :logger, :terminator, :container_runtime
 
-      def build_deps
-        build_conf.fetch(:build_dependencies)
-      end
-
-      def container_name
-        @container_name ||= image_cache.generate_container_name(distro.name, build_deps)
-      end
-
-      def image
-        @image ||= image_cache.image(container_name, build_conf[:image] || distro.image)
-      end
-
       def build_cli(mounts, commands)
         mount_cli = mounts.map do |from, to|
           "--mount type=bind,source=#{from},target=#{to}"
         end.join(' ')
 
         <<~CLI
-          run --name #{container_name} --entrypoint /bin/sh #{mount_cli} #{image} -c "#{commands.join(' && ')}"
+          #{image_cache.rm_cli} ; #{container_runtime.executable} run --name #{image_cache.container_name} --entrypoint /bin/sh #{mount_cli} #{image_cache.image} -c "#{commands.join(' && ')}" && #{image_cache.commit_cli}
         CLI
       end
 
       def execute(cli)
-        container_runtime.execute(cli) do |output_line|
+        container_runtime.execute(cli, lock_key: image_cache.container_name) do |output_line|
           logger.info('container') { output_line }
         end&.success?
       end
