@@ -2,9 +2,6 @@
 
 $LOAD_PATH.unshift ::File.expand_path('../vendor/liquid-5.4.0/lib', __dir__)
 
-require 'logger'
-require 'tmpdir'
-
 require 'omnipackage_agent/version'
 require 'omnipackage_agent/arch'
 require 'omnipackage_agent/config'
@@ -16,15 +13,19 @@ module OmnipackageAgent
   module_function
 
   def headless(config, source, logger: ::OmnipackageAgent::Logging::Logger.new)
-    logger.info("starting agent #{::OmnipackageAgent::VERSION} in headless mode, #{::RUBY_DESCRIPTION} @ #{::RbConfig.ruby}")
+    logger.info("starting agent #{::OmnipackageAgent::VERSION} in headless mode, #{ruby_env_info}")
 
     ::OmnipackageAgent::Build.new(logger: logger, config: config).call(source)
   end
 
   def api(config, logger: ::OmnipackageAgent::Logging::Logger.new)
-    logger.info("starting agent #{::OmnipackageAgent::VERSION} with #{config.apihost} mothership, #{::RUBY_DESCRIPTION} @ #{::RbConfig.ruby}")
+    logger.info("starting agent #{::OmnipackageAgent::VERSION} with #{config.apihost} mothership, #{ruby_env_info}")
 
     ::OmnipackageAgent::Api::Connector.new(config: config, logger: logger).join
+  end
+
+  def ruby_env_info
+    "#{::RUBY_DESCRIPTION} (#{::RbConfig.ruby})"
   end
 
   def check_system_packages!

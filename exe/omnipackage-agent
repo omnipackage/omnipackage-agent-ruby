@@ -3,6 +3,11 @@
 
 $LOAD_PATH.unshift ::File.expand_path('../lib', __dir__)
 
+begin
+  require 'super_awesome_print'
+rescue ::LoadError
+end
+
 require 'optparse'
 
 require 'omnipackage_agent'
@@ -39,7 +44,26 @@ begin
   ::OmnipackageAgent.check_system_packages!
 
   if options[:headless]
-    ::OmnipackageAgent.headless(config, options[:source])
+    unless options[:source]
+      warn 'source path required in headless'
+      warn optparser
+      exit(1)
+    end
+    results = ::OmnipackageAgent.headless(config, options[:source])
+    puts 'Build complete'
+    puts "\n"
+    results.each do |o|
+      puts o.distro.name
+      if o.success
+        puts 'Success, artefacts:'
+        o.artefacts.each do |a|
+          puts a
+        end
+      else
+        puts "Error, log: #{o.build_log}"
+      end
+      puts "\n"
+    end
   else
     ::OmnipackageAgent.api(config)
   end

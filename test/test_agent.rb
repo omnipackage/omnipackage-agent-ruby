@@ -11,7 +11,7 @@ class TestAgent < ::Minitest::Test
     # puts ' -- BUILD RESULTS -- '
     # pp result
     # puts ' -- ENDOF BUILD RESULTS -- '
-    result.each do |res| # rubocop: disable Metrics/BlockLength
+    result.each do |res|
       unless res.success
         puts "-- #{res.distro.name} build error -- "
         pp res

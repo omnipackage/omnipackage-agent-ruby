@@ -47,3 +47,9 @@ Naming/AccessorMethodName:
 
 Style/ClassVars:
   Enabled: false
+
+Lint/SuppressedException:
+  Enabled: false
+
+Metrics/BlockLength:
+  Enabled: false

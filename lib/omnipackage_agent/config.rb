@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require 'erb'
+require 'tmpdir'
 
 require 'omnipackage_agent/utils/yaml'
 
