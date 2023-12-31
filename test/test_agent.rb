@@ -3,7 +3,7 @@
 require 'test_helper'
 
 class TestAgent < ::Minitest::Test
-  def test_build_sample_project # rubocop: disable Metrics/AbcSize, Metrics/MethodLength
+  def test_build_sample_project # rubocop: disable Metrics/AbcSize, Metrics/MethodLength, Metrics/PerceivedComplexity, Metrics/CyclomaticComplexity
     logger = ::OmnipackageAgent::Logging::Logger.new(outputs: [])
     config = ::OmnipackageAgent::Config.get
 
@@ -20,8 +20,10 @@ class TestAgent < ::Minitest::Test
           puts(::File.read(res.build_log))
           puts '-- end of buildlog --'
         end
+
         assert res.success
       end
+
       assert_path_exists res.build_log
       assert_match(/successfully finished build/, ::File.read(res.build_log))
       assert_equal 1, res.artefacts.size
