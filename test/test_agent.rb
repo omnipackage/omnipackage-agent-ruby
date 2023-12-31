@@ -4,15 +4,24 @@ require 'test_helper'
 
 class TestAgent < ::Minitest::Test
   def test_build_sample_project # rubocop: disable Metrics/AbcSize, Metrics/MethodLength
-    logger = ::OmnipackageAgent::Logging::Logger.new
+    logger = ::OmnipackageAgent::Logging::Logger.new(outputs: [])
     config = ::OmnipackageAgent::Config.get
 
     result = ::OmnipackageAgent::Build.new(logger: logger, config: config).call(::File.expand_path('sample_project', __dir__))
-    puts ' -- BUILD RESULTS -- '
-    pp result
-    puts ' -- ENDOF BUILD RESULTS -- '
+    # puts ' -- BUILD RESULTS -- '
+    # pp result
+    # puts ' -- ENDOF BUILD RESULTS -- '
     result.each do |res| # rubocop: disable Metrics/BlockLength
-      assert res.success
+      unless res.success
+        puts "-- #{res.distro.name} build error -- "
+        pp res
+        if ::File.exist?(res.build_log)
+          puts '-- buildlog --'
+          puts(::File.read(res.build_log))
+          puts '-- end of buildlog --'
+        end
+        assert res.success
+      end
       assert_path_exists res.build_log
       assert_match(/successfully finished build/, ::File.read(res.build_log))
       assert_equal 1, res.artefacts.size

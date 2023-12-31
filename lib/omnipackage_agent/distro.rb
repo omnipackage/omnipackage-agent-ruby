@@ -19,7 +19,9 @@ module OmnipackageAgent
 
     def setup(build_dependencies)
       config.fetch('setup').map do |command|
-        format(command, build_dependencies: build_dependencies.join(' '))
+        deps = build_dependencies.join(' ')
+        command.gsub('%{build_dependencies}', deps)
+        # format(command, build_dependencies: build_dependencies.join(' '))
       end
     end
 
