@@ -25,7 +25,6 @@ module OmnipackageAgent
         @distro = ::OmnipackageAgent::Distro.new(build_conf.fetch(:distro))
         @log_string = ::StringIO.new
         @logger = logger.add_outputs(@log_string)
-        @terminator = terminator
         @config = config
         @subprocess = ::OmnipackageAgent::Utils::Subprocess.new(logger: logger, terminator: terminator)
 
@@ -38,9 +37,7 @@ module OmnipackageAgent
         )
       end
 
-      def run(source_path, job_variables) # rubocop: disable Metrics/AbcSize, Metrics/MethodLength
-        return if terminator&.called?
-
+      def call(source_path, job_variables) # rubocop: disable Metrics/AbcSize, Metrics/MethodLength
         logger.info("starting build for #{distro.name} in #{source_path}, variables: #{job_variables}")
 
         package = build_package(source_path, job_variables)
@@ -48,11 +45,13 @@ module OmnipackageAgent
 
         lock = ::OmnipackageAgent::Build::Lock.new(config: config, key: image_cache.container_name)
 
+        start_time = current_monotonic_time
         success = execute(build_cli(package.mounts, package.commands, lock))
+        total_duration = (current_monotonic_time - start_time).round
         if success
-          logger.info("successfully finished build for #{distro.name}, artefacts: #{package.artefacts}, log: #{@logfile.path}")
+          logger.info("successfully finished build for #{distro.name} in #{total_duration} secs, artefacts: #{package.artefacts}, log: #{@logfile.path}")
         else
-          logger.error("failed build for #{distro.name}")
+          logger.error("failed build for #{distro.name} in #{total_duration} secs")
         end
         ::OmnipackageAgent::Build::Output.new(
           success:      success,
@@ -69,7 +68,7 @@ module OmnipackageAgent
 
       private
 
-      attr_reader :logger, :terminator
+      attr_reader :logger
 
       def build_cli(mounts, commands, lock)
         mount_cli = mounts.map do |from, to|
@@ -95,6 +94,10 @@ module OmnipackageAgent
         else
           raise "distro #{distro} not supported"
         end.new(source_path, job_variables, build_conf, distro, config: config)
+      end
+
+      def current_monotonic_time
+        ::Process.clock_gettime(::Process::CLOCK_MONOTONIC)
       end
     end
   end

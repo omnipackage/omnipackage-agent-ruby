@@ -31,7 +31,7 @@ module OmnipackageAgent
           config:       config,
           logger:       logger,
           terminator:   terminator
-        ).run(source_path, job_variables)
+        ).call(source_path, job_variables)
       end.compact
     end
   end
