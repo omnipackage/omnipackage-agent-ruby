@@ -18,59 +18,61 @@ require 'omnipackage_agent/build/lock'
 module OmnipackageAgent
   class Build
     class Runner
-      attr_reader :subprocess, :build_conf, :distro, :image_cache, :config
-
-      def initialize(build_conf:, config:, logger:, terminator: nil) # rubocop: disable Metrics/MethodLength
-        @build_conf = build_conf
-        @distro = ::OmnipackageAgent::Distro.new(build_conf.fetch(:distro))
-        @log_string = ::StringIO.new
-        @logger = logger.add_outputs(@log_string)
+      def initialize(build_conf:, source_path:, job_variables:, config:, logger:, terminator:) # rubocop: disable Metrics/ParameterLists
         @config = config
+        @log_string = ::StringIO.new
+        @logger = logger.add_outputs(log_string)
         @subprocess = ::OmnipackageAgent::Utils::Subprocess.new(logger: logger, terminator: terminator)
 
-        @image_cache = ::OmnipackageAgent::Build::ImageCache.new(
-          subprocess:     subprocess,
-          config:         config,
-          default_image:  build_conf[:image] || distro.image,
-          distro_name:    distro.name,
-          build_deps:     build_conf.fetch(:build_dependencies)
-        )
+        distro = ::OmnipackageAgent::Distro.new(build_conf.fetch(:distro))
+        @package = build_package(source_path, job_variables, distro, build_conf)
+        @image_cache = build_image_cache(distro, build_conf)
       end
 
-      def call(source_path, job_variables) # rubocop: disable Metrics/AbcSize, Metrics/MethodLength
-        logger.info("starting build for #{distro.name} in #{source_path}, variables: #{job_variables}")
+      def call
+        log_start
 
-        package = build_package(source_path, job_variables)
-        @logfile = ::OmnipackageAgent::Build::Logfile.new(::OmnipackageAgent::Utils::Path.mkpath(package.output_path, 'build.log'))
+        logfile = create_build_log
 
-        lock = ::OmnipackageAgent::Build::Lock.new(config: config, key: image_cache.container_name)
+        result = build(logfile)
+        log_finish(result)
 
-        start_time = current_monotonic_time
-        success = execute(build_cli(package.mounts, package.commands, lock))
-        total_duration = (current_monotonic_time - start_time).round
-        if success
-          logger.info("successfully finished build for #{distro.name} in #{total_duration} secs, artefacts: #{package.artefacts}, log: #{@logfile.path}")
-        else
-          logger.error("failed build for #{distro.name} in #{total_duration} secs")
-        end
-        ::OmnipackageAgent::Build::Output.new(
-          success:      success,
-          artefacts:    package.artefacts.map { |i| ::Pathname.new(i) },
-          build_log:    @logfile.path,
-          build_config: build_conf
-        )
+        result
       ensure
-        @logfile&.write(@log_string.string)
-        @logfile&.close
-        @log_string.rewind
-        @log_string.truncate(0)
+        logfile.write(log_string.string)
+        logfile.close
       end
 
       private
 
-      attr_reader :logger
+      attr_reader :logger, :log_string, :subprocess, :config, :package, :image_cache
 
-      def build_cli(mounts, commands, lock)
+      def log_start
+        logger.info("starting build for #{package.distro} at #{package.source_path}, variables: #{package.job_variables}")
+      end
+
+      def log_finish(result)
+        if result.success
+          logger.info("successfully finished build for #{package.distro} in #{result.total_time}s, artefacts: #{result.artefacts.map(&:to_s)}, log: #{result.build_log}")
+        else
+          logger.error("failed build for #{package.distro} in #{result.total_time}s, log: #{result.build_log}")
+        end
+      end
+
+      def build(logfile) # rubocop: disable Metrics/AbcSize
+        start_time = current_monotonic_time
+        success = execute(build_cli(package.mounts, package.commands))
+
+        ::OmnipackageAgent::Build::Output.new(
+          success:      success,
+          artefacts:    package.artefacts.map { |i| ::Pathname.new(i) },
+          build_log:    logfile.path,
+          build_config: package.build_conf,
+          total_time:   (current_monotonic_time - start_time).round
+        )
+      end
+
+      def build_cli(mounts, commands)
         mount_cli = mounts.map do |from, to|
           "--mount type=bind,source=#{from},target=#{to}"
         end.join(' ')
@@ -83,10 +85,10 @@ module OmnipackageAgent
       def execute(cli)
         subprocess.execute(cli) do |output_line|
           logger.info('container') { output_line }
-        end&.success?
+        end&.success? || false # nil can be in case of termination
       end
 
-      def build_package(source_path, job_variables)
+      def build_package(source_path, job_variables, distro, build_conf)
         if distro.rpm?
           ::OmnipackageAgent::Build::Rpm::Package
         elsif distro.deb?
@@ -98,6 +100,24 @@ module OmnipackageAgent
 
       def current_monotonic_time
         ::Process.clock_gettime(::Process::CLOCK_MONOTONIC)
+      end
+
+      def create_build_log
+        ::OmnipackageAgent::Build::Logfile.new(::OmnipackageAgent::Utils::Path.mkpath(package.output_path, 'build.log'))
+      end
+
+      def lock
+        @lock ||= ::OmnipackageAgent::Build::Lock.new(config: config, key: image_cache.container_name)
+      end
+
+      def build_image_cache(distro, build_conf)
+        ::OmnipackageAgent::Build::ImageCache.new(
+          subprocess:     subprocess,
+          config:         config,
+          default_image:  build_conf.fetch(:image, distro.image),
+          distro_name:    distro.name,
+          build_deps:     build_conf.fetch(:build_dependencies)
+        )
       end
     end
   end

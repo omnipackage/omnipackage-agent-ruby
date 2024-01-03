@@ -30,7 +30,7 @@ module OmnipackageAgent
         @thread = ::Thread.new do
           download_tarball(sources_dir)
           @build_outputs = ::OmnipackageAgent::Build.new(config: config, logger: logger).call(sources_dir, distros: distros, terminator: terminator)
-          upload_artefacts
+          upload_artefacts unless terminator.called?
         rescue ::StandardError => e
           @exception = e
           logger.error("error: #{e}")

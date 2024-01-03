@@ -3,13 +3,14 @@
 module OmnipackageAgent
   class Build
     class Output
-      attr_reader :success, :artefacts, :build_log, :build_config
+      attr_reader :success, :artefacts, :build_log, :build_config, :total_time
 
-      def initialize(success:, artefacts:, build_log:, build_config:)
+      def initialize(success:, artefacts:, build_log:, build_config:, total_time:)
         @success = success
         @artefacts = artefacts
         @build_log = build_log
         @build_config = build_config
+        @total_time = total_time
       end
 
       def distro

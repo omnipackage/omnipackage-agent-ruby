@@ -41,6 +41,10 @@ module OmnipackageAgent
       config.fetch('package_type') == 'deb'
     end
 
+    def to_s
+      name
+    end
+
     private
 
     attr_reader :config
