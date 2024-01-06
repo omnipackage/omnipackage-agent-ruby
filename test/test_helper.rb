@@ -4,3 +4,5 @@ $LOAD_PATH.unshift ::File.expand_path('../lib', __dir__)
 require 'omnipackage_agent'
 
 require 'minitest/autorun'
+
+require 'super_awesome_print'
