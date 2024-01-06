@@ -1,3 +1,5 @@
+[![CI](https://github.com/omnipackage/omnipackage-agent-ruby/actions/workflows/ruby.yml/badge.svg)](https://github.com/omnipackage/omnipackage-agent-ruby/actions/workflows/ruby.yml)
+
 # AgentRb
 
 Welcome to your new gem! In this directory, you'll find the files you need to be able to package up your Ruby library into a gem. Put your Ruby code in the file `lib/agent_rb`. To experiment with that code, run `bin/console` for an interactive prompt.
