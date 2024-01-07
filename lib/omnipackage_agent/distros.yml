@@ -120,14 +120,14 @@ distros:
   image_info_url: 'https://hub.docker.com/_/debian'
 
 - id: 'ubuntu_20.04'
-  name: 'Ubuntu 20.04 LTS'
+  name: 'Ubuntu 20.04'
   image: 'ubuntu:20.04'
   <<: *debian
   arch: x86_64
   image_info_url: 'https://hub.docker.com/_/ubuntu'
 
 - id: 'ubuntu_22.04'
-  name: 'Ubuntu 22.04 LTS'
+  name: 'Ubuntu 22.04'
   image: 'ubuntu:22.04'
   <<: *debian
   arch: x86_64
@@ -147,19 +147,19 @@ distros:
   arch: x86_64
   image_info_url: 'https://hub.docker.com/_/ubuntu'
 
-- id: 'mageia_8'
-  name: 'Mageia 8'
-  image: 'mageia:8'
-  <<: *redhat
-  arch: x86_64
-  image_info_url: 'https://hub.docker.com/_/mageia'
+#- id: 'mageia_8'
+#  name: 'Mageia 8'
+#  image: 'mageia:8'
+#  <<: *redhat
+#  arch: x86_64
+#  image_info_url: 'https://hub.docker.com/_/mageia'
 
-- id: 'mageia_cauldron'
-  name: 'Mageia Cauldron'
-  image: 'mageia:cauldron'
-  <<: *redhat
-  arch: x86_64
-  image_info_url: 'https://hub.docker.com/_/mageia'
+#- id: 'mageia_cauldron'
+#  name: 'Mageia Cauldron'
+#  image: 'mageia:cauldron'
+#  <<: *redhat
+#  arch: x86_64
+#  image_info_url: 'https://hub.docker.com/_/mageia'
 
 - id: 'almalinux_8'
   name: 'AlmaLinux 8'
