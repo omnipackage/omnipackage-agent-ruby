@@ -22,7 +22,7 @@ module OmnipackageAgent
         @config = config
         @log_string = ::StringIO.new
         @logger = logger.add_outputs(log_string)
-        @subprocess = ::OmnipackageAgent::Utils::Subprocess.new(logger: logger, terminator: terminator)
+        @subprocess = ::OmnipackageAgent::Utils::Subprocess.new(logger: @logger, terminator: terminator)
 
         distro = ::OmnipackageAgent::Distro.new(build_conf.fetch(:distro))
         @package = build_package(source_path, job_variables, distro, build_conf)
