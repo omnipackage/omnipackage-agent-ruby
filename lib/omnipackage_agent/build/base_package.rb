@@ -3,15 +3,15 @@
 module OmnipackageAgent
   class Build
     class BasePackage
-      attr_reader :source_path, :job_variables, :build_conf, :distro, :config
+      attr_reader :source_path, :job_variables, :build_conf, :distro, :build_dir
       attr_reader :output_path, :commands, :mounts # set these in setup method
 
-      def initialize(source_path, job_variables, build_conf, distro, config:)
+      def initialize(source_path, job_variables, build_conf, distro, build_dir)
         @source_path = source_path
         @job_variables = job_variables
         @distro = distro
         @build_conf = build_conf
-        @config = config
+        @build_dir = build_dir
         setup
       end
 

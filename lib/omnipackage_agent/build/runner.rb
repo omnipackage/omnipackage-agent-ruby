@@ -77,7 +77,7 @@ module OmnipackageAgent
           "--mount type=bind,source=#{from},target=#{to}"
         end.join(' ')
 
-        <<~CLI
+        <<~CLI.chomp
           #{lock.to_cli} '#{image_cache.rm_cli} ; #{config.container_runtime} run --name #{image_cache.container_name} --entrypoint /bin/sh #{mount_cli} #{image_cache.image} -c "#{commands.join(' && ')}" && #{image_cache.commit_cli}'
         CLI
       end
@@ -95,7 +95,7 @@ module OmnipackageAgent
           ::OmnipackageAgent::Build::Deb::Package
         else
           raise "distro #{distro} not supported"
-        end.new(source_path, job_variables, build_conf, distro, config: config)
+        end.new(source_path, job_variables, build_conf, distro, config.build_dir)
       end
 
       def current_monotonic_time

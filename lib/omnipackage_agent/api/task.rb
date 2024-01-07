@@ -36,7 +36,7 @@ module OmnipackageAgent
           logger.error("error: #{e}")
           logger.debug(e.backtrace.join("\n"))
         ensure
-          ::FileUtils.rm_rf(sources_dir)
+          ::FileUtils.rm_rf(config.build_dir)
           block.call(self)
           freeze
         end

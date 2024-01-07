@@ -22,7 +22,7 @@ module OmnipackageAgent
 
           specfile = ::OmnipackageAgent::Build::Rpm::Specfile.new(::OmnipackageAgent::Utils::Path.mkpath(source_path, specfile_path_template_path))
           rpmbuild_folder_name = "#{specfile.name}-#{distro.name}"
-          rpmbuild_path = ::OmnipackageAgent::Utils::Path.mkpath(config.build_dir, rpmbuild_folder_name)
+          rpmbuild_path = ::OmnipackageAgent::Utils::Path.mkpath(build_dir, rpmbuild_folder_name)
           ::FileUtils.mkdir_p(rpmbuild_path)
           @output_path = rpmbuild_path
 
@@ -30,7 +30,7 @@ module OmnipackageAgent
           specfile_name = "#{source_folder_name}-#{distro.name}.spec"
 
           template_params = build_conf.merge(job_variables).merge(source_folder_name: source_folder_name)
-          specfile.save(::OmnipackageAgent::Utils::Path.mkpath(config.build_dir, rpmbuild_folder_name, specfile_name), template_params)
+          specfile.save(::OmnipackageAgent::Utils::Path.mkpath(build_dir, rpmbuild_folder_name, specfile_name), template_params)
 
           @commands = distro.setup(build_deps) + [
             'rpmdev-setuptree',
