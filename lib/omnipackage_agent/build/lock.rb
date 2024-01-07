@@ -12,7 +12,7 @@ module OmnipackageAgent
       end
 
       def to_cli
-        "flock --verbose --no-fork --timeout #{timeout} #{lockfile} --command"
+        "flock --verbose --timeout #{timeout} #{lockfile} --command"
       end
 
       private
