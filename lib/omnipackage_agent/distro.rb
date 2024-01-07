@@ -8,6 +8,10 @@ module OmnipackageAgent
       def set_distro_configs!(hash)
         @@configs = hash.fetch('distros').each_with_object({}) { |elem, acc| acc[elem['id']] = elem }.freeze
       end
+
+      def exists?(distro)
+        @@configs.key?(distro)
+      end
     end
 
     attr_reader :name
