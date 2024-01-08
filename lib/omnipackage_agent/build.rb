@@ -39,6 +39,8 @@ module OmnipackageAgent
     end
 
     def build_for_distro(distro_build_config, source_path, job_variables)
+      return if terminator&.called?
+
       ::OmnipackageAgent::Build::Runner.new(
         build_conf:    distro_build_config,
         config:        config,
