@@ -38,10 +38,18 @@ module OmnipackageAgent
         logger.error("scheduling error: #{e.message}")
       end
 
-      def state_serialize
+      def state_serialize # rubocop: disable Metrics/AbcSize, Metrics/MethodLength
         mutex.synchronize do
           result = state.to_hash
-          result[:livelog] = state.task&.read_log if state.task
+          if state.task
+            result[:livelog] = state.task.read_log
+            if state.task.build_outputs
+              result[:stats] = {
+                total_time:     state.task.build_outputs.sum(&:total_time),
+                lockwait_time:  state.task.build_outputs.sum(&:lockwait_time)
+              }
+            end
+          end
           result
         end
       end
