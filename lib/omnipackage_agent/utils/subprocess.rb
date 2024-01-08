@@ -14,22 +14,39 @@ module OmnipackageAgent
         @terminator = terminator
       end
 
-      def execute(cli, &block) # rubocop: disable Metrics/MethodLength
+      def execute(cli, timeout_sec: 43_200, term_timeout_sec: 10, &block) # rubocop: disable Metrics/MethodLength
         return if terminator&.called?
 
-        logger.info("starting child process: #{cli}")
         exit_status = nil
         ::Open3.popen2e(cli) do |_stdin, stdout_and_stderr, wait_thr|
-          pid = wait_thr.pid
           terminator&.arm(wait_thr)
-          logger.debug("started child process with pid #{pid}")
+          logger.info("started child process pid #{wait_thr.pid}: #{cli}")
 
           stdout_and_stderr.each(&block) if block
 
+          wait(wait_thr, timeout_sec, term_timeout_sec)
+
           exit_status = wait_thr.value
-          logger.debug("finished child process #{exit_status}")
+          logger.info("finished child process: #{exit_status}")
         end
         exit_status
+      end
+
+      private
+
+      def wait(wait_thr, timeout_sec, term_timeout_sec) # rubocop: disable Metrics/MethodLength
+        ::Timeout.timeout(timeout_sec) do
+          wait_thr.join
+        end
+      rescue ::Timeout::Error
+        ::Process.kill('TERM', wait_thr.pid)
+        begin
+          ::Timeout.timeout(term_timeout_sec) do
+            wait_thr.join
+          end
+        rescue ::Timeout::Error
+          ::Process.kill('KILL', wait_thr.pid)
+        end
       end
     end
   end
