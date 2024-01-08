@@ -15,6 +15,17 @@ module OmnipackageAgent
         "flock --verbose --timeout #{timeout} #{lockfile} --command"
       end
 
+      def extract_wait_time(logstring)
+        logstring.lines.inject(0) do |acc, elem|
+          match = /flock: getting lock took (\d+\.\d+) seconds/.match(elem)
+          if match && match[1]
+            acc + match[1].to_f
+          else
+            acc
+          end
+        end
+      end
+
       private
 
       attr_reader :lockfile, :config, :timeout

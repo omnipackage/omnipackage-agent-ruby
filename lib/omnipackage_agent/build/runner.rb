@@ -68,7 +68,8 @@ module OmnipackageAgent
           artefacts:    package.artefacts.map { |i| ::Pathname.new(i) },
           build_log:    logfile.path,
           build_config: package.build_conf,
-          total_time:   (current_monotonic_time - start_time).round
+          total_time:   (current_monotonic_time - start_time).round,
+          lockwait_time: lock.extract_wait_time(log_string.string)
         )
       end
 
