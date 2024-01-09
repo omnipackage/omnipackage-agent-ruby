@@ -14,11 +14,12 @@ require 'omnipackage_agent/build/output'
 require 'omnipackage_agent/build/rpm/package'
 require 'omnipackage_agent/build/deb/package'
 require 'omnipackage_agent/build/lock'
+require 'omnipackage_agent/build/limits'
 
 module OmnipackageAgent
   class Build
     class Runner
-      def initialize(build_conf:, source_path:, job_variables:, config:, logger:, terminator:) # rubocop: disable Metrics/ParameterLists
+      def initialize(build_conf:, source_path:, job_variables:, config:, logger:, terminator:, limits:) # rubocop: disable Metrics/ParameterLists
         @config = config
         @log_string = ::StringIO.new
         @logger = logger.add_outputs(log_string)
@@ -27,6 +28,7 @@ module OmnipackageAgent
         distro = ::OmnipackageAgent::Distro.new(build_conf.fetch(:distro))
         @package = build_package(source_path, job_variables, distro, build_conf)
         @image_cache = build_image_cache(distro, build_conf)
+        @limits = limits
       end
 
       def call
@@ -45,7 +47,7 @@ module OmnipackageAgent
 
       private
 
-      attr_reader :logger, :log_string, :subprocess, :config, :package, :image_cache
+      attr_reader :logger, :log_string, :subprocess, :config, :package, :image_cache, :limits
 
       def log_start
         logger.info("starting build for #{package.distro} at #{package.source_path}, variables: #{package.job_variables}")
@@ -73,18 +75,18 @@ module OmnipackageAgent
         )
       end
 
-      def build_cli(mounts, commands)
+      def build_cli(mounts, commands) # rubocop: disable Metrics/AbcSize
         mount_cli = mounts.map do |from, to|
           "--mount type=bind,source=#{from},target=#{to}"
         end.join(' ')
 
         <<~CLI.chomp
-          #{lock.to_cli} '#{image_cache.rm_cli} ; #{config.container_runtime} run --name #{image_cache.container_name} --entrypoint /bin/sh #{mount_cli} #{image_cache.image} -c "#{commands.join(' && ')}" && #{image_cache.commit_cli}'
+          #{lock.to_cli} '#{image_cache.rm_cli} ; #{config.container_runtime} run --name #{image_cache.container_name} --entrypoint /bin/sh #{mount_cli} #{limits.to_cli} #{image_cache.image} -c "#{commands.join(' && ')}" && #{image_cache.commit_cli}'
         CLI
       end
 
       def execute(cli)
-        subprocess.execute(cli) do |output_line|
+        subprocess.execute(cli, timeout_sec: limits.execute_timeout) do |output_line|
           logger.info('container') { output_line }
         end&.success? || false # nil can be in case of termination
       end

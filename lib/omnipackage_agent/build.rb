@@ -5,15 +5,17 @@ require 'omnipackage_agent/build/config'
 require 'omnipackage_agent/extract_version'
 require 'omnipackage_agent/distro'
 require 'omnipackage_agent/arch'
+require 'omnipackage_agent/build/limits'
 
 module OmnipackageAgent
   class Build
-    attr_reader :logger, :config, :terminator
+    attr_reader :logger, :config, :terminator, :limits
 
-    def initialize(config:, logger:, terminator: nil)
+    def initialize(config:, logger:, limits: nil, terminator: nil)
       @config = config
       @logger = logger
       @terminator = terminator
+      @limits = limits || ::OmnipackageAgent::Build::Limits.max
     end
 
     def call(source_path, distros: nil)
@@ -47,7 +49,8 @@ module OmnipackageAgent
         logger:        logger,
         terminator:    terminator,
         source_path:   source_path,
-        job_variables: job_variables
+        job_variables: job_variables,
+        limits:        limits
       ).call
     end
   end

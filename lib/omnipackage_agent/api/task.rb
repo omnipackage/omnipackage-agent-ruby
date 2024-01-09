@@ -11,7 +11,7 @@ module OmnipackageAgent
     class Task
       attr_reader :id, :tarball_url, :upload_url, :distros, :downloader, :build_outputs, :exception, :logger, :config
 
-      def initialize(id:, tarball_url:, upload_url:, distros:, downloader:, logger:, config:) # rubocop: disable Metrics/ParameterLists
+      def initialize(id:, tarball_url:, upload_url:, distros:, downloader:, logger:, config:, limits:) # rubocop: disable Metrics/ParameterLists
         @id = id
         @distros = distros
         @tarball_url = tarball_url
@@ -21,6 +21,7 @@ module OmnipackageAgent
         @stdout2 = ::OmnipackageAgent::Logging::Stdout2.new
         @logger = logger.add_outputs(stdout2)
         @terminator = ::OmnipackageAgent::Utils::Terminator.new
+        @limits = limits
       end
 
       def start(&block) # rubocop: disable Metrics/MethodLength, Metrics/AbcSize
