@@ -35,7 +35,7 @@ module OmnipackageAgent
       end
 
       def memtotal
-        (`grep MemTotal /proc/meminfo`.chomp.gsub(/\D/, '').to_i / 1024 * 0.86).round.to_s + 'm' # rubocop: disable Style/StringConcatenation
+        (`grep MemTotal /proc/meminfo`.chomp.gsub(/\D/, '').to_i * 0.86).round.to_s + 'k' # rubocop: disable Style/StringConcatenation
       rescue ::StandardError
         '4096g'
       end
