@@ -26,7 +26,7 @@ module OmnipackageAgent
 
       def to_cli
         <<~CLI.chomp
-          --memory=#{memory} --cpus="#{cpus}" --pids-limit=#{pids}
+          --memory="#{memory}" --cpus="#{cpus}" --pids-limit="#{pids}"
         CLI
       end
     end
