@@ -7,7 +7,7 @@ module OmnipackageAgent
         def deserialize(hash)
           return max unless hash
 
-          max(memory: hash['memory'], cpus: hash['cpus'], pids: hash['pids'], execute_timeout: hash['execute_timeout'])
+          new(memory: hash['memory'], cpus: hash['cpus'], pids: hash['pids'], execute_timeout: hash['execute_timeout'])
         end
 
         def max

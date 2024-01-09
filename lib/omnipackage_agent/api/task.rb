@@ -9,7 +9,7 @@ require 'omnipackage_agent/logging/stdout2'
 module OmnipackageAgent
   module Api
     class Task
-      attr_reader :id, :tarball_url, :upload_url, :distros, :downloader, :build_outputs, :exception, :logger, :config
+      attr_reader :id, :tarball_url, :upload_url, :distros, :downloader, :build_outputs, :exception, :logger, :config, :limits
 
       def initialize(id:, tarball_url:, upload_url:, distros:, downloader:, logger:, config:, limits:) # rubocop: disable Metrics/ParameterLists
         @id = id
@@ -30,7 +30,7 @@ module OmnipackageAgent
 
         @thread = ::Thread.new do
           download_tarball(sources_dir)
-          @build_outputs = ::OmnipackageAgent::Build.new(config: config, logger: logger, terminator: terminator).call(sources_dir, distros: distros)
+          @build_outputs = ::OmnipackageAgent::Build.new(config: config, logger: logger, terminator: terminator, limits: limits).call(sources_dir, distros: distros)
           upload_artefacts unless terminator.called?
         rescue ::StandardError => e
           @exception = e
