@@ -15,7 +15,7 @@ module OmnipackageAgent
       @config = config
       @logger = logger
       @terminator = terminator
-      @limits = limits || ::OmnipackageAgent::Build::Limits.max
+      @limits = limits || ::OmnipackageAgent::Build::Limits.new
     end
 
     def call(source_path, distros: nil)
