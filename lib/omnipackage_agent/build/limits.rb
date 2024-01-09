@@ -43,7 +43,7 @@ module OmnipackageAgent
       def pid_max
         (`cat /proc/sys/kernel/pid_max`.chomp.to_i * 0.86).round.to_s
       rescue ::StandardError
-        '10000'
+        '30000'
       end
     end
   end
