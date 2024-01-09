@@ -29,19 +29,19 @@ module OmnipackageAgent
       private
 
       def nproc
-        [`nproc`.chomp.to_i - 1, 1].max.to_s
+        `nproc`.chomp
       rescue ::StandardError
         '1024'
       end
 
       def memtotal
-        (`grep MemTotal /proc/meminfo`.chomp.gsub(/\D/, '').to_i * 0.86).round.to_s + 'k' # rubocop: disable Style/StringConcatenation
+        (`grep MemTotal /proc/meminfo`.chomp.gsub(/\D/, '').to_i * 0.9).round.to_s + 'k' # rubocop: disable Style/StringConcatenation
       rescue ::StandardError
         '4096g'
       end
 
       def pid_max
-        (`cat /proc/sys/kernel/pid_max`.chomp.to_i * 0.86).round.to_s
+        (`cat /proc/sys/kernel/pid_max`.chomp.to_i * 0.9).round.to_s
       rescue ::StandardError
         '30000'
       end
