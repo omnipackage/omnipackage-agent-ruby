@@ -33,7 +33,7 @@ optparser.parse!(into: options)
 # Dir.chdir(__dir__)
 
 begin
-  config = ::OmnipackageAgent::Config.get(options)
+  config = ::OmnipackageAgent::Config.get(options[:config])
   ::OmnipackageAgent.check_system_packages!
 
   unless options[:build]

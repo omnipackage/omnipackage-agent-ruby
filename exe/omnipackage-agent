@@ -24,8 +24,6 @@ optparser = ::OptionParser.new do |parser|
     puts parser
     exit
   end
-  parser.on('--apihost API_HOST', 'cloud api host url')
-  parser.on('--apikey API_KEY', 'cloud api key')
   parser.on('-c', '--config CONFIG_FILE', 'path to config file')
 end
 optparser.parse!(into: options)
@@ -39,7 +37,7 @@ optparser.parse!(into: options)
 
 begin
   ::OmnipackageAgent.check_system_packages!
-  config = ::OmnipackageAgent::Config.get(options)
+  config = ::OmnipackageAgent::Config.get(options[:config])
   ::OmnipackageAgent.run(config)
 rescue ::StandardError => e
   warn "#{e.class}: #{e.message}"
