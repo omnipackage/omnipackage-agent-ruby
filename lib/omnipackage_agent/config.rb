@@ -17,11 +17,11 @@ module OmnipackageAgent
       private
 
       def load_file(fpath)
-        return {} unless fpath
-
-        content = ::File.read(fpath)
-        yaml = ::ERB.new(content).result
-        ::OmnipackageAgent::Yaml.load(yaml, symbolize_names: true) || {}
+        if fpath
+          content = ::File.read(fpath)
+          yaml = ::ERB.new(content).result
+          ::OmnipackageAgent::Yaml.load(yaml, symbolize_names: true)
+        end || {}
       end
     end
 

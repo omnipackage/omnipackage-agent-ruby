@@ -24,6 +24,10 @@ optparser = ::OptionParser.new do |parser|
     puts parser
     exit
   end
+  parser.on('--print-default-config', 'print to stdout the default config file content that you can use as a starting point') do
+    puts ::File.read(::OmnipackageAgent::Config::DEFAULT_LOCATION)
+    exit
+  end
   parser.on('-c', '--config CONFIG_FILE', 'path to config file')
 end
 optparser.parse!(into: options)
