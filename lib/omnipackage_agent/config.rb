@@ -10,8 +10,8 @@ module OmnipackageAgent
     DEFAULT_LOCATION = ::File.expand_path('../../support/config.yml.example', __dir__)
 
     class << self
-      def get(fpath = nil)
-        new(load_file(DEFAULT_LOCATION).merge(load_file(fpath)))
+      def get(fpath = nil, overrides: {})
+        new(load_file(DEFAULT_LOCATION).merge(load_file(fpath)).merge(overrides))
       end
 
       private
