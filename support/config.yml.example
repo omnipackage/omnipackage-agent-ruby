@@ -1,9 +1,10 @@
 # docker or podman
 container_runtime: podman
 
-# ignored in headless mode
-apikey: '1234'
-apihost: 'http://zenbook:5000'
+# when using as self-hosted agent
+apikey: ''
+apihost: 'https://omnipackage.org'
 
+# these directories must be writable by user under which you run agent
 build_dir: "<%= ::Dir.tmpdir %>/omnipackage-build"
 lockfiles_dir: "<%= ::Dir.tmpdir %>/omnipackage-lock"

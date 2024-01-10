@@ -10,11 +10,18 @@ module OmnipackageAgent
     DEFAULT_LOCATION = ::File.expand_path('../../support/config.yml.example', __dir__)
 
     class << self
-      def get(options = {})
-        fpath = options.delete(:config) || DEFAULT_LOCATION
+      def get(fpath = nil)
+        new(load_file(DEFAULT_LOCATION).merge(load_file(fpath)))
+      end
+
+      private
+
+      def load_file(fpath)
+        return {} unless fpath
+
         content = ::File.read(fpath)
         yaml = ::ERB.new(content).result
-        new(::OmnipackageAgent::Yaml.load(yaml, symbolize_names: true).merge(options))
+        ::OmnipackageAgent::Yaml.load(yaml, symbolize_names: true) || {}
       end
     end
 

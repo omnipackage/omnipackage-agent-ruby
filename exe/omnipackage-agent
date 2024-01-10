@@ -43,7 +43,7 @@ optparser.parse!(into: options)
 
 begin
   ::OmnipackageAgent.check_system_packages!
-  config = ::OmnipackageAgent::Config.get(options)
+  config = ::OmnipackageAgent::Config.get(options[:config])
   ::OmnipackageAgent.run(config)
 rescue ::StandardError => e
   warn "#{e.class}: #{e.message}"
