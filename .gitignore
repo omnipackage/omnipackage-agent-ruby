@@ -9,3 +9,5 @@
 /build-*/
 /test/sample_project/sample_project
 /test/sample_project/*.o
+/config.local.yml
+/oom

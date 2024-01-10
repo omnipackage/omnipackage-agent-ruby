@@ -7,35 +7,46 @@ require 'omnipackage_agent/utils/yaml'
 
 module OmnipackageAgent
   class Config
-    DEFAULT_LOCATION = ::File.expand_path('../../support/config.yml.example', __dir__)
-
     class << self
       def get(options = {})
-        fpath = options.delete(:config) || DEFAULT_LOCATION
-        content = ::File.read(fpath)
-        yaml = ::ERB.new(content).result
-        new(::OmnipackageAgent::Yaml.load(yaml, symbolize_names: true).merge(options))
+        fpath = options.delete(:config)
+        hash = if fpath
+                 yaml = ::ERB.new(::File.read(fpath)).result
+                 ::OmnipackageAgent::Yaml.load(yaml, symbolize_names: true)
+               end || {}
+        hash.merge!(options)
+        new(hash)
       end
     end
 
     ATTRIBUTES = {
-      container_runtime: ::String,
-      apikey: ::String,
-      apihost: ::String,
-      build_dir: ::String,
-      lockfiles_dir: ::String
+      container_runtime:  { type: ::String, default: -> { ::OmnipackageAgent.detect_container_runtime } },
+      apikey:             { type: ::String, default: '' },
+      apihost:            { type: ::String, default: 'https://omnipackage.org' },
+      build_dir:          { type: ::String, default: "#{::Dir.tmpdir}/omnipackage-build" },
+      lockfiles_dir:      { type: ::String, default: "#{::Dir.tmpdir}/omnipackage-lock" }
     }.freeze
 
-    def initialize(hash, attributes = ATTRIBUTES) # rubocop: disable Metrics/MethodLength
-      attributes.each do |a, type|
-        value = hash.fetch(a)
-        if type.is_a?(::Hash)
-          instance_variable_set("@#{a}", self.class.new(value, type))
-        else
-          raise ::TypeError, "attribute #{a}: #{value} must be #{type}, not #{value.class}" unless value.is_a?(type)
+    def initialize(hash, attributes = ATTRIBUTES) # rubocop: disable Metrics/MethodLength, Metrics/AbcSize
+      attributes.each do |a, meta|
+        value = hash.is_a?(::Hash) ? hash[a] : nil
+        if meta.key?(:type)
+          if value.nil?
+            raise ::TypeError, "attribute #{a} does not have default value and must exist" unless meta[:default]
+            value = if meta[:default].is_a?(::Proc)
+                      meta[:default].call
+                    else
+                      meta[:default]
+                    end
+          end
+
+          raise ::TypeError, "attribute #{a}: #{value} must be #{meta[:type]}, not #{value.class}" unless value.is_a?(meta[:type])
 
           instance_variable_set("@#{a}", value)
+        else # nested hash
+          instance_variable_set("@#{a}", self.class.new(value, meta))
         end
+
         self.class.attr_reader(a)
       end
       freeze

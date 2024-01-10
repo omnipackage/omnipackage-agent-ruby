@@ -24,10 +24,6 @@ optparser = ::OptionParser.new do |parser|
     puts parser
     exit
   end
-  parser.on('--show-default-config', 'show default config file location') do
-    puts ::OmnipackageAgent::Config::DEFAULT_LOCATION
-    exit
-  end
   parser.on('--apihost API_HOST', 'cloud api host url')
   parser.on('--apikey API_KEY', 'cloud api key')
   parser.on('-c', '--config CONFIG_FILE', 'path to config file')

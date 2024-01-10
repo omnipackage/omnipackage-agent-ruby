@@ -32,4 +32,8 @@ module OmnipackageAgent
       raise "please install #{name}" unless system("#{cmd} &> /dev/null")
     end
   end
+
+  def detect_container_runtime
+    %w[podman docker].find { |i| system("#{i} -v") } || (raise 'no docker or podman detected, please install one of them or specify container_runtime in config file')
+  end
 end

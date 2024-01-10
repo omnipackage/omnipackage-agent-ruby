@@ -1,9 +1,9 @@
 # docker or podman
-container_runtime: podman
+# container_runtime: podman
 
 # ignored in headless mode
-apikey: '1234'
-apihost: 'http://zenbook:5000'
+# apikey: '1234'
+# apihost: 'https://omnipackage.org'
 
-build_dir: "<%= ::Dir.tmpdir %>/omnipackage-build"
-lockfiles_dir: "<%= ::Dir.tmpdir %>/omnipackage-lock"
+# build_dir: "<%= ::Dir.tmpdir %>/omnipackage-build"
+# lockfiles_dir: "<%= ::Dir.tmpdir %>/omnipackage-lock"
