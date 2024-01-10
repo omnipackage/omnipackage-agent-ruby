@@ -42,6 +42,15 @@ optparser.parse!(into: options)
 begin
   ::OmnipackageAgent.check_system_packages!
   config = ::OmnipackageAgent::Config.get(options[:config])
+  if config.apihost.empty?
+    warn 'you have to specify apihost in the config file'
+    exit(2)
+  end
+  if config.apikey.empty?
+    warn 'you have to specify apikey in the config file'
+    exit(2)
+  end
+
   ::OmnipackageAgent.run(config)
 rescue ::StandardError => e
   warn "#{e.class}: #{e.message}"

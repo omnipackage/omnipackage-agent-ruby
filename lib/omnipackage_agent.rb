@@ -15,11 +15,6 @@ module OmnipackageAgent
   def run(config, logger: ::OmnipackageAgent::Logging::Logger.new)
     logger.info("starting agent #{::OmnipackageAgent::VERSION} with #{config.apihost} mothership, #{ruby_env_info}")
 
-    if config.apikey.empty?
-      logger.fatal('you have to specify apikey in the config file')
-      return
-    end
-
     ::OmnipackageAgent::Api::Connector.new(config: config, logger: logger).join
   end
 
