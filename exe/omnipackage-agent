@@ -46,8 +46,6 @@ begin
 rescue ::StandardError => e
   warn "#{e.class}: #{e.message}"
   warn e.backtrace
-  warn ''
-  warn optparser
   exit(1)
 rescue ::Interrupt
   warn 'quitting...'
