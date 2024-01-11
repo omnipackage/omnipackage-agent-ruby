@@ -11,7 +11,10 @@ module OmnipackageAgent
 
     class << self
       def get(fpath = nil, overrides: {})
-        new(load_file(DEFAULT_LOCATION).merge(load_file(fpath)).merge(overrides))
+        h = load_file(DEFAULT_LOCATION)
+        h.merge!(load_file(fpath))
+        h.merge!(overrides)
+        new(h)
       end
 
       private
