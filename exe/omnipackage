@@ -9,38 +9,86 @@ rescue ::LoadError
 end
 
 require 'optparse'
+require 'pathname'
 
 require 'omnipackage_agent'
 
-options = {}
-optparser = ::OptionParser.new do |parser|
-  parser.banner = "Usage: #{$PROGRAM_NAME} [options]"
+default_build_dir = ::Pathname.new(::Dir.tmpdir).join('omnipackage-headless-build').to_s
 
-  parser.on('-v', '--version', 'show version') do
+subtext = <<HELP
+Available command are:
+  init      creates files required to build your project with OmniPackage
+  build     build the project
+See '#{$PROGRAM_NAME} COMMAND --help' for more information on a specific command.
+HELP
+
+options = {}
+global = ::OptionParser.new do |opts|
+  opts.banner = "Usage: #{$PROGRAM_NAME} [options] [subcommand [options]]"
+  opts.on('-v', '--version', 'show version') do
     puts ::OmnipackageAgent::VERSION
     exit
   end
-  parser.on('-h', '--help', 'show help info') do
-    puts parser
+  opts.on('-h', '--help', 'show help info') do
+    puts opts
     exit
   end
-  parser.on('-b', '--build SOURCE_PATH', 'path to source code that you want to build')
-  parser.on('-c', '--config CONFIG_FILE', 'path to config file')
+  opts.on('-c', '--config CONFIG_FILE', 'path to config file') do |v|
+    options[:config] = v
+  end
+  opts.separator('')
+  opts.separator(subtext)
 end
-optparser.parse!(into: options)
 
-# pp options
-# Dir.chdir(__dir__)
+subcommands = {
+  'init' => ::OptionParser.new do |opts|
+    opts.banner = "Usage: #{$PROGRAM_NAME} init [options] path"
+    #opts.on("-f", "--[no-]force", "force verbosely") do |v|
+    #  options[:force] = v
+    #end
+  end,
+
+  'build' => ::OptionParser.new do |opts|
+    opts.banner = "Usage: #{$PROGRAM_NAME} build [options] path"
+    opts.on('-d', '--build-dir BUILD_DIR', "use this directory as temporary for building instead of default (#{default_build_dir})") do |v|
+      options[:build_dir] = v
+    end
+  end,
+}
+
+global.order!
+command = ::ARGV.shift
+rest = if command
+  subcommands[command].order!
+else
+  []
+end
+
+config = if options[:config]
+  ::OmnipackageAgent::Config.get(options[:config])
+else
+  ::OmnipackageAgent::Config.get(overrides: {
+    build_dir: options[:build_dir] || default_build_dir
+  })
+end
 
 begin
-  config = ::OmnipackageAgent::Config.get(options[:config])
   ::OmnipackageAgent.check_system_packages!
 
-  unless options[:build]
-    warn 'source path required in headless'
-    warn optparser
-    exit(1)
+  case command
+  when 'build'
+    if rest.empty?
+      warn 'you have to specify path'
+      warn subcommands['build']
+      exit(1)
+    end
+    rest.each do |path|
+      pp ::OmnipackageAgent::Build.new(logger: ::OmnipackageAgent::Logging::Logger.new, config: config).call(path)
+    end
+  when 'init'
+  else
   end
+=begin
   results = ::OmnipackageAgent::Build.new(logger: ::OmnipackageAgent::Logging::Logger.new, config: config).call(options[:build])
 
   puts 'Build complete'
@@ -57,8 +105,12 @@ begin
     end
     puts "\n"
   end
+=end
 rescue ::StandardError => e
   warn "#{e.class}: #{e.message}"
   warn e.backtrace
   exit(1)
+rescue ::Interrupt
+  warn 'quitting...'
+  exit(0)
 end
