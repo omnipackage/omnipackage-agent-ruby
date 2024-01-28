@@ -2,7 +2,7 @@
 
 require 'omnipackage_agent/build/runner'
 require 'omnipackage_agent/build/config'
-require 'omnipackage_agent/extract_version'
+require 'omnipackage_agent/build/extract_version'
 require 'omnipackage_agent/distro'
 require 'omnipackage_agent/arch'
 require 'omnipackage_agent/build/limits'
@@ -22,7 +22,7 @@ module OmnipackageAgent
       build_config = ::OmnipackageAgent::Build::Config.new(source_path)
 
       job_variables = {
-        version: ::OmnipackageAgent::ExtractVersion.new(build_config, source_path).call
+        version: ::OmnipackageAgent::Build::ExtractVersion.new(build_config, source_path).call
       }
 
       distros_build_configs(build_config, distros).shuffle.map { |dbc| build_for_distro(dbc, source_path, job_variables) }.compact

@@ -12,6 +12,7 @@ require 'optparse'
 require 'pathname'
 
 require 'omnipackage_agent'
+require 'omnipackage_agent/init/init'
 
 default_build_dir = ::Pathname.new(::Dir.tmpdir).join('omnipackage-headless-build').to_s
 
@@ -86,6 +87,14 @@ begin
       pp ::OmnipackageAgent::Build.new(logger: ::OmnipackageAgent::Logging::Logger.new, config: config).call(path)
     end
   when 'init'
+    if rest.empty?
+      warn 'you have to specify path'
+      warn subcommands['init']
+      exit(1)
+    end
+    rest.each do |path|
+      ::OmnipackageAgent::Init::Init.new(path: path, config: config).call
+    end
   else
   end
 =begin

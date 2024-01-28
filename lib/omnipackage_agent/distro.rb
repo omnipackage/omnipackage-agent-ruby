@@ -53,6 +53,6 @@ module OmnipackageAgent
 
     attr_reader :config
 
-    set_distro_configs!(::OmnipackageAgent::Yaml.load_file(::Pathname.new(__dir__).join('distros.yml')))
+    set_distro_configs!(::OmnipackageAgent::Yaml.load_file(::Pathname.new(__dir__).join('../../support/distros.yml')))
   end
 end
