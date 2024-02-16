@@ -51,8 +51,11 @@ subcommands = {
 
   'build' => ::OptionParser.new do |opts|
     opts.banner = "Usage: #{$PROGRAM_NAME} build [options] path"
-    opts.on('-d', '--build-dir BUILD_DIR', "use this directory as temporary for building instead of default (#{default_build_dir})") do |v|
+    opts.on('-p', '--build-dir BUILD_DIR', "use this directory as temporary for building instead of default (#{default_build_dir})") do |v|
       options[:build_dir] = v
+    end
+    opts.on('-d', '--distros distro1,distro2', "build only for these distros") do |v|
+      options[:distros] = v.split(',')
     end
   end,
 }
@@ -84,7 +87,7 @@ begin
       exit(1)
     end
     rest.each do |path|
-      pp ::OmnipackageAgent::Build.new(logger: ::OmnipackageAgent::Logging::Logger.new, config: config).call(path)
+      pp ::OmnipackageAgent::Build.new(logger: ::OmnipackageAgent::Logging::Logger.new, config: config).call(path, distros: options[:distros])
     end
   when 'init'
     if rest.empty?

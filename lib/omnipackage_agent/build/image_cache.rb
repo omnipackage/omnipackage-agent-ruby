@@ -9,11 +9,11 @@ module OmnipackageAgent
     class ImageCache
       attr_reader :subprocess, :config, :default_image, :container_name
 
-      def initialize(subprocess:, config:, default_image:, distro_name:, build_deps:)
+      def initialize(subprocess:, config:, default_image:, distro_name:, deps:)
         @config = config
         @subprocess = subprocess
         @default_image = default_image
-        @container_name = generate_container_name(distro_name, build_deps)
+        @container_name = generate_container_name(distro_name, deps)
       end
 
       def image
@@ -34,8 +34,8 @@ module OmnipackageAgent
 
       private
 
-      def generate_container_name(distro_name, build_deps)
-        "omnipackage-agent-#{distro_name}-#{::Digest::SHA1.hexdigest(build_deps.sort.join)}"
+      def generate_container_name(distro_name, deps)
+        "omnipackage-agent-#{distro_name}-#{::Digest::SHA1.hexdigest(deps.sort.join)}"
       end
     end
   end

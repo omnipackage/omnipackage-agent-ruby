@@ -31,11 +31,12 @@ module OmnipackageAgent
           debian_folder.save(::OmnipackageAgent::Utils::Path.mkpath(build_path, 'debian'), template_params)
 
           @commands = distro.setup(build_deps) + [
+            before_build_script('/source'),
             'cp -R /source/* /output/build/',
             'cd /output/build',
             'DEB_BUILD_OPTIONS=noddebs dpkg-buildpackage -b -tc'
             # 'rm -rf /output/build/*'
-          ]
+          ].compact
 
           @mounts = {
             source_path.to_s  => '/source',

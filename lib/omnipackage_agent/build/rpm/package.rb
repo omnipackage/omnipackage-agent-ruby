@@ -33,13 +33,14 @@ module OmnipackageAgent
           specfile.save(::OmnipackageAgent::Utils::Path.mkpath(build_dir, rpmbuild_folder_name, specfile_name), template_params)
 
           @commands = distro.setup(build_deps) + [
+            before_build_script('/source'),
             'rpmdev-setuptree',
             "cp -R /source /root/rpmbuild/SOURCES/#{source_folder_name}",
             'cd /root/rpmbuild/SOURCES/',
             "tar -cvzf #{source_folder_name}.tar.gz #{source_folder_name}/",
             "cd /root/rpmbuild/SOURCES/#{source_folder_name}/",
             "QA_RPATHS=$(( 0x0001|0x0010 )) rpmbuild --clean -bb /root/rpmbuild/#{specfile_name}"
-          ]
+          ].compact
 
           @mounts = {
             source_path.to_s    => '/source',

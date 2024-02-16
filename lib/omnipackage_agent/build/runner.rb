@@ -119,8 +119,19 @@ module OmnipackageAgent
           config:         config,
           default_image:  build_conf.fetch(:image, distro.image),
           distro_name:    distro.name,
-          build_deps:     build_conf.fetch(:build_dependencies)
+          deps:           image_cache_deps(build_conf)
         )
+      end
+
+      def image_cache_deps(build_conf)
+        deps = build_conf.fetch(:build_dependencies)
+
+        bbs = package.before_build_script
+        if bbs
+          deps + [::File.exist?(bbs) ? ::File.read(bbs) : bbs]
+        else
+          deps
+        end.freeze
       end
     end
   end

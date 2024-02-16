@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require 'omnipackage_agent/utils/path'
+
 module OmnipackageAgent
   class Build
     class BasePackage
@@ -24,6 +26,17 @@ module OmnipackageAgent
       end
 
       def artefacts
+      end
+
+      def before_build_script(relative_to = source_path)
+        bbs = build_conf[:before_build_script]
+        return unless bbs
+
+        if ::File.exist?(::OmnipackageAgent::Utils::Path.mkpath(source_path, bbs))
+          ::OmnipackageAgent::Utils::Path.mkpath(relative_to, bbs).to_s
+        else
+          bbs
+        end
       end
 
       private
