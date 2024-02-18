@@ -6,93 +6,75 @@ extract_version:
 
 rpm: &rpm
   installable_package_name: 'sample_project'
+  build_dependencies: ['gcc', 'make']
   rpm:
     spec_template: '.omnipackage/sample_project.spec.liquid'
 
 deb: &deb
   installable_package_name: 'sample-project'
+  build_dependencies: ['build-essential']
   deb:
     debian_templates: '.omnipackage/deb'
 
 builds:
 - distro: 'opensuse_15.3'
-  build_dependencies: ['gcc', 'make']
   <<: *rpm
 
 - distro: 'opensuse_15.4'
-  build_dependencies: ['gcc', 'make']
   <<: *rpm
 
 - distro: 'opensuse_15.5'
-  build_dependencies: ['gcc', 'make']
   <<: *rpm
 
 - distro: 'opensuse_tumbleweed'
-  build_dependencies: ['gcc', 'make']
   <<: *rpm
 
 - distro: 'fedora_38'
-  build_dependencies: ['gcc', 'make']
   <<: *rpm
 
 - distro: 'fedora_39'
-  build_dependencies: ['gcc', 'make']
   <<: *rpm
 
 - distro: 'fedora_rawhide'
-  build_dependencies: ['gcc', 'make']
   <<: *rpm
 
 - distro: 'debian_10'
-  build_dependencies: ['gcc', 'make']
   <<: *deb
 
 - distro: 'debian_11'
-  build_dependencies: ['gcc', 'make']
   <<: *deb
 
 - distro: 'debian_12'
-  build_dependencies: ['gcc', 'make']
   <<: *deb
 
 - distro: 'debian_testing'
-  build_dependencies: ['gcc', 'make']
   <<: *deb
 
 - distro: 'debian_unstable'
-  build_dependencies: ['gcc', 'make']
   <<: *deb
 
 - distro: 'ubuntu_20.04'
-  build_dependencies: ['gcc', 'make']
   <<: *deb
 
 - distro: 'ubuntu_22.04'
-  build_dependencies: ['gcc', 'make']
   <<: *deb
 
 - distro: 'ubuntu_23.10'
-  build_dependencies: ['gcc', 'make']
   <<: *deb
 
 - distro: 'ubuntu_23.04'
-  build_dependencies: ['gcc', 'make']
   <<: *deb
 
 - distro: 'almalinux_8'
-  build_dependencies: ['gcc', 'make']
   <<: *rpm
 
 - distro: 'almalinux_9'
-  build_dependencies: ['gcc', 'make']
   <<: *rpm
 
 - distro: 'rockylinux_8'
-  build_dependencies: ['gcc', 'make']
   <<: *rpm
 
 - distro: 'rockylinux_9'
-  build_dependencies: ['gcc', 'make']
   <<: *rpm
 
 #- distro: 'mageia_8'
