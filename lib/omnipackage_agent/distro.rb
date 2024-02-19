@@ -49,6 +49,10 @@ module OmnipackageAgent
       name
     end
 
+    def humanized_name
+      config.fetch('name')
+    end
+
     private
 
     attr_reader :config

@@ -13,6 +13,9 @@ require 'pathname'
 
 require 'omnipackage_agent'
 require 'omnipackage_agent/init/init'
+require 'omnipackage_agent/utils/colorize'
+
+::String.include(::OmnipackageAgent::Utils::Colorize)
 
 default_build_dir = ::Pathname.new(::Dir.tmpdir).join('omnipackage-headless-build').to_s
 
@@ -76,6 +79,17 @@ else
   })
 end
 
+def print_result(path, results)
+  puts "Finished build in #{path}"
+  results.each do |o|
+    if o.success
+      puts "#{o.distro.humanized_name} artefacts: #{o.artefacts.map(&:to_s).join(', ')}".green
+    else
+      puts "#{o.distro.humanized_name} error: #{o.build_log}".red
+    end
+  end
+end
+
 begin
   ::OmnipackageAgent.check_system_packages!
 
@@ -87,7 +101,7 @@ begin
       exit(1)
     end
     rest.each do |path|
-      pp ::OmnipackageAgent::Build.new(logger: ::OmnipackageAgent::Logging::Logger.new, config: config).call(path, distros: options[:distros])
+      print_result(path, ::OmnipackageAgent::Build.new(logger: ::OmnipackageAgent::Logging::Logger.new, config: config).call(path, distros: options[:distros]))
     end
   when 'init'
     if rest.empty?
@@ -100,24 +114,6 @@ begin
     end
   else
   end
-=begin
-  results = ::OmnipackageAgent::Build.new(logger: ::OmnipackageAgent::Logging::Logger.new, config: config).call(options[:build])
-
-  puts 'Build complete'
-  puts "\n"
-  results.each do |o|
-    puts o.distro.name
-    if o.success
-      puts 'Success, artefacts:'
-      o.artefacts.each do |a|
-        puts a
-      end
-    else
-      puts "Error, log: #{o.build_log}"
-    end
-    puts "\n"
-  end
-=end
 rescue ::StandardError => e
   warn "#{e.class}: #{e.message}"
   warn e.backtrace
