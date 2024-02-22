@@ -83,7 +83,7 @@ def print_result(path, results)
   puts "Finished build in #{path}"
   results.each do |o|
     if o.success
-      puts "#{o.distro.humanized_name} artefacts: #{o.artefacts.map(&:to_s).join(', ')}".green
+      puts "#{o.distro.humanized_name} artefacts: #{o.artefacts.map(&:to_s).join(', ')}".light_green
     else
       puts "#{o.distro.humanized_name} error: #{o.build_log}".red
     end

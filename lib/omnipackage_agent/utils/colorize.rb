@@ -15,6 +15,10 @@ module OmnipackageAgent
         colorize(32)
       end
 
+      def light_green
+        colorize(92)
+      end
+
       def yellow
         colorize(33)
       end
