@@ -49,7 +49,7 @@ module OmnipackageAgent
         logger:        logger,
         terminator:    terminator,
         source_path:   source_path,
-        job_variables: job_variables,
+        job_variables: job_variables.merge(current_time_rfc2822: ::Time.now.strftime('%a, %-d %b %Y %T %z')),
         limits:        limits
       ).call
     end
