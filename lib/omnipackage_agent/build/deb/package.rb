@@ -32,7 +32,7 @@ module OmnipackageAgent
 
           @commands = distro.setup(build_deps) + [
             before_build_script('/source'),
-            'cp -R /source/* /output/build/',
+            'cp -R /source/. /output/build/',
             'cd /output/build',
             'DEB_BUILD_OPTIONS=noddebs dpkg-buildpackage -b -tc'
             # 'rm -rf /output/build/*'
