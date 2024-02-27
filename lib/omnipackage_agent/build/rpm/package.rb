@@ -35,6 +35,7 @@ module OmnipackageAgent
           @commands = distro.setup(build_deps) + [
             before_build_script('/source'),
             'rpmdev-setuptree',
+            'rm -rf /root/rpmbuild/SOURCES/*',
             "cp -R /source /root/rpmbuild/SOURCES/#{source_folder_name}",
             'cd /root/rpmbuild/SOURCES/',
             "tar -cvzf #{source_folder_name}.tar.gz #{source_folder_name}/",
