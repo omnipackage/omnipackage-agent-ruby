@@ -26,6 +26,9 @@ builds:
 - distro: 'opensuse_15.5'
   <<: *rpm
 
+- distro: 'opensuse_15.6'
+  <<: *rpm
+
 - distro: 'opensuse_tumbleweed'
   <<: *rpm
 

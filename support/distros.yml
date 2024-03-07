@@ -56,6 +56,13 @@ distros:
   arch: x86_64
   image_info_url: 'https://hub.docker.com/r/opensuse/leap'
 
+- id: 'opensuse_15.6'
+  name: 'openSUSE Leap 15.6'
+  image: 'opensuse/leap:15.6'
+  <<: *opensuse
+  arch: x86_64
+  image_info_url: 'https://hub.docker.com/r/opensuse/leap'
+
 - id: 'opensuse_tumbleweed'
   name: 'openSUSE Tumbleweed'
   image: 'opensuse/tumbleweed'
