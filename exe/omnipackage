@@ -60,6 +60,11 @@ subcommands = {
     opts.on('-d', '--distros distro1,distro2', "build only for these distros") do |v|
       options[:distros] = v.split(',')
     end
+    opts.on('-s', '--secret KEY1="abc"', "specify build-time secret, can be used multiple times to set multiple secrets") do |v|
+      options[:secrets] ||= {}
+      k, v = v.split('=')
+      options[:secrets][k] = v
+    end
   end,
 }
 
@@ -100,8 +105,11 @@ begin
       warn subcommands['build']
       exit(1)
     end
+    logger = ::OmnipackageAgent::Logging::Logger.new
+    secrets = ::OmnipackageAgent::Build::Secrets.deserialize(options[:secrets])
     rest.each do |path|
-      print_result(path, ::OmnipackageAgent::Build.new(logger: ::OmnipackageAgent::Logging::Logger.new, config: config).call(path, distros: options[:distros]))
+      result = ::OmnipackageAgent::Build.new(logger: logger, config: config, secrets: secrets).call(path, distros: options[:distros])
+      print_result(path, result)
     end
   when 'init'
     if rest.empty?
