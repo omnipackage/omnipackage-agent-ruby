@@ -9,9 +9,9 @@ require 'omnipackage_agent/logging/stdout2'
 module OmnipackageAgent
   module Api
     class Task
-      attr_reader :id, :tarball_url, :upload_url, :distros, :downloader, :build_outputs, :exception, :logger, :config, :limits
+      attr_reader :id, :tarball_url, :upload_url, :distros, :downloader, :build_outputs, :exception, :logger, :config, :limits, :secrets
 
-      def initialize(id:, tarball_url:, upload_url:, distros:, downloader:, logger:, config:, limits:) # rubocop: disable Metrics/ParameterLists
+      def initialize(id:, tarball_url:, upload_url:, distros:, downloader:, logger:, config:, limits:, secrets:) # rubocop: disable Metrics/ParameterLists, Metrics/MethodLength
         @id = id
         @distros = distros
         @tarball_url = tarball_url
@@ -22,6 +22,7 @@ module OmnipackageAgent
         @logger = logger.add_outputs(stdout2)
         @terminator = ::OmnipackageAgent::Utils::Terminator.new
         @limits = limits
+        @secrets = secrets
       end
 
       def start(&block) # rubocop: disable Metrics/MethodLength, Metrics/AbcSize
@@ -30,7 +31,13 @@ module OmnipackageAgent
 
         @thread = ::Thread.new do
           download_tarball(sources_dir)
-          @build_outputs = ::OmnipackageAgent::Build.new(config: config, logger: logger, terminator: terminator, limits: limits).call(sources_dir, distros: distros)
+          @build_outputs = ::OmnipackageAgent::Build.new(
+            config: config,
+            logger: logger,
+            terminator: terminator,
+            limits: limits,
+            secrets: secrets
+          ).call(sources_dir, distros: distros)
           upload_artefacts unless terminator.called?
         rescue ::StandardError => e
           @exception = e

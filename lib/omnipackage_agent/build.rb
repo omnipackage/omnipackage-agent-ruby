@@ -6,23 +6,26 @@ require 'omnipackage_agent/build/extract_version'
 require 'omnipackage_agent/distro'
 require 'omnipackage_agent/arch'
 require 'omnipackage_agent/build/limits'
+require 'omnipackage_agent/build/secrets'
 
 module OmnipackageAgent
   class Build
-    attr_reader :logger, :config, :terminator, :limits
+    attr_reader :logger, :config, :terminator, :limits, :secrets
 
-    def initialize(config:, logger:, limits: nil, terminator: nil)
+    def initialize(config:, logger:, limits: nil, terminator: nil, secrets: nil)
       @config = config
       @logger = logger
       @terminator = terminator
       @limits = limits || ::OmnipackageAgent::Build::Limits.new
+      @secrets = secrets || ::OmnipackageAgent::Build::Secrets.new
     end
 
     def call(source_path, distros: nil)
       build_config = ::OmnipackageAgent::Build::Config.new(source_path)
 
       job_variables = {
-        version: ::OmnipackageAgent::Build::ExtractVersion.new(build_config, source_path).call
+        version: ::OmnipackageAgent::Build::ExtractVersion.new(build_config, source_path).call,
+        secrets: secrets
       }
 
       distros_build_configs(build_config, distros).shuffle.map { |dbc| build_for_distro(dbc, source_path, job_variables) }.compact

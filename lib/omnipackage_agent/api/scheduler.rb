@@ -4,6 +4,7 @@ require 'omnipackage_agent/api/state'
 require 'omnipackage_agent/api/task'
 require 'omnipackage_agent/build/output'
 require 'omnipackage_agent/build/limits'
+require 'omnipackage_agent/build/secrets'
 
 module OmnipackageAgent
   module Api
@@ -26,6 +27,7 @@ module OmnipackageAgent
             upload_url:   payload.fetch('task').fetch('upload_artefact_url'),
             distros:      payload.fetch('task').fetch('distros'),
             limits:       ::OmnipackageAgent::Build::Limits.deserialize(payload.fetch('task')['limits']),
+            secrets:      ::OmnipackageAgent::Build::Secrets.deserialize(payload.fetch('task')['secrets']),
             downloader:   downloader,
             logger:       logger,
             config:       config
