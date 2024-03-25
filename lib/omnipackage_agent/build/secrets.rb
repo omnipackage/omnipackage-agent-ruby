@@ -22,6 +22,10 @@ module OmnipackageAgent
       def inspect
         "{#{keys.join(',')}}"
       end
+
+      def to_env_cli
+        map { |k, v| "-e #{k}='#{v}'" }.join(' ')
+      end
     end
   end
 end

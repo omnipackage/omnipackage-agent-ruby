@@ -16,6 +16,10 @@ module OmnipackageAgent
       def add_outputs(*outputs)
         self.class.new(outputs: @outputs + outputs, formatter: formatter)
       end
+
+      def add_filters(*filters)
+        self.class.new(outputs: @outputs, formatter: formatter.add_filters(filters))
+      end
     end
   end
 end

@@ -22,7 +22,7 @@ module OmnipackageAgent
       def initialize(build_conf:, source_path:, job_variables:, config:, logger:, terminator:, limits:) # rubocop: disable Metrics/ParameterLists
         @config = config
         @log_string = ::StringIO.new
-        @logger = logger.add_outputs(log_string)
+        @logger = logger.add_outputs(log_string).add_filters(*job_variables[:secrets].values)
         @subprocess = ::OmnipackageAgent::Utils::Subprocess.new(logger: @logger, terminator: terminator)
 
         distro = ::OmnipackageAgent::Distro.new(build_conf.fetch(:distro))
@@ -80,8 +80,10 @@ module OmnipackageAgent
           "--mount type=bind,source=#{from},target=#{to}"
         end.join(' ')
 
+        env_cli = package.job_variables[:secrets].to_env_cli
+
         <<~CLI.chomp
-          #{lock.to_cli} '#{image_cache.rm_cli} ; #{config.container_runtime} run --name #{image_cache.container_name} --entrypoint /bin/sh #{mount_cli} #{limits.to_cli} #{image_cache.image} -c "#{commands.join(' && ')}" && #{image_cache.commit_cli}'
+          #{lock.to_cli} '#{image_cache.rm_cli} ; #{config.container_runtime} run --name #{image_cache.container_name} --entrypoint /bin/sh #{mount_cli} #{limits.to_cli} #{env_cli} #{image_cache.image} -c "#{commands.join(' && ')}" && #{image_cache.commit_cli}'
         CLI
       end
 
