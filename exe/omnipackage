@@ -12,7 +12,7 @@ require 'optparse'
 require 'pathname'
 
 require 'omnipackage_agent'
-require 'omnipackage_agent/init/init'
+require 'omnipackage_agent/init'
 require 'omnipackage_agent/utils/colorize'
 
 ::String.include(::OmnipackageAgent::Utils::Colorize)
@@ -118,7 +118,7 @@ begin
       exit(1)
     end
     rest.each do |path|
-      ::OmnipackageAgent::Init::Init.new(path: path, config: config).call
+      ::OmnipackageAgent::Init.new(path: path, config: config).call
     end
   else
   end
