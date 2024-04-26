@@ -1,5 +1,5 @@
 # docker or podman
-container_runtime: podman
+container_runtime: docker
 
 # when using as self-hosted agent
 apikey: ''

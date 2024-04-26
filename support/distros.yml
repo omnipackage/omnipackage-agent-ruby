@@ -154,6 +154,13 @@ distros:
   arch: x86_64
   image_info_url: 'https://hub.docker.com/_/ubuntu'
 
+- id: 'ubuntu_24.04'
+  name: 'Ubuntu 24.04'
+  image: 'ubuntu:24.04'
+  <<: *debian
+  arch: x86_64
+  image_info_url: 'https://hub.docker.com/_/ubuntu'
+
 #- id: 'mageia_8'
 #  name: 'Mageia 8'
 #  image: 'mageia:8'
