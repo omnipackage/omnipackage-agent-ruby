@@ -83,10 +83,11 @@ builds:
 - distro: 'rockylinux_9'
   <<: *rpm
 
-#- distro: 'mageia_8'
-#  build_dependencies: ['gcc', 'make']
-#  <<: *rpm
+- distro: 'mageia_8'
+  <<: *rpm
 
-#- distro: 'mageia_cauldron'
-#  build_dependencies: ['gcc', 'make']
-#  <<: *rpm
+- distro: 'mageia_9'
+  <<: *rpm
+
+- distro: 'mageia_cauldron'
+  <<: *rpm
