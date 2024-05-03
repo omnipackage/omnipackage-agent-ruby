@@ -10,6 +10,7 @@ end
 
 require 'optparse'
 require 'pathname'
+require 'fileutils'
 
 require 'omnipackage_agent'
 require 'omnipackage_agent/init'
@@ -66,6 +67,13 @@ subcommands = {
       options[:secrets][k] = v
     end
   end,
+
+  'portal' => ::OptionParser.new do |opts|
+    opts.banner = "Usage: #{$PROGRAM_NAME} portal [options] distro"
+    opts.on('-p', '--build-dir BUILD_DIR', "use this directory as temporary for building instead of default (#{default_build_dir})") do |v|
+      options[:build_dir] = v
+    end
+  end,
 }
 
 global.order!
@@ -120,6 +128,16 @@ begin
     rest.each do |path|
       ::OmnipackageAgent::Init.new(path: path, config: config).call
     end
+  when 'portal'
+    distro = rest[0]
+    if distro.nil?
+      warn 'you have to specify distro'
+      warn subcommands['portal']
+      exit(1)
+    end
+    distro = ::OmnipackageAgent::Distro.new(distro)
+    ::FileUtils.mkdir_p(config.build_dir)
+    system("#{config.container_runtime} run -it --rm --mount type=bind,source=#{config.build_dir},target=/portal,readonly #{distro.image}")
   else
   end
 rescue ::StandardError => e
