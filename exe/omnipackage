@@ -10,10 +10,10 @@ end
 
 require 'optparse'
 require 'pathname'
-require 'fileutils'
 
 require 'omnipackage_agent'
 require 'omnipackage_agent/init'
+require 'omnipackage_agent/portal'
 require 'omnipackage_agent/utils/colorize'
 
 ::String.include(::OmnipackageAgent::Utils::Colorize)
@@ -135,9 +135,7 @@ begin
       warn subcommands['portal']
       exit(1)
     end
-    distro = ::OmnipackageAgent::Distro.new(distro)
-    ::FileUtils.mkdir_p(config.build_dir)
-    system("#{config.container_runtime} run -it --rm --mount type=bind,source=#{config.build_dir},target=/portal,readonly #{distro.image}")
+    ::OmnipackageAgent::Portal.new(config: config).call(distro)
   else
   end
 rescue ::StandardError => e
