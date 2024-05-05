@@ -16,6 +16,8 @@ module OmnipackageAgent
         case config.fetch(:provider)
         when 'file'
           file
+        when 'static'
+          config.fetch(:static).fetch(:version)
         else
           raise "version provider '#{config.fetch(:provider)}' not supported"
         end

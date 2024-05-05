@@ -5,13 +5,13 @@ extract_version:
     regex: 'VERSION "(.+)"'
 
 rpm: &rpm
-  installable_package_name: 'sample_project'
+  installable_package_name: '<%= installable_package_name %>'
   build_dependencies: ['gcc', 'make']
   rpm:
     spec_template: '.omnipackage/specfile.spec.liquid'
 
 deb: &deb
-  installable_package_name: 'sample-project'
+  installable_package_name: '<%= installable_package_name %>'
   build_dependencies: ['build-essential']
   deb:
     debian_templates: '.omnipackage/deb'
@@ -80,10 +80,11 @@ builds:
 - distro: 'rockylinux_9'
   <<: *rpm
 
-#- distro: 'mageia_8'
-#  build_dependencies: ['gcc', 'make']
-#  <<: *rpm
+- distro: 'mageia_8'
+  <<: *rpm
 
-#- distro: 'mageia_cauldron'
-#  build_dependencies: ['gcc', 'make']
-#  <<: *rpm
+- distro: 'mageia_9'
+  <<: *rpm
+
+- distro: 'mageia_cauldron'
+  <<: *rpm
