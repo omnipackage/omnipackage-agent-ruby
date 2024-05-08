@@ -50,10 +50,10 @@ module OmnipackageAgent
 
         attr_reader :apikey
 
-        def build_http(uri, read_timeout: 600, write_timeout: 10)
+        def build_http(uri, read_timeout: 1800, write_timeout: 120)
           http = ::Net::HTTP.new(uri.host, uri.port)
-          http.open_timeout = 10
-          http.ssl_timeout = 10
+          http.open_timeout = 120
+          http.ssl_timeout = 120
           http.read_timeout = read_timeout
           http.write_timeout = write_timeout
           http.set_debug_output($stdout) if @debug

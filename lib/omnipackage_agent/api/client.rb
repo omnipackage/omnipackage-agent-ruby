@@ -42,10 +42,10 @@ module OmnipackageAgent
 
       def build_http
         http = ::Net::HTTP.new(uri.host, uri.port)
-        http.open_timeout = 120
-        http.ssl_timeout = 120
-        http.read_timeout = 1800
-        http.write_timeout = 120
+        http.open_timeout = 60
+        http.ssl_timeout = 60
+        http.read_timeout = 600
+        http.write_timeout = 60
         http.set_debug_output($stdout) if @debug
         http.use_ssl = uri.scheme == 'https'
         http
