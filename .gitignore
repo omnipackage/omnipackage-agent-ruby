@@ -11,3 +11,4 @@
 /test/sample_project/*.o
 /config.local.yml
 /oom
+/config.production.yml
