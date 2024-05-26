@@ -25,11 +25,11 @@ module OmnipackageAgent
       def write(*args)
         clear if length > max_length
 
-        mutex.synchronize { super(*args) }
+        mutex.synchronize { super }
       end
 
       def read(*args)
-        mutex.synchronize { super(*args) }
+        mutex.synchronize { super }
       end
 
       def close
@@ -41,7 +41,7 @@ module OmnipackageAgent
       end
 
       def truncate(*args)
-        mutex.synchronize { super(*args) }
+        mutex.synchronize { super }
       end
 
       private

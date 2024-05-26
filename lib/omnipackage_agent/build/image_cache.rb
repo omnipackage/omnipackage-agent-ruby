@@ -7,16 +7,19 @@ require 'omnipackage_agent/utils/subprocess'
 module OmnipackageAgent
   class Build
     class ImageCache
-      attr_reader :subprocess, :config, :default_image, :container_name
+      attr_reader :subprocess, :config, :default_image, :container_name, :enabled
 
       def initialize(subprocess:, config:, default_image:, distro_name:, deps:)
         @config = config
         @subprocess = subprocess
         @default_image = default_image
         @container_name = generate_container_name(distro_name, deps)
+        @enabled = config.image_cache_enable
       end
 
       def image
+        return default_image unless enabled
+
         if subprocess.execute("#{config.container_runtime} image inspect #{container_name}")&.success?
           container_name
         else

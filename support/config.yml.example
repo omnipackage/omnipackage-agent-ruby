@@ -8,3 +8,6 @@ apihost: 'https://web.omnipackage.org'
 # these directories must be writeable by user under which you run agent
 build_dir: "<%= ::Dir.tmpdir %>/omnipackage-build"
 lockfiles_dir: "<%= ::Dir.tmpdir %>/omnipackage-lock"
+
+# optionally enable image cache to reduce subsequent build time in expense of storage space
+image_cache_enable: false

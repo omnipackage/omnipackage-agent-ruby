@@ -75,16 +75,22 @@ module OmnipackageAgent
         )
       end
 
-      def build_cli(mounts, commands) # rubocop: disable Metrics/AbcSize
+      def build_cli(mounts, commands) # rubocop: disable Metrics/AbcSize, Metrics/MethodLength
         mount_cli = mounts.map do |from, to|
           "--mount type=bind,source=#{from},target=#{to}"
         end.join(' ')
 
         env_cli = package.job_variables[:secrets].to_env_cli
 
-        <<~CLI.chomp
-          #{lock.to_cli} '#{image_cache.rm_cli} ; #{config.container_runtime} run --name #{image_cache.container_name} --entrypoint /bin/sh #{mount_cli} #{limits.to_cli} #{env_cli} #{image_cache.image} -c "#{commands.join(' && ')}" && #{image_cache.commit_cli}'
-        CLI
+        if image_cache.enabled
+          <<~CLI.chomp
+            #{lock.to_cli} '#{image_cache.rm_cli} ; #{config.container_runtime} run --name #{image_cache.container_name} --entrypoint /bin/sh #{mount_cli} #{limits.to_cli} #{env_cli} #{image_cache.image} -c "#{commands.join(' && ')}" && #{image_cache.commit_cli}'
+          CLI
+        else
+          <<~CLI.chomp
+            #{lock.to_cli} '#{config.container_runtime} run --rm --entrypoint /bin/sh #{mount_cli} #{limits.to_cli} #{env_cli} #{image_cache.image} -c "#{commands.join(' && ')}"'
+          CLI
+        end
       end
 
       def execute(cli)
