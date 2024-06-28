@@ -12,7 +12,7 @@ GEM
     json (2.7.2)
     language_server-protocol (3.17.0.3)
     method_source (1.1.0)
-    minitest (5.23.1)
+    minitest (5.24.0)
     parallel (1.25.1)
     parser (3.3.3.0)
       ast (~> 2.4.1)
@@ -25,7 +25,7 @@ GEM
     rake (13.2.1)
     readline-ext (0.2.0)
     regexp_parser (2.9.2)
-    rexml (3.3.0)
+    rexml (3.3.1)
       strscan
     rubocop (1.64.1)
       json (~> 2.3)

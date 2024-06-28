@@ -88,7 +88,7 @@ module OmnipackageAgent
           CLI
         else
           <<~CLI.chomp
-            #{lock.to_cli} '#{config.container_runtime} run --rm --entrypoint /bin/sh #{mount_cli} #{limits.to_cli} #{env_cli} #{image_cache.image} -c "#{commands.join(' && ')}"'
+            #{config.container_runtime} run --rm --entrypoint /bin/sh #{mount_cli} #{limits.to_cli} #{env_cli} #{image_cache.image} -c "#{commands.join(' && ')}"
           CLI
         end
       end
