@@ -4,7 +4,7 @@ require 'test_helper'
 
 class TestAgent < ::Minitest::Test
   def test_build_sample_project # rubocop: disable Metrics/AbcSize, Metrics/MethodLength, Metrics/PerceivedComplexity, Metrics/CyclomaticComplexity
-    logger = ::OmnipackageAgent::Logging::Logger.new(outputs: [])
+    logger = ::OmnipackageAgent::Logging::Logger.new(outputs: [$stdout])
     config = ::OmnipackageAgent::Config.get
 
     result = ::OmnipackageAgent::Build.new(logger: logger, config: config).call(::File.expand_path('sample_project', __dir__))

@@ -1,0 +1,8 @@
+*~
+*.gem
+*.swp
+pkg
+*.rbc
+.rvmrc
+.bundle
+.byebug_history

@@ -1,6 +1,9 @@
 # frozen_string_literal: true
 
-$LOAD_PATH.unshift ::File.expand_path('../vendor/liquid-5.4.0/lib', __dir__)
+def __load_vendor_gem__(gem)
+  $LOAD_PATH.unshift ::File.expand_path("../vendor/#{gem}/lib", __dir__)
+end
+__load_vendor_gem__('liquid-5.5.1-fork')
 
 require 'omnipackage_agent/version'
 require 'omnipackage_agent/arch'
