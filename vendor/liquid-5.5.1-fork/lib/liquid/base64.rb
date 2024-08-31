@@ -183,8 +183,6 @@
 #
 module Base64
 
-  VERSION = "0.2.0"
-
   module_function
 
   # Returns a string containing the RFC-2045-compliant \Base64-encoding of +bin+.
