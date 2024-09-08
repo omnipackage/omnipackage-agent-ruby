@@ -41,7 +41,7 @@ module OmnipackageAgent
           payload['data'] = ::File.open(filepath)
           request = ::Net::HTTP::Post.new(uri, headers)
           request.set_form(payload, 'multipart/form-data')
-          build_http(uri, read_timeout: 10, write_timeout: 600).request(request) do |response|
+          build_http(uri, read_timeout: 30, write_timeout: 1800).request(request) do |response|
             raise "upload error: #{response}" if response.code != '200'
           end
         end
