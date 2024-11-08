@@ -6,7 +6,7 @@ opensuse: &opensuse
   setup_repo:
   - 'zypper --non-interactive install -y createrepo_c'
   install_steps:
-  - 'zypper addrepo %{url}/%{project_safe_name}.repo'
+  - 'zypper addrepo %{url}/%{project_slug}.repo'
   - 'zypper refresh'
   - 'zypper install %{installable_package_name}'
 
@@ -19,8 +19,8 @@ debian: &debian
   - 'DEBIAN_FRONTEND=noninteractive apt-get update'
   - 'DEBIAN_FRONTEND=noninteractive apt-get -y install dpkg-dev'
   install_steps:
-  - "echo 'deb %{url} stable/' | sudo tee /etc/apt/sources.list.d/omnipackage_%{project_safe_name}.list"
-  - "curl -fsSL %{url}/stable/Release.key | gpg --dearmor | sudo tee /etc/apt/trusted.gpg.d/omnipackage_%{project_safe_name}.gpg > /dev/null"
+  - "echo 'deb %{url} stable/' | sudo tee /etc/apt/sources.list.d/omnipackage_%{project_slug}.list"
+  - "curl -fsSL %{url}/stable/Release.key | gpg --dearmor | sudo tee /etc/apt/trusted.gpg.d/omnipackage_%{project_slug}.gpg > /dev/null"
   - "sudo apt update"
   - "sudo apt install %{installable_package_name}"
 
@@ -31,7 +31,7 @@ redhat: &redhat
   setup_repo:
   - 'dnf install -y --allowerasing createrepo rpm-sign'
   install_steps:
-  - "curl -o /etc/yum.repos.d/%{project_safe_name}.repo %{url}/%{project_safe_name}.repo"
+  - "curl -o /etc/yum.repos.d/%{project_slug}.repo %{url}/%{project_slug}.repo"
   - "dnf install %{installable_package_name}"
 
 distros:
@@ -87,6 +87,13 @@ distros:
 - id: 'fedora_40'
   name: 'Fedora 40'
   image: 'fedora:40'
+  <<: *redhat
+  arch: x86_64
+  image_info_url: 'https://hub.docker.com/_/fedora'
+
+- id: 'fedora_41'
+  name: 'Fedora 41'
+  image: 'fedora:41'
   <<: *redhat
   arch: x86_64
   image_info_url: 'https://hub.docker.com/_/fedora'
