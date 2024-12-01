@@ -17,7 +17,7 @@ module OmnipackageAgent
 
       def extract_wait_time(logstring)
         logstring.lines.inject(0) do |acc, elem|
-          match = /flock: getting lock took (\d+\.\d+) seconds/.match(elem)
+          match = /flock: getting lock took (\d+\.\d+) seconds/.match(elem.unpack('C*').pack('U*'))
           if match && match[1]
             acc + match[1].to_f
           else
