@@ -1,0 +1,39 @@
+Name:       omnipackage-agent
+Version:    {{ version }}
+Release:    1%{?dist}
+Summary:    OmniPackage agent for both standalone and client-server modes
+License:    MIT
+URL:        https://omnipackage.org/
+Source0:    {{ source_folder_name }}.tar.gz
+
+{% if runtime_dependencies.size > 0 %}
+Requires: {{ runtime_dependencies | join: ', ' }}
+{% endif %}
+
+%define debug_package %{nil}
+%define _build_id_links none
+
+%description
+OmniPackage agent for both standalone and client-server modes
+
+
+%prep
+%setup -q
+
+
+%build
+
+
+%install
+chmod +x .omnipackage/install.sh
+.omnipackage/install.sh %{buildroot}
+
+
+%files
+%attr(755, root, root) /usr/libexec/omnipackage-agent-ruby/
+%attr(755, root, root) /usr/bin/omnipackage
+%attr(755, root, root) /usr/bin/omnipackage-agent
+
+%changelog
+* Sat Dec 28 2024 Oleg Antonyan <oleg@omnipackage.org>
+- First release

@@ -1,0 +1,12 @@
+[Unit]
+Description=OmniPackage agent %i
+After=network.target
+
+[Service]
+Type=simple
+ExecStart=/usr/libexec/omnipackage-agent-ruby/exe/omnipackage-agent -c /etc/omnipackage-agent/%i.config.yml
+RestartSec=30
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target

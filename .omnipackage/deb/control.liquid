@@ -1,0 +1,12 @@
+Source: omnipackage-agent
+Section: devel
+Priority: optional
+Maintainer: Oleg Antonyan <oleg@omnipackage.org>
+Build-Depends: debhelper (>= 8.0.0), {{ build_dependencies | join: ', ' }}
+Standards-Version: 3.9.4
+Homepage: https://omnipackage.org
+
+Package: omnipackage-agent
+Architecture: all
+Depends: ${shlibs:Depends}, ${misc:Depends}, {{ runtime_dependencies | join: ', ' }}
+Description: OmniPackage agent for both standalone and client-server modes
