@@ -43,6 +43,9 @@ builds:
 - distro: 'fedora_40'
   <<: *rpm
 
+- distro: 'fedora_41'
+  <<: *rpm
+
 - distro: 'fedora_rawhide'
   <<: *rpm
 
