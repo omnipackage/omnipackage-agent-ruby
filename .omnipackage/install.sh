@@ -13,8 +13,3 @@ cp -R $(ls -I ".omnipackage" -I ".gitignore" -I ".ruby-version" -I "node_modules
 
 ln -s $LIBDIR/exe/omnipackage $BUILDROOT$BINDIR
 ln -s $LIBDIR/exe/omnipackage-agent $BUILDROOT$BINDIR
-
-
-echo "******"
-ls -latrh $BUILDROOT
-echo "******"
