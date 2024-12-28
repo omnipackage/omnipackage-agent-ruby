@@ -5,10 +5,8 @@ Summary:    OmniPackage agent for both standalone and client-server modes
 License:    MIT
 URL:        https://omnipackage.org/
 Source0:    {{ source_folder_name }}.tar.gz
-
-{% if runtime_dependencies.size > 0 %}
 Requires: {{ runtime_dependencies | join: ', ' }}
-{% endif %}
+
 
 %define debug_package %{nil}
 %define _build_id_links none
