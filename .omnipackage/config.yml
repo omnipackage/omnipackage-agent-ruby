@@ -21,15 +21,27 @@ deb: &deb
 builds:
 - distro: 'opensuse_15.3'
   <<: *rpm
+  build_dependencies: ['gcc', 'make', 'libopenssl-devel', 'libyaml-devel', 'zlib-devel', 'libffi-devel', 'gmp-devel']
+  runtime_dependencies: ['tar', 'xz', '(docker or podman)']
+  before_build_script: '.omnipackage/install_ruby.sh'
 
 - distro: 'opensuse_15.4'
   <<: *rpm
+  build_dependencies: ['gcc', 'make', 'libopenssl-devel', 'libyaml-devel', 'zlib-devel', 'libffi-devel', 'gmp-devel']
+  runtime_dependencies: ['tar', 'xz', '(docker or podman)']
+  before_build_script: '.omnipackage/install_ruby.sh'
 
 - distro: 'opensuse_15.5'
   <<: *rpm
+  build_dependencies: ['gcc', 'make', 'libopenssl-devel', 'libyaml-devel', 'zlib-devel', 'libffi-devel', 'gmp-devel']
+  runtime_dependencies: ['tar', 'xz', '(docker or podman)']
+  before_build_script: '.omnipackage/install_ruby.sh'
 
 - distro: 'opensuse_15.6'
   <<: *rpm
+  build_dependencies: ['gcc', 'make', 'libopenssl-devel', 'libyaml-devel', 'zlib-devel', 'libffi-devel', 'gmp-devel']
+  runtime_dependencies: ['tar', 'xz', '(docker or podman)']
+  before_build_script: '.omnipackage/install_ruby.sh'
 
 - distro: 'opensuse_tumbleweed'
   <<: *rpm
