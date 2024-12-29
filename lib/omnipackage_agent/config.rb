@@ -64,7 +64,7 @@ module OmnipackageAgent
 
     def auto_detect_container_runtime
       possibilities = %w[podman docker]
-      possibilities.find { |cmd| system("#{cmd} &> /dev/null") } || (raise "you have to install #{possibilities.join(' or ')}")
+      possibilities.find { |cmd| system("#{cmd} --version &> /dev/null") } || (raise "you have to install #{possibilities.join(' or ')}")
     end
   end
 end

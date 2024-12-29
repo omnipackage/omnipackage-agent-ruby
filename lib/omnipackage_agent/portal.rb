@@ -16,7 +16,11 @@ module OmnipackageAgent
 
     def call(distro_name)
       distro = ::OmnipackageAgent::Distro.new(distro_name)
-      system("#{config.container_runtime} run -it --rm --mount type=bind,source=#{config.build_dir},target=#{mountpoint},readonly -w #{mountpoint} #{distro.image}")
+      cli = "#{config.container_runtime} run -it --rm --mount type=bind,source=#{config.build_dir},target=#{mountpoint},readonly -w #{mountpoint} #{distro.image}"
+      puts '-----'
+      puts cli
+      puts '-----'
+      system(cli)
     end
   end
 end
