@@ -37,7 +37,7 @@ module OmnipackageAgent
       image_cache_enable: [::TrueClass, ::FalseClass]
     }.freeze
 
-    def initialize(hash, attributes = ATTRIBUTES) # rubocop: disable Metrics/MethodLength, Metrics/AbcSize, Metrics/PerceivedComplexity
+    def initialize(hash, attributes = ATTRIBUTES) # rubocop: disable Metrics/MethodLength, Metrics/AbcSize, Metrics/PerceivedComplexity, Metrics/CyclomaticComplexity
       attributes.each do |a, type|
         value = hash[a]
         if type.is_a?(::Hash)
@@ -49,11 +49,22 @@ module OmnipackageAgent
             raise ::TypeError, "attribute #{a}: #{value} must be #{type}, not #{value.class}" unless value.is_a?(type)
           end
 
-          instance_variable_set("@#{a}", value)
+          if a == :container_runtime && value == 'auto'
+            instance_variable_set("@#{a}", auto_detect_container_runtime)
+          else
+            instance_variable_set("@#{a}", value)
+          end
         end
         self.class.attr_reader(a)
       end
       freeze
+    end
+
+    private
+
+    def auto_detect_container_runtime
+      possibilities = %w[podman docker]
+      possibilities.find { |cmd| system("#{cmd} &> /dev/null") } || (raise "you have to install #{possibilities.join(' or ')}")
     end
   end
 end

@@ -1,5 +1,6 @@
-# docker or podman
-container_runtime: podman
+# podman, docker or auto
+# auto will select whichever is available
+container_runtime: auto
 
 # when using as self-hosted agent
 apikey: ''
