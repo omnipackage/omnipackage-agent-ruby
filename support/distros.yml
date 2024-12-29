@@ -6,7 +6,7 @@ opensuse: &opensuse
   setup_repo:
   - 'zypper --non-interactive install -y createrepo_c'
   install_steps:
-  - 'zypper addrepo %{url}/%{project_slug}.repo'
+  - 'zypper addrepo --refresh %{url}/%{project_slug}.repo'
   - 'zypper refresh'
   - 'zypper install %{installable_package_name}'
 
