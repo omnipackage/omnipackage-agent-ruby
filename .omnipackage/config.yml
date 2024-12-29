@@ -49,6 +49,12 @@ builds:
 - distro: 'fedora_rawhide'
   <<: *rpm
 
+- distro: 'debian_10'
+  <<: *deb
+  build_dependencies: ['gcc', 'make', 'libssl-dev', 'libyaml-dev', 'zlib1g-dev', 'libffi-dev', 'libgmp-dev']
+  runtime_dependencies: ['tar', 'xz-utils', 'docker | podman']
+  before_build_script: '.omnipackage/install_ruby.sh'
+
 - distro: 'debian_11'
   <<: *deb
 
