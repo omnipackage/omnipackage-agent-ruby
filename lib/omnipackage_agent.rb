@@ -32,7 +32,7 @@ module OmnipackageAgent
                   else
                     [b, "#{b} --version"]
                   end
-      raise "please install #{name}" unless system("#{cmd} &> /dev/null")
+      raise "please install #{name}" unless system(cmd)
     end
   end
 end
