@@ -90,18 +90,27 @@ builds:
 
 - distro: 'almalinux_8'
   <<: *rpm
+  build_dependencies: ['gcc', 'make', 'openssl-devel', 'zlib-devel', 'libffi-devel', 'gmp-devel']
+  runtime_dependencies: ['tar', 'xz', '(docker or podman)']
+  before_build_script: '.omnipackage/install_ruby_rh8.sh'
 
 - distro: 'almalinux_9'
   <<: *rpm
 
 - distro: 'rockylinux_8'
   <<: *rpm
+  build_dependencies: ['gcc', 'make', 'openssl-devel', 'zlib-devel', 'libffi-devel', 'gmp-devel']
+  runtime_dependencies: ['tar', 'xz', '(docker or podman)']
+  before_build_script: '.omnipackage/install_ruby_rh8.sh'
 
 - distro: 'rockylinux_9'
   <<: *rpm
 
 - distro: 'mageia_8'
   <<: *rpm
+  build_dependencies: ['gcc', 'make', 'lib64openssl-devel', 'lib64zlib-devel', 'lib64ffi-devel', 'lib64gmp-devel', 'lib64yaml-devel']
+  runtime_dependencies: ['tar', 'xz', '(docker or podman)']
+  before_build_script: '.omnipackage/install_ruby.sh'
 
 - distro: 'mageia_9'
   <<: *rpm

@@ -40,7 +40,7 @@ module OmnipackageAgent
             'cd /root/rpmbuild/SOURCES/',
             "tar -cvzf #{source_folder_name}.tar.gz #{source_folder_name}/",
             "cd /root/rpmbuild/SOURCES/#{source_folder_name}/",
-            "QA_RPATHS=$(( 0x0001|0x0010 )) rpmbuild --clean -bb /root/rpmbuild/#{specfile_name}"
+            "QA_RPATHS=$(( 0x0001|0x0010|0x0002|0x0004|0x0008|0x0020 )) rpmbuild --clean -bb /root/rpmbuild/#{specfile_name}"
           ].compact
 
           @mounts = {
