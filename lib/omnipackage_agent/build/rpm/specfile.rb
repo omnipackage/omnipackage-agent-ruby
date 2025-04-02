@@ -6,9 +6,6 @@ module OmnipackageAgent
   class Build
     module Rpm
       class Specfile < ::OmnipackageAgent::Utils::Template
-        def name
-          /[Nn]ame:(.+)/.match(template)[1].strip
-        end
       end
     end
   end

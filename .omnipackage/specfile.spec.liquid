@@ -1,7 +1,7 @@
-Name:       omnipackage-agent
+Name:       {{ package_name }}
 Version:    {{ version }}
 Release:    1%{?dist}
-Summary:    OmniPackage agent for both standalone and client-server modes
+Summary:    {{ description }}
 License:    MIT
 URL:        https://omnipackage.org/
 Source0:    {{ source_folder_name }}.tar.gz
@@ -12,7 +12,7 @@ Requires: {{ runtime_dependencies | join: ', ' }}
 %define _build_id_links none
 
 %description
-OmniPackage agent for both standalone and client-server modes
+{{ descroption }}
 
 
 %prep

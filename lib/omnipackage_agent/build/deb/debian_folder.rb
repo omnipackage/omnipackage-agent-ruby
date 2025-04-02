@@ -17,18 +17,6 @@ module OmnipackageAgent
           @debian_folder_path = debian_folder_path
         end
 
-        def name
-          file = if ::File.exist?(mkpath_rel("control#{template_ext}"))
-                   ::File.read(mkpath_rel("control#{template_ext}"))
-                 elsif ::File.exist?(mkpath_rel('control'))
-                   ::File.read(mkpath_rel('control'))
-                 else
-                   raise "no control file in #{debian_folder_path}"
-                 end
-
-          /[Ss]ource:(.+)/.match(file)[1].strip
-        end
-
         def render(params_hash) # rubocop: disable Metrics/AbcSize
           ::Dir.foreach(debian_folder_path).each_with_object({}) do |fname, result_hash|
             next if ['.', '..'].include?(fname)

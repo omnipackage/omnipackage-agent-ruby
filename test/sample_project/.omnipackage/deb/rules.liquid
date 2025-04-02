@@ -3,7 +3,7 @@
 # Be carefull, this is a Makefile, so the indents are tabs and not spaces!
 # -*- makefile -*-
 
-export DESTROOT=$(CURDIR)/debian/sample-project
+export DESTROOT=$(CURDIR)/debian/{{ package_name }}
 export DH_VERBOSE=1
 
 %:

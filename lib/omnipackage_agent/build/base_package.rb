@@ -28,6 +28,10 @@ module OmnipackageAgent
       def artefacts
       end
 
+      def name
+        build_conf.fetch(:package_name)
+      end
+
       def before_build_script(relative_to = source_path)
         bbs = build_conf[:before_build_script]
         return unless bbs

@@ -20,7 +20,7 @@ module OmnipackageAgent
         def setup # rubocop: disable Metrics/MethodLength, Metrics/AbcSize
           debian_folder_template_path = build_conf.fetch(:deb).fetch(:debian_templates)
           debian_folder = ::OmnipackageAgent::Build::Deb::DebianFolder.new(::OmnipackageAgent::Utils::Path.mkpath(source_path, debian_folder_template_path))
-          build_folder_name = "#{debian_folder.name}-#{distro.name}"
+          build_folder_name = "#{name}-#{distro.name}"
 
           build_path = ::OmnipackageAgent::Utils::Path.mkpath(build_dir, build_folder_name, 'build')
           @output_path = ::OmnipackageAgent::Utils::Path.mkpath(build_dir, build_folder_name, 'output')

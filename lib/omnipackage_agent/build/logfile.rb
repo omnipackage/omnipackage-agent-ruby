@@ -8,7 +8,7 @@ module OmnipackageAgent
       attr_reader :file, :path
 
       def initialize(path)
-        ::FileUtils.rm(path) if ::File.exist?(path)
+        ::FileUtils.rm_f(path)
         @path = path
         @file = ::File.open(path, 'a+')
         at_exit { close }
