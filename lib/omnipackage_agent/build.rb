@@ -20,8 +20,8 @@ module OmnipackageAgent
       @secrets = secrets || ::OmnipackageAgent::Build::Secrets.new
     end
 
-    def call(source_path, distros: nil)
-      build_config = ::OmnipackageAgent::Build::Config.new(source_path)
+    def call(source_path, distros: nil, build_config_path: nil)
+      build_config = ::OmnipackageAgent::Build::Config.new(source_path, build_config_path: build_config_path)
 
       job_variables = {
         version: ::OmnipackageAgent::Build::ExtractVersion.new(build_config, source_path).call,

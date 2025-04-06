@@ -66,6 +66,9 @@ subcommands = {
       k, v = v.split('=')
       options[:secrets][k] = v
     end
+    opts.on('-b', '--build-config BUILD_CONFIG_PATH', "override default path to .omnipackage/config.yml") do |v|
+      options[:build_config_path] = build_config_path
+    end
   end,
 
   'portal' => ::OptionParser.new do |opts|
@@ -116,7 +119,11 @@ begin
     logger = ::OmnipackageAgent::Logging::Logger.new
     secrets = ::OmnipackageAgent::Build::Secrets.deserialize(options[:secrets])
     rest.each do |path|
-      result = ::OmnipackageAgent::Build.new(logger: logger, config: config, secrets: secrets).call(path, distros: options[:distros])
+      result = ::OmnipackageAgent::Build.new(
+        logger: logger,
+        config: config,
+        secrets: secrets
+      ).call(path, distros: options[:distros], build_config_path: options[:build_config_path])
       print_result(path, result)
     end
   when 'init'

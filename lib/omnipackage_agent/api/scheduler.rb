@@ -22,15 +22,16 @@ module OmnipackageAgent
         case # rubocop: disable Style/EmptyCaseCondition
         when state.idle? && payload['command'] == 'start'
           task = ::OmnipackageAgent::Api::Task.new(
-            id:           payload.fetch('task').fetch('id'),
-            tarball_url:  payload.fetch('task').fetch('sources_tarball_url'),
-            upload_url:   payload.fetch('task').fetch('upload_artefact_url'),
-            distros:      payload.fetch('task').fetch('distros'),
-            limits:       ::OmnipackageAgent::Build::Limits.deserialize(payload.fetch('task')['limits']),
-            secrets:      ::OmnipackageAgent::Build::Secrets.deserialize(payload.fetch('task')['secrets']),
-            downloader:   downloader,
-            logger:       logger,
-            config:       config
+            id:                 payload.fetch('task').fetch('id'),
+            tarball_url:        payload.fetch('task').fetch('sources_tarball_url'),
+            upload_url:         payload.fetch('task').fetch('upload_artefact_url'),
+            distros:            payload.fetch('task').fetch('distros'),
+            build_config_path:  payload.fetch('task').fetch('build_config_path', nil),
+            limits:             ::OmnipackageAgent::Build::Limits.deserialize(payload.fetch('task')['limits']),
+            secrets:            ::OmnipackageAgent::Build::Secrets.deserialize(payload.fetch('task')['secrets']),
+            downloader:         downloader,
+            logger:             logger,
+            config:             config
           )
           start!(task)
         when state.busy? && payload['command'] == 'stop'
