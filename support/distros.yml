@@ -8,7 +8,7 @@ opensuse: &opensuse
   install_steps:
   - 'zypper addrepo --refresh %{url}/%{project_slug}.repo'
   - 'zypper refresh'
-  - 'zypper install %{installable_package_name}'
+  - 'zypper install %{package_name}'
 
 debian: &debian
   package_type: 'deb'
@@ -17,12 +17,12 @@ debian: &debian
   - 'DEBIAN_FRONTEND=noninteractive apt-get install -y build-essential debhelper %{build_dependencies}'
   setup_repo:
   - 'DEBIAN_FRONTEND=noninteractive apt-get update'
-  - 'DEBIAN_FRONTEND=noninteractive apt-get -y install dpkg-dev'
+  - 'DEBIAN_FRONTEND=noninteractive apt-get -y install dpkg-dev gpg'
   install_steps:
   - "echo 'deb %{url} stable/' | sudo tee /etc/apt/sources.list.d/omnipackage_%{project_slug}.list"
   - "curl -fsSL %{url}/stable/Release.key | gpg --dearmor | sudo tee /etc/apt/trusted.gpg.d/omnipackage_%{project_slug}.gpg > /dev/null"
   - "sudo apt update"
-  - "sudo apt install %{installable_package_name}"
+  - "sudo apt install %{package_name}"
 
 redhat: &redhat
   package_type: 'rpm'
@@ -32,7 +32,7 @@ redhat: &redhat
   - 'dnf install -y --allowerasing createrepo rpm-sign'
   install_steps:
   - "curl -o /etc/yum.repos.d/%{project_slug}.repo %{url}/%{project_slug}.repo"
-  - "dnf install %{installable_package_name}"
+  - "dnf install %{package_name}"
 
 distros:
 - id: 'opensuse_15.3'
@@ -94,6 +94,13 @@ distros:
 - id: 'fedora_41'
   name: 'Fedora 41'
   image: 'fedora:41'
+  <<: *redhat
+  arch: x86_64
+  image_info_url: 'https://hub.docker.com/_/fedora'
+
+- id: 'fedora_42'
+  name: 'Fedora 42'
+  image: 'fedora:42'
   <<: *redhat
   arch: x86_64
   image_info_url: 'https://hub.docker.com/_/fedora'
@@ -206,6 +213,13 @@ distros:
 - id: 'almalinux_9'
   name: 'AlmaLinux 9'
   image: 'almalinux:9'
+  <<: *redhat
+  arch: x86_64
+  image_info_url: 'https://hub.docker.com/_/almalinux'
+
+- id: 'almalinux_10'
+  name: 'AlmaLinux 10'
+  image: 'almalinux:10'
   <<: *redhat
   arch: x86_64
   image_info_url: 'https://hub.docker.com/_/almalinux'

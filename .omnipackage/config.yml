@@ -64,6 +64,9 @@ builds:
 - distro: 'fedora_41'
   <<: *rpm
 
+- distro: 'fedora_42'
+  <<: *rpm
+
 - distro: 'fedora_rawhide'
   <<: *rpm
 
@@ -101,6 +104,9 @@ builds:
   before_build_script: '.omnipackage/install_ruby_rh8.sh'
 
 - distro: 'almalinux_9'
+  <<: *rpm
+
+- distro: 'almalinux_10'
   <<: *rpm
 
 - distro: 'rockylinux_8'
