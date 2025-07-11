@@ -182,13 +182,6 @@ distros:
   arch: x86_64
   image_info_url: 'https://hub.docker.com/_/ubuntu'
 
-- id: 'mageia_8'
-  name: 'Mageia 8'
-  image: 'mageia:8'
-  <<: *redhat
-  arch: x86_64
-  image_info_url: 'https://hub.docker.com/_/mageia'
-
 - id: 'mageia_9'
   name: 'Mageia 9'
   image: 'mageia:9'
