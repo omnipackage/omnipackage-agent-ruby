@@ -97,6 +97,9 @@ builds:
 - distro: 'ubuntu_24.04'
   <<: *deb
 
+- distro: 'ubuntu_25.04'
+  <<: *deb
+
 - distro: 'almalinux_8'
   <<: *rpm
   build_dependencies: ['gcc', 'make', 'openssl-devel', 'zlib-devel', 'libffi-devel', 'gmp-devel']
