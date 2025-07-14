@@ -29,7 +29,7 @@ redhat: &redhat
   setup:
   - 'dnf install -y --allowerasing rpmdevtools tar %{build_dependencies}'
   setup_repo:
-  - 'dnf install -y --allowerasing createrepo rpm-sign'
+  - 'dnf install -y --allowerasing createrepo rpm-sign gpg'
   install_steps:
   - "curl -o /etc/yum.repos.d/%{project_slug}.repo %{url}/%{project_slug}.repo"
   - "dnf install %{package_name}"
@@ -118,6 +118,7 @@ distros:
   <<: *debian
   arch: x86_64
   image_info_url: 'https://hub.docker.com/_/debian'
+  deprecated: 'Official support ended in <a href="https://endoflife.date/debian" target="_blank">September 2020</a>. Repositories stopped working in July 2025'
 
 - id: 'debian_11'
   name: 'Debian 11'
@@ -178,6 +179,13 @@ distros:
 - id: 'ubuntu_24.04'
   name: 'Ubuntu 24.04'
   image: 'ubuntu:24.04'
+  <<: *debian
+  arch: x86_64
+  image_info_url: 'https://hub.docker.com/_/ubuntu'
+
+- id: 'ubuntu_25.04'
+  name: 'Ubuntu 25.04'
+  image: 'ubuntu:25.04'
   <<: *debian
   arch: x86_64
   image_info_url: 'https://hub.docker.com/_/ubuntu'
