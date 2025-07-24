@@ -34,6 +34,11 @@ global = ::OptionParser.new do |opts|
     puts ::OmnipackageAgent::VERSION
     exit
   end
+  opts.on('-x', '--check', 'check system dependencies') do
+    ::OmnipackageAgent.check_system_packages!
+    puts 'ok'
+    exit
+  end
   opts.on('-h', '--help', 'show help info') do
     puts opts
     exit

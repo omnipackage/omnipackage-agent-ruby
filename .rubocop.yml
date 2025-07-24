@@ -57,3 +57,6 @@ Lint/SuppressedException:
 
 Metrics/BlockLength:
   Enabled: false
+
+Naming/PredicateMethod:
+  Enabled: false
