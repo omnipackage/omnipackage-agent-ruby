@@ -17,4 +17,4 @@ Or just clone this repo and run  `exe/omnipackage` or `exe/omnipackage-agent` di
 
 ## Usage
 
-Refer to the [docs.omnipackage.org](https://docs.omnipackage.org/)
+Refer to [docs.omnipackage.org](https://docs.omnipackage.org/)
