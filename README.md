@@ -1,4 +1,5 @@
 [![CI](https://github.com/omnipackage/omnipackage-agent-ruby/actions/workflows/ruby.yml/badge.svg)](https://github.com/omnipackage/omnipackage-agent-ruby/actions/workflows/ruby.yml)
+[![OmniPackage repositories badge](https://repositories.omnipackage.org/oleg/omnipackage-agent/omnipackage-agent.svg)](https://web.omnipackage.org/oleg/omnipackage-agent)
 
 # OmniPackage agent
 
