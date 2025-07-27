@@ -10,6 +10,7 @@ jobs:
       - uses: actions/checkout@v4
       - uses: ruby/setup-ruby@v1
         with:
+          ruby-version: '3.4'
           bundler-cache: true
       - run: bin/setup
       - run: bundle exec rubocop -DP
@@ -45,6 +46,7 @@ jobs:
       - uses: actions/checkout@v4
       - uses: ruby/setup-ruby@v1
         with:
+          ruby-version: '3.4'
           bundler-cache: true
       - run: bin/setup
       - run: bundle exec rake integration_test
