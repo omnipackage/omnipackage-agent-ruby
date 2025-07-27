@@ -65,6 +65,10 @@ module OmnipackageAgent
       config.fetch('name')
     end
 
+    def deprecated
+      config.fetch('deprecated', nil)
+    end
+
     private
 
     attr_reader :config

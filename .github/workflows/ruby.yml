@@ -33,7 +33,9 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
-
-      - run: |
-          docker version
-          docker info
+      - uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: '3.4'
+          bundler-cache: true
+      - run: bin/setup
+      - run: bundle exec rake test

@@ -4,11 +4,20 @@ require_relative 'integration_test_helper'
 
 class TestBuildSampleProject < ::Minitest::Test
   %w[podman docker].each do |container_runtime|
+    next unless system("#{container_runtime} --version > /dev/null 2>&1")
+
     ::OmnipackageAgent::Distro.each do |distro|
+      next if distro.deprecated
+
       define_method("test_#{distro}_#{container_runtime}") do
         build_sample_project(container_runtime, [distro.name])
       end
     end
+  end
+
+  def test_auto_detect_container_runtime
+    cmd = ::OmnipackageAgent::Config.get.container_runtime
+    assert system("#{cmd} --version > /dev/null 2>&1")
   end
 
   private
