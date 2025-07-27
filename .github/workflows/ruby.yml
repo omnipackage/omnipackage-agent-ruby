@@ -1,26 +1,21 @@
-name: "CI"
+name: CI
 
-on:
-  push:
-    branches: [ "master" ]
-  pull_request:
-    branches: [ "master" ]
+on: [push, pull_request]
 
 jobs:
-  lint:
+  test:
     runs-on: ubuntu-latest
 
+    strategy:
+      fail-fast: false
+      matrix:
+        ruby-version: ['3.1', '3.2', '3.3', '3.4']
+
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
-
-      - name: Install Ruby and gems
-        uses: ruby/setup-ruby@v1
+      - uses: actions/checkout@v4
+      - uses: ruby/setup-ruby@v1
         with:
-          ruby-version: "3.1"
-
-      - name: Bundle install
-        run: bundle install
-
-      - name: Rubocop
-        run: bundle exec rubocop -DP
+          ruby-version: ${{ matrix.ruby-version }}
+      - run: bundle install
+      - run: bundle exec rubocop -DP
+      - run: bundle exec rake test
