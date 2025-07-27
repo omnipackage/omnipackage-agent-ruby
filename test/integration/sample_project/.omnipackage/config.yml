@@ -47,9 +47,6 @@ builds:
 - distro: 'fedora_rawhide'
   <<: *rpm
 
-- distro: 'debian_10'
-  <<: *deb
-
 - distro: 'debian_11'
   <<: *deb
 
@@ -81,9 +78,6 @@ builds:
   <<: *rpm
 
 - distro: 'rockylinux_9'
-  <<: *rpm
-
-- distro: 'mageia_8'
   <<: *rpm
 
 - distro: 'mageia_9'

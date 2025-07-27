@@ -8,6 +8,7 @@ gemspec
 gem 'minitest'
 gem 'pry'
 gem 'rake'
+gem 'reline'
 gem 'rubocop'
 gem 'rubocop-minitest'
 gem 'rubocop-rake'

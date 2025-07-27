@@ -4,6 +4,7 @@ def __load_vendor_gem__(gem)
   $LOAD_PATH.unshift ::File.expand_path("../vendor/#{gem}/lib", __dir__)
 end
 __load_vendor_gem__('liquid-5.5.1-fork')
+__load_vendor_gem__('logger-1.7.0') if ::Gem::Version.new(RUBY_VERSION) >= ::Gem::Version.new('3.4')
 
 require 'omnipackage_agent/version'
 require 'omnipackage_agent/arch'
