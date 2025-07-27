@@ -6,6 +6,7 @@ source 'https://rubygems.org'
 gemspec
 
 gem 'minitest'
+gem 'minitest-fail-fast'
 gem 'pry'
 gem 'rake'
 gem 'reline'

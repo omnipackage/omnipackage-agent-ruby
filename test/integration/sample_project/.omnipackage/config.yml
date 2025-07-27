@@ -68,6 +68,9 @@ builds:
 - distro: 'ubuntu_22.04'
   <<: *deb
 
+- distro: 'ubuntu_23.04'
+  <<: *deb
+
 - distro: 'ubuntu_24.04'
   <<: *deb
 

@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require 'test_helper'
+require_relative 'integration_test_helper'
 
 class TestBuildSampleProject < ::Minitest::Test
   %w[podman docker].each do |container_runtime|
@@ -15,16 +15,17 @@ class TestBuildSampleProject < ::Minitest::Test
 
   def build_sample_project(container_runtime, distros) # rubocop: disable Metrics/AbcSize, Metrics/MethodLength, Metrics/PerceivedComplexity, Metrics/CyclomaticComplexity
     logger = if ::ENV['VERBOSE']
-      ::OmnipackageAgent::Logging::Logger.new(outputs: [$stdout])
-    else
-      ::OmnipackageAgent::Logging::Logger.new(outputs: [])
-    end
+               ::OmnipackageAgent::Logging::Logger.new(outputs: [$stdout])
+             else
+               ::OmnipackageAgent::Logging::Logger.new(outputs: [])
+             end
     config = ::OmnipackageAgent::Config.get(overrides: {
-      container_runtime: container_runtime,
+                                              container_runtime: container_runtime,
       build_dir: "#{::Dir.tmpdir}/omnipackage-integration-test-build-#{container_runtime}"
-    })
+                                            })
     # puts "starting #{distros.join(', ')} in #{container_runtime}"
     result = ::OmnipackageAgent::Build.new(logger: logger, config: config).call(::File.expand_path('sample_project', __dir__), distros: distros)
+
     assert_equal distros.size, result.size, "missing #{distros} result"
     # puts ' -- BUILD RESULTS -- '
     # pp result

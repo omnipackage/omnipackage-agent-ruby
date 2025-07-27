@@ -8,6 +8,6 @@ describe ::OmnipackageAgent do
   end
 
   it 'has default distros config' do
-    assert ::OmnipackageAgent::Distro.exists?('opensuse_tumbleweed')
+    assert_operator ::OmnipackageAgent::Distro.to_a.size, :>, 20
   end
 end
