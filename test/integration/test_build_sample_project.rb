@@ -3,9 +3,19 @@
 require 'test_helper'
 
 class TestBuildSampleProject < ::Minitest::Test
-  def test_build_sample_project # rubocop: disable Metrics/AbcSize, Metrics/MethodLength, Metrics/PerceivedComplexity, Metrics/CyclomaticComplexity
+  def test_podman
+    build_sample_project('podman')
+  end
+
+  def test_docker
+    build_sample_project('docker')
+  end
+
+  private
+
+  def build_sample_project(container_runtime) # rubocop: disable Metrics/AbcSize, Metrics/MethodLength, Metrics/PerceivedComplexity, Metrics/CyclomaticComplexity
     logger = ::OmnipackageAgent::Logging::Logger.new(outputs: [$stdout])
-    config = ::OmnipackageAgent::Config.get
+    config = ::OmnipackageAgent::Config.get(overrides: { container_runtime: container_runtime })
 
     result = ::OmnipackageAgent::Build.new(logger: logger, config: config).call(::File.expand_path('sample_project', __dir__))
     # puts ' -- BUILD RESULTS -- '
