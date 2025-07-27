@@ -38,4 +38,4 @@ jobs:
           ruby-version: '3.4'
           bundler-cache: true
       - run: bin/setup
-      - run: bundle exec rake test
+      - run: bundle exec rake integration_test
