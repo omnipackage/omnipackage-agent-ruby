@@ -55,7 +55,7 @@ module OmnipackageAgent
             instance_variable_set("@#{a}", value)
           end
         end
-        self.class.attr_reader(a)
+        self.class.attr_reader(a) unless respond_to?(a)
       end
       freeze
     end

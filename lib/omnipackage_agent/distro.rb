@@ -5,12 +5,24 @@ require 'omnipackage_agent/utils/yaml'
 module OmnipackageAgent
   class Distro
     class << self
+      include ::Enumerable
+
       def set_distro_configs!(hash)
         @@configs = hash.fetch('distros').each_with_object({}) { |elem, acc| acc[elem['id']] = elem }.freeze
       end
 
       def exists?(distro)
         @@configs.key?(distro)
+      end
+
+      def each(&block)
+        if block
+          @@configs.each_key { |distro| block.call(new(distro)) }
+        else
+          ::Enumerator.new do |y|
+            @@configs.each_key { |distro| y << new(distro) }
+          end
+        end
       end
     end
 

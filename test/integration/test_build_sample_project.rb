@@ -3,21 +3,29 @@
 require 'test_helper'
 
 class TestBuildSampleProject < ::Minitest::Test
-  def test_podman
-    build_sample_project('podman')
-  end
-
-  def test_docker
-    build_sample_project('docker')
+  %w[podman docker].each do |container_runtime|
+    ::OmnipackageAgent::Distro.each do |distro|
+      define_method("test_#{distro}_#{container_runtime}") do
+        build_sample_project(container_runtime, [distro.name])
+      end
+    end
   end
 
   private
 
-  def build_sample_project(container_runtime) # rubocop: disable Metrics/AbcSize, Metrics/MethodLength, Metrics/PerceivedComplexity, Metrics/CyclomaticComplexity
-    logger = ::OmnipackageAgent::Logging::Logger.new(outputs: [$stdout])
-    config = ::OmnipackageAgent::Config.get(overrides: { container_runtime: container_runtime })
-
-    result = ::OmnipackageAgent::Build.new(logger: logger, config: config).call(::File.expand_path('sample_project', __dir__))
+  def build_sample_project(container_runtime, distros) # rubocop: disable Metrics/AbcSize, Metrics/MethodLength, Metrics/PerceivedComplexity, Metrics/CyclomaticComplexity
+    logger = if ::ENV['VERBOSE']
+      ::OmnipackageAgent::Logging::Logger.new(outputs: [$stdout])
+    else
+      ::OmnipackageAgent::Logging::Logger.new(outputs: [])
+    end
+    config = ::OmnipackageAgent::Config.get(overrides: {
+      container_runtime: container_runtime,
+      build_dir: "#{::Dir.tmpdir}/omnipackage-integration-test-build-#{container_runtime}"
+    })
+    # puts "starting #{distros.join(', ')} in #{container_runtime}"
+    result = ::OmnipackageAgent::Build.new(logger: logger, config: config).call(::File.expand_path('sample_project', __dir__), distros: distros)
+    assert_equal distros.size, result.size, "missing #{distros} result"
     # puts ' -- BUILD RESULTS -- '
     # pp result
     # puts ' -- ENDOF BUILD RESULTS -- '
@@ -62,6 +70,7 @@ class TestBuildSampleProject < ::Minitest::Test
 
       assert success, lines.join('|') # rubocop: disable Minitest/AssertWithExpectedArgument
       assert_equal 'alive 1.3.5', lines[-1]
+      # puts "OK #{distros.join(', ')} in #{container_runtime}"
     end
   end
 end
