@@ -3,6 +3,17 @@ name: CI
 on: [push, pull_request]
 
 jobs:
+  lint:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ruby/setup-ruby@v1
+        with:
+          bundler-cache: true
+      - run: bin/setup
+      - run: bundle exec rubocop -DP
+
   test:
     runs-on: ubuntu-latest
 
@@ -18,7 +29,6 @@ jobs:
           ruby-version: ${{ matrix.ruby-version }}
           bundler-cache: true
       - run: bin/setup
-      - run: bundle exec rubocop -DP
       - run: bundle exec rake test
 
   integration_test:
@@ -35,7 +45,6 @@ jobs:
       - uses: actions/checkout@v4
       - uses: ruby/setup-ruby@v1
         with:
-          ruby-version: '3.4'
           bundler-cache: true
       - run: bin/setup
       - run: bundle exec rake integration_test
