@@ -17,6 +17,7 @@ class TestBuildSampleProject < ::Minitest::Test
 
   def test_auto_detect_container_runtime
     cmd = ::OmnipackageAgent::Config.get.container_runtime
+
     assert system("#{cmd} --version > /dev/null 2>&1")
   end
 
