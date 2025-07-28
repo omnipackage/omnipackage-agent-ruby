@@ -34,6 +34,7 @@ jobs:
 
   integration_test:
     runs-on: ubuntu-latest
+    timeout-minutes: 120
 
     services:
       docker:

@@ -4,6 +4,7 @@ require 'erb'
 require 'tmpdir'
 
 require 'omnipackage_agent/utils/yaml'
+require 'omnipackage_agent/container_runtime'
 
 module OmnipackageAgent
   class Config
@@ -50,7 +51,7 @@ module OmnipackageAgent
           end
 
           if a == :container_runtime && value == 'auto'
-            instance_variable_set("@#{a}", auto_detect_container_runtime)
+            instance_variable_set("@#{a}", ::OmnipackageAgent::ContainerRuntime.auto_detect)
           else
             instance_variable_set("@#{a}", value)
           end
@@ -58,13 +59,6 @@ module OmnipackageAgent
         self.class.attr_reader(a) unless respond_to?(a)
       end
       freeze
-    end
-
-    private
-
-    def auto_detect_container_runtime
-      possibilities = %w[podman docker]
-      possibilities.find { |cmd| system("#{cmd} --version > /dev/null 2>&1") } || (raise "you have to install #{possibilities.join(' or ')}")
     end
   end
 end
