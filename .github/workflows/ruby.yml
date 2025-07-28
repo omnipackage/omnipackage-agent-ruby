@@ -48,5 +48,8 @@ jobs:
         with:
           ruby-version: '3.1'
           bundler-cache: true
+      - run: |
+          sudo apt update
+          sudo apt -y install podman
       - run: bin/setup
       - run: bundle exec rake integration_test

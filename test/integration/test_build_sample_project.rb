@@ -4,7 +4,7 @@ require_relative 'integration_test_helper'
 
 class TestBuildSampleProject < ::Minitest::Test
   %w[podman docker].each do |container_runtime|
-    next unless system("#{container_runtime} --version > /dev/null 2>&1")
+    # next unless system("#{container_runtime} --version > /dev/null 2>&1")
 
     ::OmnipackageAgent::Distro.each do |distro|
       next if distro.deprecated
