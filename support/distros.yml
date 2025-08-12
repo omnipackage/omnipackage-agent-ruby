@@ -134,6 +134,13 @@ distros:
   arch: x86_64
   image_info_url: 'https://hub.docker.com/_/debian'
 
+- id: 'debian_13'
+  name: 'Debian 13'
+  image: 'debian:trixie'
+  <<: *debian
+  arch: x86_64
+  image_info_url: 'https://hub.docker.com/_/debian'
+
 - id: 'debian_testing'
   name: 'Debian testing'
   image: 'debian:testing'

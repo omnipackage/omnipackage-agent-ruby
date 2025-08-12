@@ -56,6 +56,9 @@ builds:
 - distro: 'debian_12'
   <<: *deb
 
+- distro: 'debian_13'
+  <<: *deb
+
 - distro: 'debian_testing'
   <<: *deb
 
