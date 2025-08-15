@@ -1,0 +1,17 @@
+/.bundle/
+/.yardoc
+/_yardoc/
+/coverage/
+/doc/
+/pkg/
+/spec/reports/
+/tmp/
+/build-*/
+/test/sample_project/sample_project
+/test/sample_project/*.o
+/config.local.yml
+/oom
+/config.production.yml
+/.git/
+/.github/
+/.omnipackage
