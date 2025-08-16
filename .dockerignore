@@ -15,3 +15,4 @@
 /.git/
 /.github/
 /.omnipackage
+/vm/*.qcow2
