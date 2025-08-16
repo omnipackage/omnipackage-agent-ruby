@@ -12,3 +12,4 @@
 /config.local.yml
 /oom
 /config.production.yml
+/vm/*.qcow2
