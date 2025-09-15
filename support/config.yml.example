@@ -14,4 +14,4 @@ lockfiles_dir: "<%= ::Dir.tmpdir %>/omnipackage-lock"
 image_cache_enable: false
 
 # optionally disable cpu/memory limits in child containers
-container_limits_disable: true
+container_limits_disable: false
