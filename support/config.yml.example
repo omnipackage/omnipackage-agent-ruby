@@ -12,3 +12,6 @@ lockfiles_dir: "<%= ::Dir.tmpdir %>/omnipackage-lock"
 
 # optionally enable image cache to reduce subsequent build time in expense of storage space
 image_cache_enable: false
+
+# optionally disable cpu/memory limits in child containers
+container_limits_disable: true

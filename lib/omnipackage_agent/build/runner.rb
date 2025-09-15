@@ -84,11 +84,11 @@ module OmnipackageAgent
 
         if image_cache.enabled
           <<~CLI.chomp
-            #{lock.to_cli} '#{image_cache.rm_cli} ; #{config.container_runtime} run --name #{image_cache.container_name} --entrypoint /bin/sh #{mount_cli} #{limits.to_cli} #{env_cli} #{image_cache.image} -c "#{commands.join(' && ')}" && #{image_cache.commit_cli}'
+            #{lock.to_cli} '#{image_cache.rm_cli} ; #{config.container_runtime} run --name #{image_cache.container_name} --entrypoint /bin/sh #{mount_cli} #{limits_cli} #{env_cli} #{image_cache.image} -c "#{commands.join(' && ')}" && #{image_cache.commit_cli}'
           CLI
         else
           <<~CLI.chomp
-            #{config.container_runtime} run --rm --entrypoint /bin/sh #{mount_cli} #{limits.to_cli} #{env_cli} #{image_cache.image} -c "#{commands.join(' && ')}"
+            #{config.container_runtime} run --rm --entrypoint /bin/sh #{mount_cli} #{limits_cli} #{env_cli} #{image_cache.image} -c "#{commands.join(' && ')}"
           CLI
         end
       end
@@ -140,6 +140,12 @@ module OmnipackageAgent
         else
           deps
         end.freeze
+      end
+
+      def limits_cli
+        return '' if config.container_limits_disable
+
+        limits.to_cli
       end
     end
   end
