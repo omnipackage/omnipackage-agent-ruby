@@ -29,7 +29,7 @@ optparser = ::OptionParser.new do |parser|
     exit
   end
   parser.on('-c', '--config CONFIG_FILE', 'path to config file')
-  parser.on('--print-imstallation-path', 'print to stdout the installation path') do
+  parser.on('--print-installation-path', 'print to stdout the installation path') do
     puts ::File.expand_path('..', __dir__)
     exit
   end
