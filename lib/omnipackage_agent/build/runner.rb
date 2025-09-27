@@ -18,7 +18,7 @@ require 'omnipackage_agent/build/limits'
 
 module OmnipackageAgent
   class Build
-    class Runner
+    class Runner # rubocop: disable Metrics/ClassLength
       def initialize(build_conf:, source_path:, job_variables:, config:, logger:, terminator:, limits:) # rubocop: disable Metrics/ParameterLists
         @config = config
         @log_string = ::StringIO.new
