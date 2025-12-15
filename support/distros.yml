@@ -112,6 +112,13 @@ distros:
   arch: x86_64
   image_info_url: 'https://hub.docker.com/_/fedora'
 
+- id: 'fedora_43'
+  name: 'Fedora 43'
+  image: 'fedora:43'
+  <<: *redhat
+  arch: x86_64
+  image_info_url: 'https://hub.docker.com/_/fedora'
+
 - id: 'fedora_rawhide'
   name: 'Fedora Rawhide'
   image: 'fedora:rawhide'
