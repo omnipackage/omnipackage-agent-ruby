@@ -16,4 +16,7 @@ runs:
     - name: Run agent
       shell: bash
       run: |
-        $GITHUB_WORKSPACE/exe/omnipackage-agent -c ${{ github.action_path }}/omnipackage-config.yml
+        pwd
+        ls -la
+        ls -la exe
+        /exe/omnipackage-agent -c ${{ github.action_path }}/omnipackage-config.yml
