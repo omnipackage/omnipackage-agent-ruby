@@ -16,4 +16,5 @@ runs:
     - name: Run agent
       shell: bash
       run: |
+        tree
         exe/omnipackage-agent -c action-config.yml
