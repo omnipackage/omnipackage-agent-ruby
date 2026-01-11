@@ -16,5 +16,4 @@ runs:
     - name: Run agent
       shell: bash
       run: |
-        set -euo pipefail
-        exe/omnipackage-agent -c ${{ github.action_path }}/omnipackage-config.yml
+        $GITHUB_WORKSPACE/exe/omnipackage-agent -c ${{ github.action_path }}/omnipackage-config.yml
