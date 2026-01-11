@@ -1,0 +1,6 @@
+apikey: <%= ::ENV.fetch('APIKEY') %>
+apihost: 'https://web.omnipackage.org'
+image_cache_enable: false
+container_limits_disable: true
+single_shot: true
+single_shot_wait_sec: 200

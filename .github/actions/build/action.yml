@@ -1,0 +1,20 @@
+name: OmniPackage agent on Github actions
+description: Runs single-shot agent triggered by OmniPackage
+
+runs:
+  using: composite
+  steps:
+    - name: Install Ruby and Podman
+      shell: bash
+      run: |
+        set -euo pipefail
+        sudo apt-get update
+        sudo apt-get install -y ruby-full podman
+        ruby -v
+        podman --version
+
+    - name: Run agent
+      shell: bash
+      run: |
+        set -euo pipefail
+        exe/omnipackage-agent -c ${{ github.action_path }}/omnipackage-config.yml
