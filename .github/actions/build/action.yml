@@ -16,5 +16,6 @@ runs:
     - name: Run agent
       shell: bash
       run: |
-        tree ${{ github.action_path }}
+        set -euo pipefail
+        tree ${{ github.action_path }}/../../../
         ${{ github.action_path }}/../../../exe/omnipackage-agent -c ${{ github.action_path }}/config.yml
