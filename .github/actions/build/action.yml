@@ -2,7 +2,7 @@ name: OmniPackage agent on Github actions
 description: Runs single-shot agent triggered by OmniPackage
 
 runs:
-  using: "composite"
+  using: composite
   steps:
     - name: Install Ruby and Podman
       shell: bash
@@ -16,4 +16,5 @@ runs:
     - name: Run agent
       shell: bash
       run: |
-        ${{ github.action_path }}/exe/omnipackage-agent -c ${{ github.action_path }}/action-config.yml
+        tree ${{ github.action_path }}
+        ${{ github.action_path }}/../../../exe/omnipackage-agent -c ${{ github.action_path }}/config.yml
