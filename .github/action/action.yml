@@ -4,7 +4,7 @@ description: Runs single-shot agent triggered by OmniPackage
 runs:
   using: composite
   steps:
-    - name: Install Ruby and Podman
+    - name: Install dependencies
       shell: bash
       run: |
         set -euo pipefail
@@ -17,5 +17,4 @@ runs:
       shell: bash
       run: |
         set -euo pipefail
-        tree ${{ github.action_path }}/../../../
-        ${{ github.action_path }}/../../../exe/omnipackage-agent -c ${{ github.action_path }}/config.yml
+        ${{ github.action_path }}/../../exe/omnipackage-agent -c ${{ github.action_path }}/config.yml
