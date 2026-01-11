@@ -17,7 +17,10 @@ module OmnipackageAgent
   module_function
 
   def run(config, logger: ::OmnipackageAgent::Logging::Logger.new)
-    logger.info("starting agent #{::OmnipackageAgent::VERSION} with #{config.apihost} mothership, #{ruby_env_info}")
+    logline = "starting agent #{::OmnipackageAgent::VERSION} with #{config.apihost} mothership"
+    logline += " in single-shot mode with #{config.single_shot_wait_sec} seconds wait timeout" if config.single_shot
+    logline += " [#{ruby_env_info}]"
+    logger.info(logline)
 
     ::OmnipackageAgent::Api::Connector.new(config: config, logger: logger).join
   end

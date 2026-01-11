@@ -15,3 +15,7 @@ image_cache_enable: false
 
 # optionally disable cpu/memory limits in child containers
 container_limits_disable: false
+
+# in signle-shot mode the agent will wait for a build task and quit after finishing it
+single_shot: false
+single_shot_wait_sec: 300

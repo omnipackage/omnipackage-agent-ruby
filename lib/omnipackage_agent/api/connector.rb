@@ -47,6 +47,7 @@ module OmnipackageAgent
         ensure
           case queue.pop(response&.next_poll_after || rand(30..180))
           when 'quit'
+            logger.info('quitting')
             break
           end
         end

@@ -36,7 +36,9 @@ module OmnipackageAgent
       build_dir: ::String,
       lockfiles_dir: ::String,
       image_cache_enable: [::TrueClass, ::FalseClass],
-      container_limits_disable: [::TrueClass, ::FalseClass]
+      container_limits_disable: [::TrueClass, ::FalseClass],
+      single_shot: [::TrueClass, ::FalseClass],
+      single_shot_wait_sec: ::Integer
     }.freeze
 
     def initialize(hash, attributes = ATTRIBUTES) # rubocop: disable Metrics/MethodLength, Metrics/AbcSize, Metrics/PerceivedComplexity, Metrics/CyclomaticComplexity

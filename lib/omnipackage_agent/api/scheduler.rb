@@ -15,10 +15,11 @@ module OmnipackageAgent
         @queue = queue
         @downloader = downloader
         @config = config
+        @start_time = current_time_monotonic
         recharge!
       end
 
-      def call(payload) # rubocop: disable Metrics/MethodLength, Metrics/AbcSize
+      def call(payload) # rubocop: disable Metrics/MethodLength, Metrics/AbcSize, Metrics/CyclomaticComplexity, Metrics/PerceivedComplexity
         case # rubocop: disable Style/EmptyCaseCondition
         when state.idle? && payload['command'] == 'start'
           task = ::OmnipackageAgent::Api::Task.new(
@@ -38,6 +39,9 @@ module OmnipackageAgent
           stop!
         when state.finished?
           recharge!
+        when state.idle? && single_shot_expired?
+          logger.warn('single-shot wait timeout expired')
+          queue.push('quit')
         end
       rescue ::StandardError => e
         logger.error("scheduling error: #{e.message}")
@@ -61,7 +65,7 @@ module OmnipackageAgent
 
       private
 
-      attr_reader :mutex, :logger, :queue, :downloader, :state, :config
+      attr_reader :mutex, :logger, :queue, :downloader, :state, :config, :start_time
 
       def finalize(task)
         finish!(task)
@@ -90,6 +94,10 @@ module OmnipackageAgent
           @state = ::OmnipackageAgent::Api::State.new('finished', task: task)
         end
         queue.push(state)
+        return unless config.single_shot
+
+        logger.warn('single-shot task finished')
+        queue.push('quit')
       end
 
       def recharge!
@@ -98,6 +106,14 @@ module OmnipackageAgent
           @state = ::OmnipackageAgent::Api::State.new('idle')
         end
         queue.push(state)
+      end
+
+      def current_time_monotonic
+        ::Process.clock_gettime(::Process::CLOCK_MONOTONIC)
+      end
+
+      def single_shot_expired?
+        config.single_shot && config.single_shot_wait_sec < (current_time_monotonic - start_time)
       end
     end
   end
