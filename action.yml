@@ -16,20 +16,4 @@ runs:
     - name: Run agent
       shell: bash
       run: |
-        set -euo pipefail
-
-        if [ -z "${APIKEY:-}" ]; then
-          echo "APIKEY is not set"
-          exit 1
-        fi
-
-        cat > config.yml <<EOF
-apikey: <%= ::ENV.fetch('APIKEY') %>
-apihost: 'https://web.omnipackage.org'
-image_cache_enable: false
-container_limits_disable: true
-single_shot: true
-single_shot_wait_sec: 200
-EOF
-
-        exe/omnipackage-agent -c config.yml
+        exe/omnipackage-agent -c action-config.yml
